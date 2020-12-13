@@ -37,7 +37,7 @@ module.exports.authenticate = function(uname, password) {
       else if(result.length)
         resolve(result[0]);
       else
-        resolve([]);
+        resolve({});
     });
     connection.end();
   });
@@ -58,7 +58,7 @@ module.exports.getInfo = function(id) {
       else if(result.length)
         resolve(result[0]);
       else
-        resolve([]);
+        resolve({});
     });
     connection.end();
   });
