@@ -1,4 +1,5 @@
 var express = require('express');
+var authentication = require(__projdir + '/middlewares/authentication');
 var userModel = require(__projdir + '/models/user');
 var router = express.Router();
 
@@ -71,17 +72,7 @@ router.post('/', async function(req, res, next) {
   }
 });
 
-// Login required for the operations below
-router.use(function (req, res, next) {
-  var user_id = req.session.user_id;
-  if(!user_id) {
-    res.status(401);
-    return res.json({'successful': false, 'data': [], 'error_field': [], 'error_msg': '401 Unauthorized.'});
-  }
-  next();
-});
-
-router.get('/', async function(req, res, next) {
+router.get('/', authentication, async function(req, res, next) {
   try {
     var user_id   = req.session.user_id;
     var user_info = await userModel.getInfo(user_id);
@@ -97,7 +88,7 @@ router.get('/', async function(req, res, next) {
   }
 });
 
-router.put('/', async function(req, res, next) {
+router.put('/', authentication, async function(req, res, next) {
   try {
     var user_id = req.session.user_id;
 

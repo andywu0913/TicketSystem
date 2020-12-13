@@ -1,4 +1,6 @@
 var express = require('express');
+var authentication = require(__projdir + '/middlewares/authentication');
+var authorization = require(__projdir + '/middlewares/authorization');
 var eventModel = require(__projdir + '/models/event');
 var router = express.Router();
 
@@ -39,27 +41,7 @@ router.get('/:event_id', async function(req, res, next) {
   }
 });
 
-// Login required for the operations below
-router.use(function (req, res, next) {
-  var user_id = req.session.user_id;
-  if(!user_id) {
-    res.status(401);
-    return res.json({'successful': false, 'data': [], 'error_field': [], 'error_msg': '401 Unauthorized.'});
-  }
-  next();
-});
-
-// User role: (Admin or Host) is required for the functions below
-router.use(function (req, res, next) {
-  var role = req.session.role || 99;
-  if(role > 2){
-    res.status(403);
-    return res.json({'successful': false, 'data': [], 'error_field': [], 'error_msg': '403 Forbidden.'});
-  }
-  next();
-});
-
-router.post('/', async function(req, res, next) {
+router.post('/', authentication, authorization(roles = [1, 2]), async function(req, res, next) {
   try {
     var name        = req.body.name;
     var description = req.body.description;
@@ -93,7 +75,7 @@ router.post('/', async function(req, res, next) {
   }
 });
 
-router.put('/', async function(req, res, next) {
+router.put('/', authentication, authorization(roles = [1, 2]), async function(req, res, next) {
   try {
     var event_id    = req.body.event_id;
     var name        = req.body.name;
@@ -138,7 +120,7 @@ router.put('/', async function(req, res, next) {
   }
 });
 
-router.delete('/', async function(req, res, next) {
+router.delete('/', authentication, authorization(roles = [1, 2]), async function(req, res, next) {
   try {
     var event_id = req.body.event_id;
     var user_id  = req.session.user_id;
