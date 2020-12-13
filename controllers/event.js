@@ -7,6 +7,11 @@ router.get('/', async function(req, res, next) {
     let start_id   = req.query.start_id || null;
     let row_counts = req.query.row_counts || 10;
 
+    if(isNaN(row_counts)) {
+      res.status(400);
+      return res.json({'successful': false, 'data': {}, 'error_field': ['row_counts'], 'error_msg': 'One or more fields contain incorrect values.'});
+    }
+
     var events = await eventModel.getMultiple(start_id, parseInt(row_counts));
     res.json({'successful': true, 'data': events, 'error_field': [], 'error_msg': ''});
   }
@@ -58,19 +63,29 @@ router.post('/', async function(req, res, next) {
   try {
     var name        = req.body.name;
     var description = req.body.description;
+    var start_date  = req.body.start_date;
+    var end_date    = req.body.end_date;
     var user_id     = req.session.user_id;
 
-    if(!name || !description) {
+    if(!name || !description || !start_date || !end_date) {
       res.status(400);
-      return res.json({'successful': false, 'data': {}, 'error_field': ['name', 'description'], 'error_msg': 'Missing one or more required parameters.'});
+      return res.json({'successful': false, 'data': {}, 'error_field': ['name', 'description', 'start_date', 'end_date'], 'error_msg': 'Missing one or more required parameters.'});
     }
 
-    var result = await eventModel.create(name, description, user_id);
+    start_date = new Date(start_date);
+    end_date   = new Date(end_date);
+
+    if(name.length > 50 || start_date.toString() === 'Invalid Date' || end_date.toString() === 'Invalid Date') {
+      res.status(400);
+      return res.json({'successful': false, 'data': {}, 'error_field': ['name', 'start_date', 'end_date'], 'error_msg': 'One or more parameters contain incorrect values.'});
+    }
+
+    var result = await eventModel.create(name, description, start_date, end_date, user_id);
     if(result.affectedRows === 0)
       throw 'Fail to create the event.';
 
     res.status(201);
-    res.json({'successful': true, 'data': {'id': result.insertId, 'name': name, 'description': description}, 'error_field': [], 'error_msg': ''});
+    res.json({'successful': true, 'data': {'id': result.insertId}, 'error_field': [], 'error_msg': ''});
   }
   catch (err) {
     res.status(500);
@@ -83,12 +98,22 @@ router.put('/', async function(req, res, next) {
     var event_id    = req.body.event_id;
     var name        = req.body.name;
     var description = req.body.description;
+    var start_date  = req.body.start_date;
+    var end_date    = req.body.end_date;
     var user_id     = req.session.user_id;
     var role        = req.session.role;
 
-    if(!event_id || !name || !description) {
+    if(!event_id || !name || !description || !start_date || !end_date) {
       res.status(400);
-      return res.json({'successful': false, 'data': [], 'error_field': ['event_id', 'name', 'description'], 'error_msg': 'Missing one or more required parameters.'});
+      return res.json({'successful': false, 'data': [], 'error_field': ['event_id', 'name', 'description', 'start_date', 'end_date'], 'error_msg': 'Missing one or more required parameters.'});
+    }
+
+    start_date = new Date(start_date);
+    end_date   = new Date(end_date);
+
+    if(name.length > 50 || start_date.toString() === 'Invalid Date' || end_date.toString() === 'Invalid Date') {
+      res.status(400);
+      return res.json({'successful': false, 'data': {}, 'error_field': ['name', 'start_date', 'end_date'], 'error_msg': 'One or more parameters contain incorrect values.'});
     }
 
     var event = await eventModel.getSingle(event_id);
@@ -100,7 +125,7 @@ router.put('/', async function(req, res, next) {
       return res.json({'successful': false, 'data': [], 'error_field': [], 'error_msg': 'No permission to update the event.'});
     }
 
-    var result = await eventModel.update(event_id, name, description);
+    var result = await eventModel.update(event_id, name, description, start_date, end_date);
     if(result.affectedRows === 0)
       throw 'Fail to update the event in the database.';
 

@@ -2,12 +2,12 @@ var mysql = require('mysql');
 
 var config = require(__projdir + '/config/db').mysql;
 
-module.exports.create = function(name, description, creator_uid) {
+module.exports.create = function(name, description, start_date, end_date, creator_uid) {
   return new Promise(function(resolve, reject) {
     var connection = mysql.createConnection(config);
     connection.connect();
-    var sql = 'INSERT INTO `event` (`name`, `description`, `creator_uid`) VALUES (?, ?, ?)';
-    connection.query(sql, [name, description, creator_uid], function (err, result) {
+    var sql = 'INSERT INTO `event` (`name`, `description`, `start_date`, `end_date`, `creator_uid`) VALUES (?, ?, ?, ?, ?)';
+    connection.query(sql, [name, description, start_date, end_date, creator_uid], function (err, result) {
       if (err)
         reject(err);
       else
@@ -19,8 +19,8 @@ module.exports.create = function(name, description, creator_uid) {
 
 module.exports.getMultiple = function(start_id, row_counts) {
   return new Promise(function(resolve, reject) {
-    var sql_latest = 'SELECT `id`, `name`, `description` FROM `event`                ORDER BY `id` DESC LIMIT ?';
-    var sql_offset = 'SELECT `id`, `name`, `description` FROM `event` WHERE `id` < ? ORDER BY `id` DESC LIMIT ?';
+    var sql_latest = 'SELECT `id`, `name`, `description`, `start_date`, `end_date` FROM `event`                ORDER BY `id` DESC LIMIT ?';
+    var sql_offset = 'SELECT `id`, `name`, `description`, `start_date`, `end_date` FROM `event` WHERE `id` < ? ORDER BY `id` DESC LIMIT ?';
     var sql_params_latest = [row_counts];
     var sql_params_offset = [start_id, row_counts];
 
@@ -40,7 +40,7 @@ module.exports.getSingle = function(id) {
   return new Promise(function(resolve, reject) {
     var connection = mysql.createConnection(config);
     connection.connect();
-    var sql = 'SELECT `id`, `name`, `description`, `creator_uid` FROM `event` WHERE `id` = ?';
+    var sql = 'SELECT `id`, `name`, `description`, `start_date`, `end_date`, `creator_uid` FROM `event` WHERE `id` = ?';
     connection.query(sql, [id], function (err, result) {
       if (err)
         reject(err);
@@ -53,12 +53,12 @@ module.exports.getSingle = function(id) {
   });
 };
 
-module.exports.update = function(id, name, description) {
+module.exports.update = function(id, name, description, start_date, end_date) {
   return new Promise(function(resolve, reject) {
     var connection = mysql.createConnection(config);
     connection.connect();
-    var sql = 'UPDATE `event` SET `name` = ?, `description` = ? WHERE `id` = ?';
-    connection.query(sql, [name, description, id], function (err, result) {
+    var sql = 'UPDATE `event` SET `name` = ?, `description` = ?, `start_date` = ?, `end_date` = ? WHERE `id` = ?';
+    connection.query(sql, [name, description, start_date, end_date, id], function (err, result) {
       if (err)
         reject(err);
       else

@@ -46,6 +46,11 @@ router.post('/', async function(req, res, next) {
       return res.json({'successful': false, 'data': {}, 'error_field': ['uname', 'password', 'name', 'email'], 'error_msg': 'Missing one or more required parameters.'});
     }
 
+    if(uname.length > 16 || name.length > 64 || email.length > 64) {
+      res.status(400);
+      return res.json({'successful': false, 'data': {}, 'error_field': ['uname', 'name', 'email'], 'error_msg': 'One or more parameters contain incorrect values.'});
+    }
+
     var result = await userModel.create(uname, password, role, name, email);
 
     if(result.affectedRows === 0)
@@ -101,8 +106,12 @@ router.put('/', async function(req, res, next) {
     var email   = req.body.email;
 
     if(uname && name && email) {
-      var result = await userModel.updateInfo(user_id, uname, name, email);
+      if(uname.length > 16 || name.length > 64 || email.length > 64) {
+        res.status(400);
+        return res.json({'successful': false, 'data': {}, 'error_field': ['uname', 'name', 'email'], 'error_msg': 'One or more parameters contain incorrect values.'});
+      }
 
+      var result = await userModel.updateInfo(user_id, uname, name, email);
       if(result.affectedRows === 0)
         throw 'Fail to update user info in the database.';
 
