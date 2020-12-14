@@ -99,7 +99,7 @@ router.put('/', authentication, async function(req, res, next) {
     if(uname && name && email) {
       if(uname.length > 16 || name.length > 64 || email.length > 64) {
         res.status(400);
-        return res.json({'successful': false, 'data': {}, 'error_field': ['uname', 'name', 'email'], 'error_msg': 'One or more parameters contain incorrect values.'});
+        return res.json({'successful': false, 'data': [], 'error_field': ['uname', 'name', 'email'], 'error_msg': 'One or more parameters contain incorrect values.'});
       }
 
       var result = await userModel.updateInfo(user_id, uname, name, email);

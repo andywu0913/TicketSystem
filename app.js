@@ -10,6 +10,7 @@ global.__projdir = __dirname;
 
 var userController = require('./controllers/user');
 var eventController = require('./controllers/event');
+var sessionController = require('./controllers/session');
 
 var app = express();
 
@@ -30,6 +31,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/api/user', userController);
 app.use('/api/event', eventController);
+app.use('/api/session', sessionController);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

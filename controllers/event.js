@@ -2,6 +2,7 @@ var express = require('express');
 var authentication = require(__projdir + '/middlewares/authentication');
 var authorization = require(__projdir + '/middlewares/authorization');
 var eventModel = require(__projdir + '/models/event');
+var sessionModel = require(__projdir + '/models/session');
 var router = express.Router();
 
 router.get('/', async function(req, res, next) {
@@ -75,9 +76,9 @@ router.post('/', authentication, authorization(roles = [1, 2]), async function(r
   }
 });
 
-router.put('/', authentication, authorization(roles = [1, 2]), async function(req, res, next) {
+router.put('/:event_id', authentication, authorization(roles = [1, 2]), async function(req, res, next) {
   try {
-    var event_id    = req.body.event_id;
+    var event_id    = req.params.event_id;
     var name        = req.body.name;
     var description = req.body.description;
     var start_date  = req.body.start_date;
@@ -95,7 +96,7 @@ router.put('/', authentication, authorization(roles = [1, 2]), async function(re
 
     if(name.length > 50 || start_date.toString() === 'Invalid Date' || end_date.toString() === 'Invalid Date') {
       res.status(400);
-      return res.json({'successful': false, 'data': {}, 'error_field': ['name', 'start_date', 'end_date'], 'error_msg': 'One or more parameters contain incorrect values.'});
+      return res.json({'successful': false, 'data': [], 'error_field': ['name', 'start_date', 'end_date'], 'error_msg': 'One or more parameters contain incorrect values.'});
     }
 
     var event = await eventModel.getSingle(event_id);
@@ -120,9 +121,9 @@ router.put('/', authentication, authorization(roles = [1, 2]), async function(re
   }
 });
 
-router.delete('/', authentication, authorization(roles = [1, 2]), async function(req, res, next) {
+router.delete('/:event_id', authentication, authorization(roles = [1, 2]), async function(req, res, next) {
   try {
-    var event_id = req.body.event_id;
+    var event_id = req.params.event_id;
     var user_id  = req.session.user_id;
     var role     = req.session.role;
 
@@ -140,13 +141,18 @@ router.delete('/', authentication, authorization(roles = [1, 2]), async function
       return res.json({'successful': false, 'data': [], 'error_field': [], 'error_msg': 'No permission to delete the event.'});
     }
 
+    var session = await sessionModel.getAllByEventId(event_id);
+    if(session.length > 0) {
+      res.status(400);
+      return res.json({'successful': false, 'data': [], 'error_field': [], 'error_msg': 'One or more sessions exist under current event.\nDelete those sessions first.'});
+    }
+
     var result = await eventModel.delete(event_id);
     if(result.affectedRows === 0)
       throw 'Fail to delete the event from the database.';
 
     res.status(204);
     return res.end();
-
   }
   catch (err) {
     res.status(500);
