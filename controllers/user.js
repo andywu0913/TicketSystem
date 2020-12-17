@@ -1,10 +1,8 @@
-var express = require('express');
-var authentication = require(__projdir + '/middlewares/authentication');
-var jwt = require(__projdir + '/utils/jwt');
 var userModel = require(__projdir + '/models/user');
-var router = express.Router();
 
-router.post('/login', async function(req, res, next) {
+var jwt = require(__projdir + '/utils/jwt');
+
+module.exports.login = async function(req, res) {
   try {
     var uname    = req.body.uname;
     var password = req.body.password;
@@ -43,9 +41,9 @@ router.post('/login', async function(req, res, next) {
     res.status(500);
     res.json({'successful': false, 'data': {}, 'error_field': [], 'error_msg': err});
   }
-});
+};
 
-router.post('/refresh', authentication, async function(req, res, next) {
+module.exports.refreshLoginToken = async function(req, res) {
   try {
     var userId       = req.user_id;
     var role         = req.role;
@@ -82,14 +80,14 @@ router.post('/refresh', authentication, async function(req, res, next) {
     res.status(500);
     res.json({'successful': false, 'data': {}, 'error_field': [], 'error_msg': err});
   }
-});
+};
 
-router.all('/logout', function(req, res, next) {
+module.exports.logout = function(req, res) {
   // TODO: delete refreshToken from database
   res.json({'successful': true, 'data': [], 'error_field': [], 'error_msg': ''});
-});
+};
 
-router.post('/', async function(req, res, next) {
+module.exports.create = async function(req, res) {
   try {
     var uname    = req.body.uname;
     var password = req.body.password;
@@ -125,9 +123,9 @@ router.post('/', async function(req, res, next) {
       res.json({'successful': false, 'data': {}, 'error_field': [], 'error_msg': err});
     }
   }
-});
+};
 
-router.get('/', authentication, async function(req, res, next) {
+module.exports.find = async function(req, res) {
   try {
     var userId   = req.user_id;
     var userInfo = await userModel.getInfo(userId);
@@ -141,9 +139,9 @@ router.get('/', authentication, async function(req, res, next) {
     res.status(500);
     res.json({'successful': false, 'data': {}, 'error_field': [], 'error_msg': err});
   }
-});
+};
 
-router.put('/', authentication, async function(req, res, next) {
+module.exports.updateInfo = async function(req, res) {
   try {
     var userId = req.user_id;
     var uname  = req.body.uname;
@@ -177,9 +175,9 @@ router.put('/', authentication, async function(req, res, next) {
       res.json({'successful': false, 'data': [], 'error_field': [], 'error_msg': err});
     }
   }
-});
+};
 
-router.put('/password', authentication, async function(req, res, next) {
+module.exports.updatePassword = async function(req, res) {
   try {
     var userId          = req.user_id;
     var passwordCurrent = req.body.password_current;
@@ -213,6 +211,4 @@ router.put('/password', authentication, async function(req, res, next) {
     res.status(500);
     res.json({'successful': false, 'data': [], 'error_field': [], 'error_msg': err});
   }
-});
-
-module.exports = router;
+};

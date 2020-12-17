@@ -1,11 +1,7 @@
-var express = require('express');
-var authentication = require(__projdir + '/middlewares/authentication');
-var authorization = require(__projdir + '/middlewares/authorization');
 var eventModel = require(__projdir + '/models/event');
 var sessionModel = require(__projdir + '/models/session');
-var router = express.Router();
 
-router.get('/', async function(req, res, next) {
+module.exports.findAll = async function(req, res, next) {
   try {
     let start_id   = req.query.start_id || null;
     let row_counts = req.query.row_counts || 10;
@@ -22,9 +18,9 @@ router.get('/', async function(req, res, next) {
     res.status(500);
     res.json({'successful': false, 'data': [], 'error_field': [], 'error_msg': err});
   }
-});
+};
 
-router.get('/:event_id', async function(req, res, next) {
+module.exports.find = async function(req, res, next) {
   try {
     var event_id = req.params.event_id;
 
@@ -40,9 +36,9 @@ router.get('/:event_id', async function(req, res, next) {
     res.status(500);
     res.json({'successful': false, 'data': {}, 'error_field': [], 'error_msg': err});
   }
-});
+};
 
-router.post('/', authentication, authorization(roles = [1, 2]), async function(req, res, next) {
+module.exports.create = async function(req, res, next) {
   try {
     var name        = req.body.name;
     var description = req.body.description;
@@ -74,9 +70,9 @@ router.post('/', authentication, authorization(roles = [1, 2]), async function(r
     res.status(500);
     res.json({'successful': false, 'data': {}, 'error_field': [], 'error_msg': err});
   }
-});
+};
 
-router.put('/:event_id', authentication, authorization(roles = [1, 2]), async function(req, res, next) {
+module.exports.update = async function(req, res, next) {
   try {
     var event_id    = req.params.event_id;
     var name        = req.body.name;
@@ -119,9 +115,9 @@ router.put('/:event_id', authentication, authorization(roles = [1, 2]), async fu
     res.status(500);
     res.json({'successful': false, 'data': [], 'error_field': [], 'error_msg': err});
   }
-});
+};
 
-router.delete('/:event_id', authentication, authorization(roles = [1, 2]), async function(req, res, next) {
+module.exports.delete = async function(req, res, next) {
   try {
     var event_id = req.params.event_id;
     var user_id  = req.user_id;
@@ -158,6 +154,4 @@ router.delete('/:event_id', authentication, authorization(roles = [1, 2]), async
     res.status(500);
     res.json({'successful': false, 'data': [], 'error_field': [], 'error_msg': err});
   }
-});
-
-module.exports = router;
+};

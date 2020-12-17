@@ -1,11 +1,7 @@
-var express = require('express');
-var authentication = require(__projdir + '/middlewares/authentication');
-var authorization = require(__projdir + '/middlewares/authorization');
 var eventModel = require(__projdir + '/models/event');
 var sessionModel = require(__projdir + '/models/session');
-var router = express.Router();
 
-router.get('/', async function(req, res, next) {
+module.exports.find = async function(req, res, next) {
   try {
     var event_id = req.query.event_id;
 
@@ -21,9 +17,9 @@ router.get('/', async function(req, res, next) {
     res.status(500);
     res.json({'successful': false, 'data': {}, 'error_field': [], 'error_msg': err});
   }
-});
+};
 
-router.post('/', authentication, authorization(roles = [1, 2]), async function(req, res, next) {
+module.exports.create = async function(req, res, next) {
   try {
     var event_id              = req.query.event_id;
     var time                  = req.body.time;
@@ -69,9 +65,9 @@ router.post('/', authentication, authorization(roles = [1, 2]), async function(r
     res.status(500);
     res.json({'successful': false, 'data': {}, 'error_field': [], 'error_msg': err});
   }
-});
+};
 
-router.put('/:session_id', authentication, authorization(roles = [1, 2]), async function(req, res, next) {
+module.exports.update = async function(req, res, next) {
   try {
     var session_id            = req.params.session_id;
     var time                  = req.body.time;
@@ -119,9 +115,9 @@ router.put('/:session_id', authentication, authorization(roles = [1, 2]), async 
     res.status(500);
     res.json({'successful': false, 'data': [], 'error_field': [], 'error_msg': err});
   }
-});
+};
 
-router.delete('/:session_id', authentication, authorization(roles = [1, 2]), async function(req, res, next) {
+module.exports.delete = async function(req, res, next) {
   try {
     var session_id = req.params.session_id;
     var user_id    = req.user_id;
@@ -154,6 +150,4 @@ router.delete('/:session_id', authentication, authorization(roles = [1, 2]), asy
     res.status(500);
     res.json({'successful': false, 'data': [], 'error_field': [], 'error_msg': err});
   }
-});
-
-module.exports = router;
+};

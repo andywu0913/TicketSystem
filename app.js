@@ -7,9 +7,9 @@ var logger = require('morgan');
 global.__version = require('./package.json').version;
 global.__projdir = __dirname;
 
-var userController = require('./controllers/user');
-var eventController = require('./controllers/event');
-var sessionController = require('./controllers/session');
+var userRouter = require('./routes/user');
+var eventRouter = require('./routes/event');
+var sessionRouter = require('./routes/session');
 
 var app = express();
 
@@ -19,13 +19,13 @@ app.set('view engine', 'ejs');
 
 app.use(logger('dev'));
 app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+app.use(express.urlencoded({extended: false}));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/api/user', userController);
-app.use('/api/event', eventController);
-app.use('/api/session', sessionController);
+app.use('/api/user', userRouter);
+app.use('/api/event', eventRouter);
+app.use('/api/session', sessionRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
