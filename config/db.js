@@ -6,4 +6,4 @@ module.exports = {
 		database: 'TicketSystem',
 		charset : 'utf8mb4'
 	}
-}
+};

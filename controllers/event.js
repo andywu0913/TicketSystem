@@ -48,7 +48,7 @@ router.post('/', authentication, authorization(roles = [1, 2]), async function(r
     var description = req.body.description;
     var start_date  = req.body.start_date;
     var end_date    = req.body.end_date;
-    var user_id     = req.session.user_id;
+    var user_id     = req.user_id;
 
     if(!name || !description || !start_date || !end_date) {
       res.status(400);
@@ -83,8 +83,8 @@ router.put('/:event_id', authentication, authorization(roles = [1, 2]), async fu
     var description = req.body.description;
     var start_date  = req.body.start_date;
     var end_date    = req.body.end_date;
-    var user_id     = req.session.user_id;
-    var role        = req.session.role;
+    var user_id     = req.user_id;
+    var role        = req.role;
 
     if(!event_id || !name || !description || !start_date || !end_date) {
       res.status(400);
@@ -124,8 +124,8 @@ router.put('/:event_id', authentication, authorization(roles = [1, 2]), async fu
 router.delete('/:event_id', authentication, authorization(roles = [1, 2]), async function(req, res, next) {
   try {
     var event_id = req.params.event_id;
-    var user_id  = req.session.user_id;
-    var role     = req.session.role;
+    var user_id  = req.user_id;
+    var role     = req.role;
 
     if(!event_id) {
       res.status(400);

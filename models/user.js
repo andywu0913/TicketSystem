@@ -43,6 +43,44 @@ module.exports.authenticate = function(uname, password) {
   });
 };
 
+module.exports.compareRefreshToken = function(id, refreshToken) {
+  return new Promise(function(resolve, reject) {
+    var connection = mysql.createConnection(config);
+    connection.connect();
+    var sql = 'SELECT `id`, `role` \
+               FROM `user` \
+               WHERE `id` = ? AND `refresh_token` = ? AND `token_expires_in` > NOW()';
+    connection.query(sql, [id, refreshToken], function (err, result) {
+      if (err)
+        reject(err);
+      else if(result.length)
+        resolve(result[0]);
+      else
+        resolve({});
+    });
+    connection.end();
+  });
+};
+
+module.exports.updateRefreshToken = function(id, token, expires_in) {
+  return new Promise(function(resolve, reject) {
+    var connection = mysql.createConnection(config);
+    connection.connect();
+    var sql = 'UPDATE `user` SET \
+                 `refresh_token` = ?, \
+                 `token_expires_in` = ?, \
+                 `last_login_time` = CURRENT_TIMESTAMP() \
+               WHERE `id` = ?';
+    connection.query(sql, [token, expires_in, id], function (err, result) {
+      if (err)
+        reject(err);
+      else
+        resolve(result);
+    });
+    connection.end();
+  });
+};
+
 module.exports.getInfo = function(id) {
   return new Promise(function(resolve, reject) {
     var connection = mysql.createConnection(config);

@@ -32,8 +32,8 @@ router.post('/', authentication, authorization(roles = [1, 2]), async function(r
     var ticket_sell_time_end  = req.body.ticket_sell_time_end;
     var max_seats             = req.body.max_seats;
     var price                 = req.body.price;
-    var user_id               = req.session.user_id;
-    var role                  = req.session.role;
+    var user_id               = req.user_id;
+    var role                  = req.role;
 
     if(!event_id || !time || !address || !ticket_sell_time_open || !ticket_sell_time_end || !max_seats || !price) {
       res.status(400);
@@ -80,8 +80,8 @@ router.put('/:session_id', authentication, authorization(roles = [1, 2]), async 
     var ticket_sell_time_end  = req.body.ticket_sell_time_end;
     var max_seats             = req.body.max_seats;
     var price                 = req.body.price;
-    var user_id               = req.session.user_id;
-    var role                  = req.session.role;
+    var user_id               = req.user_id;
+    var role                  = req.role;
 
     if(!session_id || !time || !address || !ticket_sell_time_open || !ticket_sell_time_end || !max_seats || !price) {
       res.status(400);
@@ -124,8 +124,8 @@ router.put('/:session_id', authentication, authorization(roles = [1, 2]), async 
 router.delete('/:session_id', authentication, authorization(roles = [1, 2]), async function(req, res, next) {
   try {
     var session_id = req.params.session_id;
-    var user_id    = req.session.user_id;
-    var role       = req.session.role;
+    var user_id    = req.user_id;
+    var role       = req.role;
 
     if(!session_id) {
       res.status(400);
