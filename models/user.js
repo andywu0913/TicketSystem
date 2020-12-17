@@ -1,134 +1,76 @@
 var crypto = require("crypto");
-var mysql = require('mysql');
 
-var config = require(__projdir + '/config/db').mysql;
+module.exports = function(dbConnection) {
 
-function hashPassword(password) {
-  return crypto.createHash('sha256').update(password).digest('hex');
-}
+  function hashPassword(password) {
+    return crypto.createHash('sha256').update(password).digest('hex');
+  }
 
-module.exports.create = function(uname, password, role, name, email) {
-  return new Promise(function(resolve, reject) {
-    var connection = mysql.createConnection(config);
-    connection.connect();
-    var sql = 'INSERT INTO `user` (`uname`, `password`, `role`, `name`, `email`) VALUES (?, ?, ?, ?, ?)';
-    connection.query(sql, [uname, hashPassword(password), role, name, email], function (err, result) {
-      if (err)
-        reject(err);
-      else
-        resolve(result);
-    });
-    connection.end();
-  });
+  return {
+    create: async function(uname, password, role, name, email) {
+      var sql = 'INSERT INTO `user` (`uname`, `password`, `role`, `name`, `email`) VALUES (?, ?, ?, ?, ?)';
+      var [result, _] = await dbConnection.query(sql, [uname, hashPassword(password), role, name, email]);
+
+      return result;
+    },
+    authenticate: async function(uname, password) {
+      var sql = 'SELECT `user`.`id`, `uname`, `user`.`name`, `role`, `role`.`name` AS "rname" \
+                 FROM `user` \
+                 LEFT JOIN `role` \
+                 ON `user`.`role` = `role`.`id` \
+                 WHERE `uname` = ? AND `password` = ?';
+      var [rows, fields] = await dbConnection.query(sql, [uname, hashPassword(password)]);
+
+      if(rows.length === 0)
+        return {};
+
+      return rows[0];
+    },
+    compareRefreshToken: async function(id, refreshToken) {
+      var sql = 'SELECT `id`, `role` \
+                 FROM `user` \
+                 WHERE `id` = ? AND `refresh_token` = ? AND `token_expires_in` > NOW()';
+      var [rows, fields] = await dbConnection.query(sql, [id, refreshToken]);
+        
+      if(rows.length === 0)
+        return {};
+
+      return rows[0];
+    },
+    updateRefreshToken: async function(id, token, expiresIn) {
+      var sql = 'UPDATE `user` SET \
+                   `refresh_token` = ?, \
+                   `token_expires_in` = ?, \
+                   `last_login_time` = CURRENT_TIMESTAMP() \
+                 WHERE `id` = ?';
+      var [result, _] = await dbConnection.query(sql, [token, expiresIn, id]);
+
+      return result;
+    },
+    getInfo: async function(id) {
+      var sql = 'SELECT `user`.`id`, `uname`, `user`.`name`, `email`, `role`, `role`.`name` AS "rname" \
+                 FROM `user` \
+                 LEFT JOIN `role` \
+                 ON `user`.`role` = `role`.`id` \
+                 WHERE `user`.`id` = ?';
+      var [rows, fields] = await dbConnection.query(sql, [id]);
+
+      if(rows.length === 0)
+        return {};
+
+      return rows[0];
+    },
+    updateInfo: async function(id, uname, name, email) {
+      var sql = 'UPDATE `user` SET `uname` = ?, `name` = ?, `email`= ?, `last_update_time` = CURRENT_TIMESTAMP() WHERE `id` = ?';
+      var [result, _] = await dbConnection.query(sql, [uname, name, email, id]);
+
+      return result;
+    },
+    updatePassword: async function(id, passwordNew) {
+      var sql = 'UPDATE `user` SET `password` = ?, `last_update_time` = CURRENT_TIMESTAMP() WHERE `id` = ?';
+      var [result, _] = await dbConnection.query(sql, [hashPassword(passwordNew), id]);
+      
+      return result;
+    }
+  };
 };
-
-module.exports.authenticate = function(uname, password) {
-  return new Promise(function(resolve, reject) {
-    var connection = mysql.createConnection(config);
-    connection.connect();
-    var sql = 'SELECT `user`.`id`, `uname`, `user`.`name`, `role`, `role`.`name` AS "rname" \
-               FROM `user` \
-               LEFT JOIN `role` \
-               ON `user`.`role` = `role`.`id` \
-               WHERE `uname` = ? AND `password` = ?';
-    connection.query(sql, [uname, hashPassword(password)], function (err, result) {
-      if (err)
-        reject(err);
-      else if(result.length)
-        resolve(result[0]);
-      else
-        resolve({});
-    });
-    connection.end();
-  });
-};
-
-module.exports.compareRefreshToken = function(id, refreshToken) {
-  return new Promise(function(resolve, reject) {
-    var connection = mysql.createConnection(config);
-    connection.connect();
-    var sql = 'SELECT `id`, `role` \
-               FROM `user` \
-               WHERE `id` = ? AND `refresh_token` = ? AND `token_expires_in` > NOW()';
-    connection.query(sql, [id, refreshToken], function (err, result) {
-      if (err)
-        reject(err);
-      else if(result.length)
-        resolve(result[0]);
-      else
-        resolve({});
-    });
-    connection.end();
-  });
-};
-
-module.exports.updateRefreshToken = function(id, token, expires_in) {
-  return new Promise(function(resolve, reject) {
-    var connection = mysql.createConnection(config);
-    connection.connect();
-    var sql = 'UPDATE `user` SET \
-                 `refresh_token` = ?, \
-                 `token_expires_in` = ?, \
-                 `last_login_time` = CURRENT_TIMESTAMP() \
-               WHERE `id` = ?';
-    connection.query(sql, [token, expires_in, id], function (err, result) {
-      if (err)
-        reject(err);
-      else
-        resolve(result);
-    });
-    connection.end();
-  });
-};
-
-module.exports.getInfo = function(id) {
-  return new Promise(function(resolve, reject) {
-    var connection = mysql.createConnection(config);
-    connection.connect();
-    var sql = 'SELECT `user`.`id`, `uname`, `user`.`name`, `email`, `role`, `role`.`name` AS "rname" \
-               FROM `user` \
-               LEFT JOIN `role` \
-               ON `user`.`role` = `role`.`id` \
-               WHERE `user`.`id` = ?';
-    connection.query(sql, [id], function (err, result) {
-      if (err)
-        reject(err);
-      else if(result.length)
-        resolve(result[0]);
-      else
-        resolve({});
-    });
-    connection.end();
-  });
-};
-
-module.exports.updateInfo = function(id, uname, name, email) {
-  return new Promise(function(resolve, reject) {
-    var connection = mysql.createConnection(config);
-    connection.connect();
-    var sql = 'UPDATE `user` SET `uname` = ?, `name` = ?, `email`= ?, `last_update_time` = CURRENT_TIMESTAMP() WHERE `id` = ?';
-    connection.query(sql, [uname, name, email, id], function (err, result) {
-      if (err)
-        reject(err);
-      else
-        resolve(result);
-    });
-    connection.end();
-  });
-};
-
-module.exports.updatePassword = function(id, password_new) {
-  return new Promise(function(resolve, reject) {
-    var connection = mysql.createConnection(config);
-    connection.connect();
-    var sql = 'UPDATE `user` SET `password` = ?, `last_update_time` = CURRENT_TIMESTAMP() WHERE `id` = ?';
-    connection.query(sql, [hashPassword(password_new), id], function (err, result) {
-      if (err)
-        reject(err);
-      else
-        resolve(result);
-    });
-    connection.end();
-  });
-};
-

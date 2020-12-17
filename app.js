@@ -7,6 +7,8 @@ var logger = require('morgan');
 global.__version = require('./package.json').version;
 global.__projdir = __dirname;
 
+var mysqlMiddleware = require('./middlewares/mysql');
+
 var userRouter = require('./routes/user');
 var eventRouter = require('./routes/event');
 var sessionRouter = require('./routes/session');
@@ -22,6 +24,9 @@ app.use(express.json());
 app.use(express.urlencoded({extended: false}));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+
+// put mysql.pool instance into req.mysql
+app.use(mysqlMiddleware);
 
 app.use('/api/user', userRouter);
 app.use('/api/event', eventRouter);

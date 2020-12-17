@@ -12,7 +12,9 @@ module.exports.login = async function(req, res) {
       return res.json({'successful': false, 'data': {}, 'error_field': ['uname', 'password'], 'error_msg': 'Missing one or more required parameters.'});
     }
 
-    var loginInfo = await userModel.authenticate(uname, password);
+    var User = userModel(req.mysql);
+
+    var loginInfo = await User.authenticate(uname, password);
     if(Object.keys(loginInfo).length === 0) {
       res.status(401);
       return res.json({'successful': false, 'data': {}, 'error_field': ['uname', 'password'], 'error_msg': 'Either username or password is incorrect.'});
@@ -31,7 +33,7 @@ module.exports.login = async function(req, res) {
     var expiresIn = new Date();
     expiresIn.setDate(expiresIn.getHours() + 10);
 
-    var result = await userModel.updateRefreshToken(userId, refreshToken, expiresIn);
+    var result = await User.updateRefreshToken(userId, refreshToken, expiresIn);
     if(result.affectedRows === 0)
       throw 'Fail to update new refresh token to the database.';
 
@@ -54,7 +56,9 @@ module.exports.refreshLoginToken = async function(req, res) {
       return res.json({'successful': false, 'data': {}, 'error_field': ['refresh_token'], 'error_msg': 'Missing one or more required parameters.'});
     }
 
-    var result = await userModel.compareRefreshToken(userId, refreshToken);
+    var User = userModel(req.mysql);
+
+    var result = await User.compareRefreshToken(userId, refreshToken);
     if(Object.keys(result).length === 0) {
       res.status(401);
       return res.json({'successful': false, 'data': {}, 'error_field': [], 'error_msg': 'Current session is invalid. Try login again.'});
@@ -70,7 +74,7 @@ module.exports.refreshLoginToken = async function(req, res) {
     var expiresIn = new Date();
     expiresIn.setDate(expiresIn.getHours() + 10);
 
-    var result = await userModel.updateRefreshToken(userId, refreshToken, expiresIn);
+    var result = await User.updateRefreshToken(userId, refreshToken, expiresIn);
     if(result.affectedRows === 0)
       throw 'Fail to update new refresh token to the database.';
 
@@ -105,7 +109,11 @@ module.exports.create = async function(req, res) {
       return res.json({'successful': false, 'data': {}, 'error_field': ['uname', 'name', 'email'], 'error_msg': 'One or more parameters contain incorrect values.'});
     }
 
-    var result = await userModel.create(uname, password, role, name, email);
+    var User = userModel(req.mysql);
+
+    var result = await User.create(uname, password, role, name, email);
+
+    // TODO: return access token and refresh token
 
     if(result.affectedRows === 0)
       throw 'Fail to add user in the database.';
@@ -128,7 +136,10 @@ module.exports.create = async function(req, res) {
 module.exports.find = async function(req, res) {
   try {
     var userId   = req.user_id;
-    var userInfo = await userModel.getInfo(userId);
+
+    var User = userModel(req.mysql);
+
+    var userInfo = await User.getInfo(userId);
 
     if(Object.keys(userInfo).length === 0)
       throw 'Fail to get user info from the database.';
@@ -158,7 +169,9 @@ module.exports.updateInfo = async function(req, res) {
       return res.json({'successful': false, 'data': [], 'error_field': ['uname', 'name', 'email'], 'error_msg': 'One or more parameters contain incorrect values.'});
     }
 
-    var result = await userModel.updateInfo(userId, uname, name, email);
+    var User = userModel(req.mysql);
+
+    var result = await User.updateInfo(userId, uname, name, email);
     if(result.affectedRows === 0)
       throw 'Fail to update user info to the database.';
 
@@ -190,17 +203,19 @@ module.exports.updatePassword = async function(req, res) {
 
     // TODO: password constraint validation
 
-    var userInfo = await userModel.getInfo(userId);
+    var User = userModel(req.mysql);
+
+    var userInfo = await User.getInfo(userId);
     if(Object.keys(userInfo).length === 0)
       throw 'Fail to locate user info from the database.';
 
-    var authentication = await userModel.authenticate(userInfo.uname, passwordCurrent);
+    var authentication = await User.authenticate(userInfo.uname, passwordCurrent);
     if(Object.keys(authentication).length === 0) {
       res.status(401);
       return res.json({'successful': false, 'data': [], 'error_field': ['password_current'], 'error_msg': 'Your current password is incorrect.'});
     }
 
-    var result = await userModel.updatePassword(userId, passwordNew);
+    var result = await User.updatePassword(userId, passwordNew);
     if(result.affectedRows === 0)
       throw 'Fail to update user password to the database.';
 

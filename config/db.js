@@ -4,6 +4,9 @@ module.exports = {
 		user: '',
 		password: '',
 		database: 'TicketSystem',
-		charset : 'utf8mb4'
+		charset : 'utf8mb4',
+		waitForConnections: true,
+		connectionLimit: 10,
+		queueLimit: 0
 	}
 };

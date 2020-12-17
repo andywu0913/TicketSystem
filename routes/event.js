@@ -6,7 +6,7 @@ var authorization = require(__projdir + '/middlewares/authorization');
 
 var eventController = require(__projdir + '/controllers/event');
 
-router.get('/', eventController.findAll);
+router.get('/', eventController.findMultiple);
 
 router.get('/:event_id', eventController.find);
 
