@@ -8,6 +8,7 @@ global.__version = require('./package.json').version;
 global.__projdir = __dirname;
 
 var mysqlMiddleware = require('./middlewares/mysql');
+var redisMiddleware = require('./middlewares/redis');
 
 var userRouter = require('./routes/user');
 var eventRouter = require('./routes/event');
@@ -25,8 +26,8 @@ app.use(express.urlencoded({extended: false}));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// put mysql.pool instance into req.mysql
-app.use(mysqlMiddleware);
+app.use(mysqlMiddleware); // put mysql.pool instance into req.mysql
+app.use(redisMiddleware); // put redis instance into req.redis
 
 app.use('/api/user', userRouter);
 app.use('/api/event', eventRouter);
