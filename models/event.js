@@ -2,7 +2,7 @@ module.exports = function(dbConnection) {
   return {
     create: async function(name, description, startDate, endDate, creatorUid) {
       var sql = 'INSERT INTO `event` (`name`, `description`, `start_date`, `end_date`, `creator_uid`) VALUES (?, ?, ?, ?, ?)';
-      var [result, _] = await dbConnection.query(sql, [name, description, startDate, endDate, creatorUid]);
+      var [result, _] = await dbConnection.execute(sql, [name, description, startDate, endDate, creatorUid]);
       
       return result;
     },
@@ -16,13 +16,13 @@ module.exports = function(dbConnection) {
         var params = [rowCounts];
       }
 
-      var [rows, fields] = await dbConnection.query(sql, params);
+      var [rows, fields] = await dbConnection.execute(sql, params);
       
       return rows;
     },
     get: async function(id) {
       var sql = 'SELECT `id`, `name`, `description`, `start_date`, `end_date`, `creator_uid` FROM `event` WHERE `id` = ?';
-      var [rows, fields] = await dbConnection.query(sql, [id]);
+      var [rows, fields] = await dbConnection.execute(sql, [id]);
 
       if(rows.length === 0)
         return {};
@@ -31,13 +31,13 @@ module.exports = function(dbConnection) {
     },
     update: async function(id, name, description, startDate, endDate) {
       var sql = 'UPDATE `event` SET `name` = ?, `description` = ?, `start_date` = ?, `end_date` = ? WHERE `id` = ?';
-      var [result, _] = await dbConnection.query(sql, [name, description, startDate, endDate, id]);
+      var [result, _] = await dbConnection.execute(sql, [name, description, startDate, endDate, id]);
       
       return result;
     },
     delete: async function(id) {
       var sql = 'DELETE FROM `event` WHERE `id` = ?';
-      var [result, _] = await dbConnection.query(sql, [id]);
+      var [result, _] = await dbConnection.execute(sql, [id]);
       
       return result;
     }

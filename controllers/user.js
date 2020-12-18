@@ -1,6 +1,30 @@
+var crypto = require("crypto");
+
 var userModel = require(__projdir + '/models/user');
 
 var jwt = require(__projdir + '/utils/jwt');
+
+function hashPassword(password) {
+  return new Promise(function(resolve, reject) {
+    var salt = crypto.randomBytes(16).toString('hex');
+    crypto.scrypt(password, salt, 64, function(err, derivedKey) {
+      if(err)
+        reject(err);
+      resolve('scrypt64' + ':' + salt + ':' + derivedKey.toString('hex'));
+    });
+  });
+}
+
+function verifyPassword(password, hash) {
+  return new Promise(function(resolve, reject) {
+    var [type, salt, key] = hash.split(':');
+    crypto.scrypt(password, salt, 64, function(err, derivedKey) {
+      if(err)
+        reject(err);
+      resolve(key === derivedKey.toString('hex'));
+    });
+  });
+}
 
 module.exports.login = async function(req, res) {
   try {
@@ -14,8 +38,8 @@ module.exports.login = async function(req, res) {
 
     var User = userModel(req.mysql);
 
-    var loginInfo = await User.authenticate(uname, password);
-    if(Object.keys(loginInfo).length === 0) {
+    var loginInfo = await User.getLoginInfo(uname);
+    if(Object.keys(loginInfo).length === 0 || !await verifyPassword(password, loginInfo.password)) {
       res.status(401);
       return res.json({'successful': false, 'data': {}, 'error_field': ['uname', 'password'], 'error_msg': 'Either username or password is incorrect.'});
     }
@@ -74,7 +98,7 @@ module.exports.refreshLoginToken = async function(req, res) {
     var expiresIn = new Date();
     expiresIn.setDate(expiresIn.getHours() + 10);
 
-    var result = await User.updateRefreshToken(userId, refreshToken, expiresIn);
+    result = await User.updateRefreshToken(userId, refreshToken, expiresIn);
     if(result.affectedRows === 0)
       throw 'Fail to update new refresh token to the database.';
 
@@ -209,13 +233,13 @@ module.exports.updatePassword = async function(req, res) {
     if(Object.keys(userInfo).length === 0)
       throw 'Fail to locate user info from the database.';
 
-    var authentication = await User.authenticate(userInfo.uname, passwordCurrent);
-    if(Object.keys(authentication).length === 0) {
+    var loginInfo = await User.getLoginInfo(userInfo.uname);
+    if(Object.keys(loginInfo).length === 0 || !await verifyPassword(passwordCurrent, loginInfo.password)) {
       res.status(401);
-      return res.json({'successful': false, 'data': [], 'error_field': ['password_current'], 'error_msg': 'Your current password is incorrect.'});
+      return res.json({'successful': false, 'data': [], 'error_field': ['password_current'], 'error_msg': 'Current password is incorrect.'});
     }
 
-    var result = await User.updatePassword(userId, passwordNew);
+    var result = await User.updatePassword(userId, await hashPassword(passwordNew));
     if(result.affectedRows === 0)
       throw 'Fail to update user password to the database.';
 
