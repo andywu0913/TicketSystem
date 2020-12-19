@@ -6,7 +6,7 @@ var authorization = require(__projdir + '/middlewares/authorization');
 
 var sessionController = require(__projdir + '/controllers/session');
 
-router.get('/', sessionController.find);
+router.get('/', sessionController.getAllByEventId);
 
 router.post('/', authentication, authorization(roles = [1, 2]), sessionController.create);
 

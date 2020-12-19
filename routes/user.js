@@ -13,7 +13,7 @@ router.all('/logout', userController.logout);
 
 router.post('/', userController.create);
 
-router.get('/', authentication, userController.find);
+router.get('/', authentication, userController.getById);
 
 router.put('/', authentication, userController.updateInfo);
 

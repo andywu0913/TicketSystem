@@ -6,9 +6,9 @@ var authorization = require(__projdir + '/middlewares/authorization');
 
 var eventController = require(__projdir + '/controllers/event');
 
-router.get('/', eventController.findMultiple);
+router.get('/', eventController.getMultipleByConstraints);
 
-router.get('/:event_id', eventController.find);
+router.get('/:event_id', eventController.getById);
 
 router.post('/', authentication, authorization(roles = [1, 2]), eventController.create);
 

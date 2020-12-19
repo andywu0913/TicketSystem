@@ -71,9 +71,9 @@ module.exports.login = async function(req, res) {
 
 module.exports.refreshLoginToken = async function(req, res) {
   try {
+    var refreshToken = req.body.refresh_token;
     var userId       = req.user_id;
     var role         = req.role;
-    var refreshToken = req.body.refresh_token;
 
     if(!refreshToken) {
       res.status(400);
@@ -157,9 +157,9 @@ module.exports.create = async function(req, res) {
   }
 };
 
-module.exports.find = async function(req, res) {
+module.exports.getById = async function(req, res) {
   try {
-    var userId   = req.user_id;
+    var userId = req.user_id;
 
     var User = userModel(req.mysql);
 
@@ -178,10 +178,10 @@ module.exports.find = async function(req, res) {
 
 module.exports.updateInfo = async function(req, res) {
   try {
-    var userId = req.user_id;
     var uname  = req.body.uname;
     var name   = req.body.name;
     var email  = req.body.email;
+    var userId = req.user_id;
 
     if(!uname || !name || !email) {
       res.status(400);
@@ -216,9 +216,9 @@ module.exports.updateInfo = async function(req, res) {
 
 module.exports.updatePassword = async function(req, res) {
   try {
-    var userId          = req.user_id;
     var passwordCurrent = req.body.password_current;
     var passwordNew     = req.body.password_new;
+    var userId          = req.user_id;
 
     if(!passwordCurrent || !passwordNew) {
       res.status(400);

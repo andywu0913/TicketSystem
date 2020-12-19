@@ -13,6 +13,7 @@ var redisMiddleware = require('./middlewares/redis');
 var userRouter = require('./routes/user');
 var eventRouter = require('./routes/event');
 var sessionRouter = require('./routes/session');
+var ticketRouter = require('./routes/ticket');
 
 var app = express();
 
@@ -32,6 +33,7 @@ app.use(redisMiddleware); // put redis instance into req.redis
 app.use('/api/user', userRouter);
 app.use('/api/event', eventRouter);
 app.use('/api/session', sessionRouter);
+app.use('/api/ticket', ticketRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

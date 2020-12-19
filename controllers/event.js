@@ -1,7 +1,7 @@
 var eventModel = require(__projdir + '/models/event');
 var sessionModel = require(__projdir + '/models/session');
 
-module.exports.findMultiple = async function(req, res, next) {
+module.exports.getMultipleByConstraints = async function(req, res, next) {
   try {
     let startId   = req.query.start_id || null;
     let rowCounts = req.query.row_counts || 10;
@@ -22,7 +22,7 @@ module.exports.findMultiple = async function(req, res, next) {
   }
 };
 
-module.exports.find = async function(req, res, next) {
+module.exports.getById = async function(req, res, next) {
   try {
     var eventId = req.params.event_id;
 
@@ -152,7 +152,7 @@ module.exports.delete = async function(req, res, next) {
     var session = await Session.getAllByEventId(eventId);
     if(session.length > 0) {
       res.status(400);
-      return res.json({'successful': false, 'data': [], 'error_field': [], 'error_msg': 'One or more sessions exist under current event.\nDelete those sessions first.'});
+      return res.json({'successful': false, 'data': [], 'error_field': [], 'error_msg': 'One or more sessions exist under current event. Delete those sessions first.'});
     }
 
     var result = await Event.delete(eventId);

@@ -1,7 +1,8 @@
 var eventModel = require(__projdir + '/models/event');
 var sessionModel = require(__projdir + '/models/session');
+var ticketModel = require(__projdir + '/models/ticket');
 
-module.exports.find = async function(req, res, next) {
+module.exports.getAllByEventId = async function(req, res, next) {
   try {
     var eventId = req.query.event_id;
 
@@ -12,8 +13,8 @@ module.exports.find = async function(req, res, next) {
 
     var Session = sessionModel(req.mysql);
 
-    var event = await Session.getAllByEventId(eventId);
-    res.json({'successful': true, 'data': event, 'error_field': [], 'error_msg': ''});
+    var sessions = await Session.getAllByEventId(eventId);
+    res.json({'successful': true, 'data': sessions, 'error_field': [], 'error_msg': ''});
   }
   catch (err) {
     res.status(500);
@@ -52,6 +53,8 @@ module.exports.create = async function(req, res, next) {
     var event = await Event.get(eventId);
     if(Object.keys(event).length === 0)
       throw 'Fail to locate the event from the database.';
+
+    // TODO: check session time is between event period
 
     if(userId !== event.creator_uid && role !== 1) {
       res.status(403);
@@ -110,6 +113,7 @@ module.exports.update = async function(req, res, next) {
       return res.json({'successful': false, 'data': [], 'error_field': [], 'error_msg': 'No permission to update the session.'});
     }
 
+    // TODO: check session time is between event period
     // TODO: check the total number of ticket sold out before reducing the maxSeats
 
     var result = await Session.update(sessionId, time, address, ticketSellTimeOpen, ticketSellTimeEnd, maxSeats, price);
@@ -147,7 +151,13 @@ module.exports.delete = async function(req, res, next) {
       return res.json({'successful': false, 'data': [], 'error_field': [], 'error_msg': 'No permission to delete the session.'});
     }
 
-    // TODO: check the tickets sold out before deleting the maxSeats
+    var Ticket = ticketModel(req.mysql);
+
+    var tickets = await Ticket.getAllBySessionId(sessionId);
+    if(tickets.length > 0) {
+      res.status(400);
+      return res.json({'successful': false, 'data': [], 'error_field': [], 'error_msg': 'One or more tickets exist under current session. Cannot delete the session.'});
+    }
 
     var result = await Session.delete(sessionId);
     if(result.affectedRows === 0)
