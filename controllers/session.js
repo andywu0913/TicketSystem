@@ -99,11 +99,44 @@ module.exports.activation = async function(req, res, next) {
       return res.json({'successful': false, 'data': [], 'error_field': [], 'error_msg': 'No permission to update the session.'});
     }
 
-    var result = await Session.activation(sessionId, activation);
-    if(result.affectedRows === 0)
-      throw 'Fail to set the session activation status in the database.';
+    if(activation) {
+      var Ticket = ticketModel(req.mysql);
+      var count = await Ticket.countTicket(sessionId);
 
-    // TODO: REDIS OPERATION
+      var result = await Session.activation(sessionId, true);
+      if(result.affectedRows === 0)
+        throw 'Fail to set the session activation status in the database.';
+
+      await req.redis.multi()
+                     .set(`session:${sessionId}:name`, session.name)
+                     .set(`session:${sessionId}:ticket_sell_time_open`, session.ticket_sell_time_open)
+                     .set(`session:${sessionId}:ticket_sell_time_end`, session.ticket_sell_time_end)
+                     .set(`session:${sessionId}:open_seats`, session.max_seats - count)
+                     .set(`session:${sessionId}:is_active`, true)
+                     .exec();
+    }
+    else {
+      try {
+        await req.redis.set(`session:${sessionId}:is_active`, false);
+        
+        var result = await Session.activation(sessionId, false);
+        if(result.affectedRows === 0) {
+          throw 'Fail to set the session activation status in the database.';
+        }
+
+        await req.redis.multi()
+                       .del(`session:${sessionId}:is_active`)
+                       .del(`session:${sessionId}:name`)
+                       .del(`session:${sessionId}:ticket_sell_time_open`)
+                       .del(`session:${sessionId}:ticket_sell_time_end`)
+                       .del(`session:${sessionId}:open_seats`)
+                       .exec();
+      }
+      catch (err) {
+        await req.redis.set(`session:${sessionId}:is_active`, true);
+        throw err;
+      }
+    }
 
     res.status(204);
     return res.end();

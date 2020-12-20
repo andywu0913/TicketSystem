@@ -52,36 +52,53 @@ module.exports.create = async function(req, res, next) {
       return res.json({'successful': false, 'data': {}, 'error_field': ['session_id', 'seat_no'], 'error_msg': 'Missing one or more required parameters.'});
     }
 
-    // check session start selling time and Redis DECR
-    // if val < 0 return
+    var time_open = await req.redis.get(`session:${sessionId}:ticket_sell_time_open`);
+    var time_end  = await req.redis.get(`session:${sessionId}:ticket_sell_time_end`);
 
-    var Session = sessionModel(req.mysql);
-
-    var session = await Session.get(sessionId);
-    if(Object.keys(session).length === 0)
-      throw 'Fail to locate the session from the database.';
-
-    if(seatNo <= 0 || seatNo > session.max_seats) {
+    if(!time_open || !time_end) {
       res.status(400);
-      return res.json({'successful': false, 'data': {}, 'error_field': ['seat_no'], 'error_msg': 'One or more parameters contain incorrect values.'});
+      return res.json({'successful': false, 'data': {}, 'error_field': [], 'error_msg': 'Not available yet.'});
     }
+    
+    var now   = new Date();
+    time_open = new Date(time_open);
+    time_end  = new Date(time_end);
+
+    if(now < time_open || now > time_end) {
+      res.status(400);
+      return res.json({'successful': false, 'data': {}, 'error_field': [], 'error_msg': 'Not booking time yet.'});
+    }
+
+    var seats = await req.redis.decr(`session:${sessionId}:open_seats`);
+    if(seats < 0) {
+      await req.redis.set(`session:${sessionId}:open_seats`, 0);
+      res.status(400);
+      return res.json({'successful': false, 'data': {}, 'error_field': [], 'error_msg': 'No tickets currently available.'});
+    }
+
+    // var Session = sessionModel(req.mysql);
+
+    // var session = await Session.get(sessionId);
+    // if(Object.keys(session).length === 0)
+    //   throw 'Fail to locate the session from the database.';
+
+    // if(seatNo <= 0 || seatNo > session.max_seats) {
+    //   res.status(400);
+    //   return res.json({'successful': false, 'data': {}, 'error_field': ['seat_no'], 'error_msg': 'One or more parameters contain incorrect values.'});
+    // }
 
     var Ticket = ticketModel(req.mysql);
 
-    var count = await Ticket.countTicket(sessionId);
-    if(count >= session.max_seats) {
-      res.status(400);
-      return res.json({'successful': false, 'data': {}, 'error_field': ['seat_no'], 'error_msg': 'No more empty seats.'});
-    }
-
     var result = await Ticket.create(userId, sessionId, seatNo);
-    if(result.affectedRows === 0)
+    if(result.affectedRows === 0) {
       throw 'Fail to create the ticket.';
+    }
 
     res.status(201);
     res.json({'successful': true, 'data': {'id': result.insertId}, 'error_field': [], 'error_msg': ''});
   }
   catch (err) {
+    await req.redis.incr(`session:${sessionId}:open_seats`);
     if(err.code === 'ER_DUP_ENTRY') {
       res.status(409);
       res.json({'successful': false, 'data': {}, 'error_field': ['seat_no'], 'error_msg': 'This seat has already been occupied. Choose another one.'});
@@ -188,7 +205,9 @@ module.exports.delete = async function(req, res, next) {
     if(result.affectedRows === 0)
       throw 'Fail to delete the ticket from the database.';
 
-    // TODO: redis INCR
+    var value = await req.redis.get(`session:${ticket.session_id}:open_seats`);
+    if(value)
+      await req.redis.incr(`session:${ticket.session_id}:open_seats`);
 
     res.status(204);
     return res.end();
