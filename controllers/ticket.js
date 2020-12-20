@@ -120,6 +120,13 @@ module.exports.update = async function(req, res, next) {
       return res.json({'successful': false, 'data': [], 'error_field': [], 'error_msg': 'No permission to update the ticket.'});
     }
 
+    if(!session.is_active && userId != session.creator_uid && role !== 1) {
+      res.status(400);
+      return res.json({'successful': false, 'data': [], 'error_field': ['is_active'], 'error_msg': 'Unable to update the ticket. This session is inactive currently.'});
+    }
+
+    // TODO: check session time is between event period
+
     if(seatNo <= 0 || seatNo > session.max_seats) {
       res.status(400);
       return res.json({'successful': false, 'data': {}, 'error_field': ['seat_no'], 'error_msg': 'One or more parameters contain incorrect values.'});
@@ -161,10 +168,21 @@ module.exports.delete = async function(req, res, next) {
     if(Object.keys(ticket).length === 0)
       throw 'Fail to locate the ticket from the database.';
 
-    if(userId !== ticket.user_id && userId != ticket.creator_uid && role !== 1) {
+    var Session = sessionModel(req.mysql);
+
+    var session = await Session.get(ticket.session_id);
+
+    if(userId !== ticket.user_id && userId != session.creator_uid && role !== 1) {
       res.status(403);
       return res.json({'successful': false, 'data': [], 'error_field': [], 'error_msg': 'No permission to update the ticket.'});
     }
+
+    if(!session.is_active && userId != session.creator_uid && role !== 1) {
+      res.status(400);
+      return res.json({'successful': false, 'data': [], 'error_field': ['is_active'], 'error_msg': 'Unable to delete the ticket. This session is inactive currently.'});
+    }
+
+    // TODO: check session time is between event period
 
     var result = await Ticket.delete(ticketId);
     if(result.affectedRows === 0)

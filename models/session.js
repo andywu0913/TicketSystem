@@ -8,7 +8,7 @@ module.exports = function(dbConnection) {
       return result;
     },
     getAllByEventId: async function(eventId) {
-      var sql = 'SELECT `id`, `event_id`, `time`, `address`, `ticket_sell_time_open`, `ticket_sell_time_end`, `max_seats`, `price` \
+      var sql = 'SELECT `id`, `event_id`, `time`, `address`, `ticket_sell_time_open`, `ticket_sell_time_end`, `max_seats`, `price`, `is_active` \
                  FROM `session` \
                  WHERE `event_id` = ? \
                  ORDER BY `time`';
@@ -17,7 +17,7 @@ module.exports = function(dbConnection) {
       return rows;
     },
     get: async function(id) {
-      var sql = 'SELECT `event_id`, `name`, `session`.`id` AS "session_id", `time`, `address`, `ticket_sell_time_open`, `ticket_sell_time_end`, `max_seats`, `price`, `creator_uid` \
+      var sql = 'SELECT `event_id`, `name`, `session`.`id` AS "session_id", `time`, `address`, `ticket_sell_time_open`, `ticket_sell_time_end`, `max_seats`, `price`, `creator_uid`, `is_active` \
                  FROM `session` \
                  LEFT JOIN `event` ON `session`.`event_id` = `event`.`id` \
                  WHERE `session`.`id` = ?';
@@ -27,6 +27,14 @@ module.exports = function(dbConnection) {
         return {};
 
       return rows[0];
+    },
+    activation: async function(id, activation) {
+      var sql = 'UPDATE `session` \
+                 SET `is_active`= ? \
+                 WHERE `id` = ?';
+      var [result, _] = await dbConnection.execute(sql, [activation, id]);
+      
+      return result;
     },
     update: async function(id, time, address, ticketSellTimeOpen, ticketSellTimeEnd, maxSeats, price) {
       var sql = 'UPDATE `session` \

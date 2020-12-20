@@ -76,6 +76,44 @@ module.exports.create = async function(req, res, next) {
   }
 };
 
+module.exports.activation = async function(req, res, next) {
+  try {
+    var sessionId  = req.params.session_id;
+    var activation = req.body.activation;
+    var userId     = req.user_id;
+    var role       = req.role;
+
+    if(!sessionId) {
+      res.status(400);
+      return res.json({'successful': false, 'data': [], 'error_field': ['session_id'], 'error_msg': 'Missing one or more required parameters.'});
+    }
+
+    var Session = sessionModel(req.mysql);
+
+    var session = await Session.get(sessionId);
+    if(Object.keys(session).length === 0)
+      throw 'Fail to locate the session from the database.';
+
+    if(userId !== session.creator_uid && role !== 1) {
+      res.status(403);
+      return res.json({'successful': false, 'data': [], 'error_field': [], 'error_msg': 'No permission to update the session.'});
+    }
+
+    var result = await Session.activation(sessionId, activation);
+    if(result.affectedRows === 0)
+      throw 'Fail to set the session activation status in the database.';
+
+    // TODO: REDIS OPERATION
+
+    res.status(204);
+    return res.end();
+  }
+  catch (err) {
+    res.status(500);
+    res.json({'successful': false, 'data': [], 'error_field': [], 'error_msg': err});
+  }
+};
+
 module.exports.update = async function(req, res, next) {
   try {
     var sessionId          = req.params.session_id;
@@ -111,6 +149,11 @@ module.exports.update = async function(req, res, next) {
     if(userId !== session.creator_uid && role !== 1) {
       res.status(403);
       return res.json({'successful': false, 'data': [], 'error_field': [], 'error_msg': 'No permission to update the session.'});
+    }
+
+    if(session.is_active) {
+      res.status(400);
+      return res.json({'successful': false, 'data': [], 'error_field': ['is_active'], 'error_msg': 'Unable to update the active session. Please deactivate it first.'});
     }
 
     // TODO: check session time is between event period
@@ -149,6 +192,11 @@ module.exports.delete = async function(req, res, next) {
     if(userId !== session.creator_uid && role !== 1) {
       res.status(403);
       return res.json({'successful': false, 'data': [], 'error_field': [], 'error_msg': 'No permission to delete the session.'});
+    }
+
+    if(session.is_active) {
+      res.status(400);
+      return res.json({'successful': false, 'data': [], 'error_field': ['is_active'], 'error_msg': 'Unable to delete the active session. Please deactivate it first.'});
     }
 
     var Ticket = ticketModel(req.mysql);

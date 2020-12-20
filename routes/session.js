@@ -10,6 +10,8 @@ router.get('/', sessionController.getAllByEventId);
 
 router.post('/', authentication, authorization(roles = [1, 2]), sessionController.create);
 
+router.post('/:session_id/activation', authentication, authorization(roles = [1, 2]), sessionController.activation);
+
 router.put('/:session_id', authentication, authorization(roles = [1, 2]), sessionController.update);
 
 router.delete('/:session_id', authentication, authorization(roles = [1, 2]), sessionController.delete);
