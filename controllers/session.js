@@ -107,30 +107,25 @@ module.exports.activation = async function(req, res, next) {
       if(result.affectedRows === 0)
         throw 'Fail to set the session activation status in the database.';
 
-      await req.redis.multi()
-                     .set(`session:${sessionId}:name`, session.name)
-                     .set(`session:${sessionId}:ticket_sell_time_open`, session.ticket_sell_time_open)
-                     .set(`session:${sessionId}:ticket_sell_time_end`, session.ticket_sell_time_end)
-                     .set(`session:${sessionId}:open_seats`, session.max_seats - count)
-                     .set(`session:${sessionId}:is_active`, true)
-                     .exec();
+      await req.redis.hset(
+        `session:${sessionId}`,
+        'name',                  session.name,
+        'ticket_sell_time_open', session.ticket_sell_time_open,
+        'ticket_sell_time_end',  session.ticket_sell_time_end,
+        'open_seats',            session.max_seats - count,
+        'is_active',             true
+      );
     }
     else {
       try {
-        await req.redis.set(`session:${sessionId}:is_active`, false);
+        await req.redis.hset(`session:${sessionId}`, 'is_active', false);
 
         let result = await Session.activation(sessionId, false);
         if(result.affectedRows === 0) {
           throw 'Fail to set the session activation status in the database.';
         }
 
-        await req.redis.multi()
-                       .del(`session:${sessionId}:is_active`)
-                       .del(`session:${sessionId}:name`)
-                       .del(`session:${sessionId}:ticket_sell_time_open`)
-                       .del(`session:${sessionId}:ticket_sell_time_end`)
-                       .del(`session:${sessionId}:open_seats`)
-                       .exec();
+        await req.redis.del(`session:${sessionId}`);
       }
       catch(err) {
         await req.redis.set(`session:${sessionId}:is_active`, true);
@@ -139,7 +134,7 @@ module.exports.activation = async function(req, res, next) {
     }
 
     res.status(204);
-    return res.end();
+    res.end();
   }
   catch(err) {
     res.status(500);
@@ -197,7 +192,7 @@ module.exports.update = async function(req, res, next) {
       throw 'Fail to update the session in the database.';
 
     res.status(204);
-    return res.end();
+    res.end();
   }
   catch(err) {
     res.status(500);
@@ -245,7 +240,7 @@ module.exports.delete = async function(req, res, next) {
       throw 'Fail to delete the session from the database.';
 
     res.status(204);
-    return res.end();
+    res.end();
   }
   catch(err) {
     res.status(500);

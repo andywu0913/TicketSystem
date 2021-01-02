@@ -117,7 +117,7 @@ module.exports.update = async function(req, res, next) {
       throw 'Fail to update the event in the database.';
 
     res.status(204);
-    return res.end();
+    res.end();
   }
   catch(err) {
     res.status(500);
@@ -160,7 +160,7 @@ module.exports.delete = async function(req, res, next) {
       throw 'Fail to delete the event from the database.';
 
     res.status(204);
-    return res.end();
+    res.end();
   }
   catch(err) {
     res.status(500);

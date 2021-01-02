@@ -52,61 +52,69 @@ module.exports.create = async function(req, res, next) {
       return res.json({'successful': false, 'data': {}, 'error_field': ['session_id', 'seat_no'], 'error_msg': 'Missing one or more required parameters.'});
     }
 
-    let timeOpen = await req.redis.get(`session:${sessionId}:ticket_sell_time_open`);
-    let timeEnd  = await req.redis.get(`session:${sessionId}:ticket_sell_time_end`);
+    let isActive = await req.redis.hget(`session:${sessionId}`, 'is_active');
+    let timeOpen = await req.redis.hget(`session:${sessionId}`, 'ticket_sell_time_open');
+    let timeEnd  = await req.redis.hget(`session:${sessionId}`, 'ticket_sell_time_end');
 
-    if(!timeOpen || !timeEnd) {
+    if(isActive === 'false' || !timeOpen || !timeEnd) {
       res.status(400);
       return res.json({'successful': false, 'data': {}, 'error_field': [], 'error_msg': 'Not available yet.'});
     }
 
-    let now   = new Date();
+    let now  = new Date();
     timeOpen = new Date(timeOpen);
     timeEnd  = new Date(timeEnd);
 
-    if(now < timeOpen || now > timeEnd) {
+    if(now < timeOpen) {
       res.status(400);
       return res.json({'successful': false, 'data': {}, 'error_field': [], 'error_msg': 'Not booking time yet.'});
     }
 
-    let seats = await req.redis.decr(`session:${sessionId}:open_seats`);
+    if(now > timeEnd) {
+      res.status(400);
+      return res.json({'successful': false, 'data': {}, 'error_field': [], 'error_msg': 'Booking time is over.'});
+    }
+
+    let seats = await req.redis.hincrby(`session:${sessionId}`, 'open_seats', -1);
     if(seats < 0) {
-      await req.redis.set(`session:${sessionId}:open_seats`, 0);
+      await req.redis.hincrby(`session:${sessionId}`, 'open_seats', 1);
       res.status(400);
       return res.json({'successful': false, 'data': {}, 'error_field': [], 'error_msg': 'No tickets currently available.'});
     }
 
-    // let Session = sessionModel(req.mysql);
+    try {
+      // let Session = sessionModel(req.mysql);
 
-    // let session = await Session.get(sessionId);
-    // if(Object.keys(session).length === 0)
-    //   throw 'Fail to locate the session from the database.';
+      // let session = await Session.get(sessionId);
+      // if(Object.keys(session).length === 0)
+      //   throw 'Fail to locate the session from the database.';
 
-    // if(seatNo <= 0 || seatNo > session.max_seats) {
-    //   res.status(400);
-    //   return res.json({'successful': false, 'data': {}, 'error_field': ['seat_no'], 'error_msg': 'One or more parameters contain incorrect values.'});
-    // }
+      // if(seatNo <= 0 || seatNo > session.max_seats) {
+      //   res.status(400);
+      //   return res.json({'successful': false, 'data': {}, 'error_field': ['seat_no'], 'error_msg': 'One or more parameters contain incorrect values.'});
+      // }
 
-    let Ticket = ticketModel(req.mysql);
+      let Ticket = ticketModel(req.mysql);
 
-    let result = await Ticket.create(userId, sessionId, seatNo);
-    if(result.affectedRows === 0) {
-      throw 'Fail to create the ticket.';
+      let result = await Ticket.create(userId, sessionId, seatNo);
+      if(result.affectedRows === 0)
+        throw 'Fail to create the ticket.';
+
+      res.status(201);
+      res.json({'successful': true, 'data': {'id': result.insertId}, 'error_field': [], 'error_msg': ''});
     }
-
-    res.status(201);
-    res.json({'successful': true, 'data': {'id': result.insertId}, 'error_field': [], 'error_msg': ''});
+    catch(err) {
+      await req.redis.hincrby(`session:${sessionId}`, 'open_seats', 1);
+      if(err.code === 'ER_DUP_ENTRY') {
+        res.status(409);
+        return res.json({'successful': false, 'data': {}, 'error_field': ['seat_no'], 'error_msg': 'This seat has already been occupied. Choose another one.'});
+      }
+      throw err;
+    }
   }
   catch(err) {
-    await req.redis.incr(`session:${sessionId}:open_seats`); // TODO: sessionId not defined
-    if(err.code === 'ER_DUP_ENTRY') {
-      res.status(409);
-      res.json({'successful': false, 'data': {}, 'error_field': ['seat_no'], 'error_msg': 'This seat has already been occupied. Choose another one.'});
-    }
-    else {
-      res.status(500);
-      res.json({'successful': false, 'data': {}, 'error_field': [], 'error_msg': err});
-    }
+    res.status(500);
+    res.json({'successful': false, 'data': {}, 'error_field': [], 'error_msg': err});
   }
 };
 
@@ -154,7 +162,7 @@ module.exports.update = async function(req, res, next) {
       throw 'Fail to update the ticket in the database.';
 
     res.status(204);
-    return res.end();
+    res.end();
   }
   catch(err) {
     if(err.code === 'ER_DUP_ENTRY') {
@@ -205,12 +213,10 @@ module.exports.delete = async function(req, res, next) {
     if(result.affectedRows === 0)
       throw 'Fail to delete the ticket from the database.';
 
-    let value = await req.redis.get(`session:${ticket.session_id}:open_seats`);
-    if(value)
-      await req.redis.incr(`session:${ticket.session_id}:open_seats`);
+    await req.redis.hincrby(`session:${ticket.session_id}`, 'open_seats', 1);
 
     res.status(204);
-    return res.end();
+    res.end();
   }
   catch(err) {
     res.status(500);

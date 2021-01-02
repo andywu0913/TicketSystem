@@ -200,7 +200,7 @@ module.exports.updateInfo = async function(req, res) {
       throw 'Fail to update user info to the database.';
 
     res.status(204);
-    return res.end();
+    res.end();
   }
   catch(err) {
     if(err.code === 'ER_DUP_ENTRY') {
@@ -244,7 +244,7 @@ module.exports.updatePassword = async function(req, res) {
       throw 'Fail to update user password to the database.';
 
     res.status(204);
-    return res.end();
+    res.end();
   }
   catch(err) {
     res.status(500);
