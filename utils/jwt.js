@@ -1,7 +1,7 @@
-var crypto = require("crypto");
-var jwt = require('jsonwebtoken');
+const crypto = require('crypto');
+const jwt = require('jsonwebtoken');
 
-var secret = require(__projdir + '/config/jwt').secret;
+const secret = require(__projdir + '/config/jwt').secret;
 
 module.exports.create = {
   accessToken: function(payload, exp = '6h') {
@@ -11,13 +11,13 @@ module.exports.create = {
           reject('Fail to create JWT token.');
         resolve(token);
       });
-    })
+    });
   },
   refreshToken: function() {
     return new Promise(function(resolve, reject) {
       // Create random string as refresh token
       // 32 byte encoded to hex is 64 characters
-      var token = crypto.randomBytes(32).toString('hex');
+      let token = crypto.randomBytes(32).toString('hex');
       resolve(token);
     });
   }

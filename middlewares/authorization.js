@@ -1,6 +1,6 @@
 module.exports = function(roles = []) {
   return function(req, res, next) {
-    var role = req.role;
+    let role = req.role;
 
     if(!role || !roles.includes(role)) {
       res.status(403);

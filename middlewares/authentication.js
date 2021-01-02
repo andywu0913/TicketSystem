@@ -1,18 +1,21 @@
-var jwt = require(__projdir + '/utils/jwt');
+const jwt = require(__projdir + '/utils/jwt');
 
 module.exports = async function(req, res, next) {
-  var auth = req.headers.authorization;
+  let auth = req.headers.authorization;
 
   if(!auth) {
     res.status(401);
     return res.json({'successful': false, 'data': [], 'error_field': [], 'error_msg': '401 Unauthorized.'});
   }
 
+  let token;
+  let payload;
+
   try {
-    var token = auth.split(' ')[1];
-    var payload = await jwt.decode(token);
+    token = auth.split(' ')[1];
+    payload = await jwt.decode(token);
   }
-  catch (err) {
+  catch(err) {
     res.status(401);
     return res.json({'successful': false, 'data': [], 'error_field': [], 'error_msg': 'JWT token is invalid.'});
   }
@@ -24,6 +27,6 @@ module.exports = async function(req, res, next) {
 
   req.user_id = payload.user_id;
   req.role = payload.role;
-  
+
   next();
 };

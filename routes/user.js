@@ -1,9 +1,9 @@
-var express = require('express');
-var router = express.Router();
+const express = require('express');
+const router = express.Router();
 
-var authentication = require(__projdir + '/middlewares/authentication');
+const authentication = require(__projdir + '/middlewares/authentication');
 
-var userController = require(__projdir + '/controllers/user');
+const userController = require(__projdir + '/controllers/user');
 
 router.post('/login', userController.login);
 

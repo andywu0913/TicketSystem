@@ -1,10 +1,10 @@
-var express = require('express');
-var router = express.Router();
+const express = require('express');
+const router = express.Router();
 
-var authentication = require(__projdir + '/middlewares/authentication');
-var authorization = require(__projdir + '/middlewares/authorization');
+const authentication = require(__projdir + '/middlewares/authentication');
+const authorization = require(__projdir + '/middlewares/authorization');
 
-var sessionController = require(__projdir + '/controllers/session');
+const sessionController = require(__projdir + '/controllers/session');
 
 router.get('/', sessionController.getAllByEventId);
 

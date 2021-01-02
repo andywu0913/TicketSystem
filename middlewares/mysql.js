@@ -1,10 +1,10 @@
-var mysql = require('mysql2/promise');
+const mysql = require('mysql2/promise');
 
-var config = require(__projdir + '/config/mysql');
+const config = require(__projdir + '/config/mysql');
 
-var pool = mysql.createPool(config);
+const pool = mysql.createPool(config);
 
-module.exports = async function(req, res, next) {
+module.exports = function(req, res, next) {
   req.mysql = pool;
   next();
 };

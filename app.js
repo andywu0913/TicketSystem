@@ -1,21 +1,21 @@
-var createError = require('http-errors');
-var express = require('express');
-var path = require('path');
-var cookieParser = require('cookie-parser');
-var logger = require('morgan');
+const createError = require('http-errors');
+const express = require('express');
+const path = require('path');
+const cookieParser = require('cookie-parser');
+const logger = require('morgan');
 
 global.__version = require('./package.json').version;
 global.__projdir = __dirname;
 
-var mysqlMiddleware = require('./middlewares/mysql');
-var redisMiddleware = require('./middlewares/redis');
+const mysqlMiddleware = require('./middlewares/mysql');
+const redisMiddleware = require('./middlewares/redis');
 
-var userRouter = require('./routes/user');
-var eventRouter = require('./routes/event');
-var sessionRouter = require('./routes/session');
-var ticketRouter = require('./routes/ticket');
+const userRouter = require('./routes/user');
+const eventRouter = require('./routes/event');
+const sessionRouter = require('./routes/session');
+const ticketRouter = require('./routes/ticket');
 
-var app = express();
+const app = express();
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -23,7 +23,7 @@ app.set('view engine', 'ejs');
 
 app.use(logger('dev'));
 app.use(express.json());
-app.use(express.urlencoded({extended: false}));
+app.use(express.urlencoded({'extended': false}));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 

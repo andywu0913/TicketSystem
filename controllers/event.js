@@ -1,5 +1,5 @@
-var eventModel = require(__projdir + '/models/event');
-var sessionModel = require(__projdir + '/models/session');
+const eventModel = require(__projdir + '/models/event');
+const sessionModel = require(__projdir + '/models/session');
 
 module.exports.getMultipleByConstraints = async function(req, res, next) {
   try {
@@ -11,12 +11,12 @@ module.exports.getMultipleByConstraints = async function(req, res, next) {
       return res.json({'successful': false, 'data': {}, 'error_field': ['row_counts'], 'error_msg': 'One or more fields contain incorrect values.'});
     }
 
-    var Event = eventModel(req.mysql);
+    let Event = eventModel(req.mysql);
 
-    var events = await Event.getMultiple(startId, parseInt(rowCounts));
+    let events = await Event.getMultiple(startId, parseInt(rowCounts));
     res.json({'successful': true, 'data': events, 'error_field': [], 'error_msg': ''});
   }
-  catch (err) {
+  catch(err) {
     res.status(500);
     res.json({'successful': false, 'data': [], 'error_field': [], 'error_msg': err});
   }
@@ -24,19 +24,19 @@ module.exports.getMultipleByConstraints = async function(req, res, next) {
 
 module.exports.getById = async function(req, res, next) {
   try {
-    var eventId = req.params.event_id;
+    let eventId = req.params.event_id;
 
     if(!eventId) {
       res.status(400);
       return res.json({'successful': false, 'data': {}, 'error_field': ['event_id'], 'error_msg': 'Missing one or more required parameters.'});
     }
 
-    var Event = eventModel(req.mysql);
+    let Event = eventModel(req.mysql);
 
-    var event = await Event.get(eventId);
+    let event = await Event.get(eventId);
     res.json({'successful': true, 'data': event, 'error_field': [], 'error_msg': ''});
   }
-  catch (err) {
+  catch(err) {
     res.status(500);
     res.json({'successful': false, 'data': {}, 'error_field': [], 'error_msg': err});
   }
@@ -44,11 +44,11 @@ module.exports.getById = async function(req, res, next) {
 
 module.exports.create = async function(req, res, next) {
   try {
-    var name        = req.body.name;
-    var description = req.body.description;
-    var startDate   = req.body.start_date;
-    var endDate     = req.body.end_date;
-    var userId      = req.user_id;
+    let name        = req.body.name;
+    let description = req.body.description;
+    let startDate   = req.body.start_date;
+    let endDate     = req.body.end_date;
+    let userId      = req.user_id;
 
     if(!name || !description || !startDate || !endDate) {
       res.status(400);
@@ -63,16 +63,16 @@ module.exports.create = async function(req, res, next) {
       return res.json({'successful': false, 'data': {}, 'error_field': ['name', 'start_date', 'end_date'], 'error_msg': 'One or more parameters contain incorrect values.'});
     }
 
-    var Event = eventModel(req.mysql);
+    let Event = eventModel(req.mysql);
 
-    var result = await Event.create(name, description, startDate, endDate, userId);
+    let result = await Event.create(name, description, startDate, endDate, userId);
     if(result.affectedRows === 0)
       throw 'Fail to create the event.';
 
     res.status(201);
     res.json({'successful': true, 'data': {'id': result.insertId}, 'error_field': [], 'error_msg': ''});
   }
-  catch (err) {
+  catch(err) {
     res.status(500);
     res.json({'successful': false, 'data': {}, 'error_field': [], 'error_msg': err});
   }
@@ -80,13 +80,13 @@ module.exports.create = async function(req, res, next) {
 
 module.exports.update = async function(req, res, next) {
   try {
-    var eventId     = req.params.event_id;
-    var name        = req.body.name;
-    var description = req.body.description;
-    var startDate   = req.body.start_date;
-    var endDate     = req.body.end_date;
-    var userId      = req.user_id;
-    var role        = req.role;
+    let eventId     = req.params.event_id;
+    let name        = req.body.name;
+    let description = req.body.description;
+    let startDate   = req.body.start_date;
+    let endDate     = req.body.end_date;
+    let userId      = req.user_id;
+    let role        = req.role;
 
     if(!eventId || !name || !description || !startDate || !endDate) {
       res.status(400);
@@ -101,9 +101,9 @@ module.exports.update = async function(req, res, next) {
       return res.json({'successful': false, 'data': [], 'error_field': ['name', 'start_date', 'end_date'], 'error_msg': 'One or more parameters contain incorrect values.'});
     }
 
-    var Event = eventModel(req.mysql);
+    let Event = eventModel(req.mysql);
 
-    var event = await Event.get(eventId);
+    let event = await Event.get(eventId);
     if(Object.keys(event).length === 0)
       throw 'Fail to locate the event from the database.';
 
@@ -112,14 +112,14 @@ module.exports.update = async function(req, res, next) {
       return res.json({'successful': false, 'data': [], 'error_field': [], 'error_msg': 'No permission to update the event.'});
     }
 
-    var result = await Event.update(eventId, name, description, startDate, endDate);
+    let result = await Event.update(eventId, name, description, startDate, endDate);
     if(result.affectedRows === 0)
       throw 'Fail to update the event in the database.';
 
     res.status(204);
     return res.end();
   }
-  catch (err) {
+  catch(err) {
     res.status(500);
     res.json({'successful': false, 'data': [], 'error_field': [], 'error_msg': err});
   }
@@ -127,18 +127,18 @@ module.exports.update = async function(req, res, next) {
 
 module.exports.delete = async function(req, res, next) {
   try {
-    var eventId  = req.params.event_id;
-    var userId   = req.user_id;
-    var role     = req.role;
+    let eventId  = req.params.event_id;
+    let userId   = req.user_id;
+    let role     = req.role;
 
     if(!eventId) {
       res.status(400);
       return res.json({'successful': false, 'data': [], 'error_field': ['event_id'], 'error_msg': 'Missing one or more required parameters.'});
     }
 
-    var Event = eventModel(req.mysql);
+    let Event = eventModel(req.mysql);
 
-    var event = await Event.get(eventId);
+    let event = await Event.get(eventId);
     if(Object.keys(event).length === 0)
       throw 'Fail to locate the event from the database.';
 
@@ -147,22 +147,22 @@ module.exports.delete = async function(req, res, next) {
       return res.json({'successful': false, 'data': [], 'error_field': [], 'error_msg': 'No permission to delete the event.'});
     }
 
-    var Session = sessionModel(req.mysql);
+    let Session = sessionModel(req.mysql);
 
-    var session = await Session.getAllByEventId(eventId);
+    let session = await Session.getAllByEventId(eventId);
     if(session.length > 0) {
       res.status(400);
       return res.json({'successful': false, 'data': [], 'error_field': [], 'error_msg': 'One or more sessions exist under current event. Delete those sessions first.'});
     }
 
-    var result = await Event.delete(eventId);
+    let result = await Event.delete(eventId);
     if(result.affectedRows === 0)
       throw 'Fail to delete the event from the database.';
 
     res.status(204);
     return res.end();
   }
-  catch (err) {
+  catch(err) {
     res.status(500);
     res.json({'successful': false, 'data': [], 'error_field': [], 'error_msg': err});
   }

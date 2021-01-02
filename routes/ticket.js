@@ -1,10 +1,10 @@
-var express = require('express');
-var router = express.Router();
+const express = require('express');
+const router = express.Router();
 
-var authentication = require(__projdir + '/middlewares/authentication');
-var authorization = require(__projdir + '/middlewares/authorization');
+const authentication = require(__projdir + '/middlewares/authentication');
+const authorization = require(__projdir + '/middlewares/authorization');
 
-var ticketController = require(__projdir + '/controllers/ticket');
+const ticketController = require(__projdir + '/controllers/ticket');
 
 router.get('/', authentication, authorization(roles = [1, 2]), ticketController.getAllBySessionId);
 

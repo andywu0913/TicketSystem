@@ -1,12 +1,12 @@
-var crypto = require("crypto");
+const crypto = require('crypto');
 
-var userModel = require(__projdir + '/models/user');
+const userModel = require(__projdir + '/models/user');
 
-var jwt = require(__projdir + '/utils/jwt');
+const jwt = require(__projdir + '/utils/jwt');
 
 function hashPassword(password) {
   return new Promise(function(resolve, reject) {
-    var salt = crypto.randomBytes(16).toString('hex');
+    let salt = crypto.randomBytes(16).toString('hex');
     crypto.scrypt(password, salt, 64, function(err, derivedKey) {
       if(err)
         reject(err);
@@ -17,7 +17,7 @@ function hashPassword(password) {
 
 function verifyPassword(password, hash) {
   return new Promise(function(resolve, reject) {
-    var [type, salt, key] = hash.split(':');
+    let [type, salt, key] = hash.split(':');
     crypto.scrypt(password, salt, 64, function(err, derivedKey) {
       if(err)
         reject(err);
@@ -28,42 +28,42 @@ function verifyPassword(password, hash) {
 
 module.exports.login = async function(req, res) {
   try {
-    var uname    = req.body.uname;
-    var password = req.body.password;
+    let uname    = req.body.uname;
+    let password = req.body.password;
 
     if(!uname || !password) {
       res.status(400);
       return res.json({'successful': false, 'data': {}, 'error_field': ['uname', 'password'], 'error_msg': 'Missing one or more required parameters.'});
     }
 
-    var User = userModel(req.mysql);
+    let User = userModel(req.mysql);
 
-    var loginInfo = await User.getLoginInfo(uname);
+    let loginInfo = await User.getLoginInfo(uname);
     if(Object.keys(loginInfo).length === 0 || !await verifyPassword(password, loginInfo.password)) {
       res.status(401);
       return res.json({'successful': false, 'data': {}, 'error_field': ['uname', 'password'], 'error_msg': 'Either username or password is incorrect.'});
     }
 
-    var userId = loginInfo.id;
-    var role   = loginInfo.role;
+    let userId = loginInfo.id;
+    let role   = loginInfo.role;
 
-    var accessToken = await jwt.create.accessToken({'user_id': userId, 'role': role}, exp = '35m');
-    var refreshToken = await jwt.create.refreshToken();
-    
+    let accessToken = await jwt.create.accessToken({'user_id': userId, 'role': role}, exp = '35m');
+    let refreshToken = await jwt.create.refreshToken();
+
     // access token expiration time: 30 mins
     // access token expiration tolerance time: 5 mins
     // refresh token expiration time: 10 hrs
 
-    var expiresIn = new Date();
+    let expiresIn = new Date();
     expiresIn.setDate(expiresIn.getHours() + 10);
 
-    var result = await User.updateRefreshToken(userId, refreshToken, expiresIn);
+    let result = await User.updateRefreshToken(userId, refreshToken, expiresIn);
     if(result.affectedRows === 0)
       throw 'Fail to update new refresh token to the database.';
 
     res.json({'successful': true, 'data': {'access_token': accessToken, 'expires_in': 30 * 60, 'refresh_token': refreshToken}, 'error_field': [], 'error_msg': ''});
   }
-  catch (err) {
+  catch(err) {
     res.status(500);
     res.json({'successful': false, 'data': {}, 'error_field': [], 'error_msg': err});
   }
@@ -71,31 +71,31 @@ module.exports.login = async function(req, res) {
 
 module.exports.refreshLoginToken = async function(req, res) {
   try {
-    var refreshToken = req.body.refresh_token;
-    var userId       = req.user_id;
-    var role         = req.role;
+    let refreshToken = req.body.refresh_token;
+    let userId       = req.user_id;
+    let role         = req.role;
 
     if(!refreshToken) {
       res.status(400);
       return res.json({'successful': false, 'data': {}, 'error_field': ['refresh_token'], 'error_msg': 'Missing one or more required parameters.'});
     }
 
-    var User = userModel(req.mysql);
+    let User = userModel(req.mysql);
 
-    var result = await User.compareRefreshToken(userId, refreshToken);
+    let result = await User.compareRefreshToken(userId, refreshToken);
     if(Object.keys(result).length === 0) {
       res.status(401);
       return res.json({'successful': false, 'data': {}, 'error_field': [], 'error_msg': 'Current session is invalid. Try login again.'});
     }
 
-    var accessToken = await jwt.create.accessToken({'user_id': userId, 'role': role}, exp = '35m');
+    let accessToken = await jwt.create.accessToken({'user_id': userId, 'role': role}, exp = '35m');
     refreshToken = await jwt.create.refreshToken();
 
     // access token expiration time: 30 mins
     // access token expiration tolerance time: 5 mins
     // refresh token expiration time: 10 hrs
 
-    var expiresIn = new Date();
+    let expiresIn = new Date();
     expiresIn.setDate(expiresIn.getHours() + 10);
 
     result = await User.updateRefreshToken(userId, refreshToken, expiresIn);
@@ -104,7 +104,7 @@ module.exports.refreshLoginToken = async function(req, res) {
 
     res.json({'successful': true, 'data': {'access_token': accessToken, 'expires_in': 30 * 60, 'refresh_token': refreshToken}, 'error_field': [], 'error_msg': ''});
   }
-  catch (err) {
+  catch(err) {
     res.status(500);
     res.json({'successful': false, 'data': {}, 'error_field': [], 'error_msg': err});
   }
@@ -117,11 +117,11 @@ module.exports.logout = function(req, res) {
 
 module.exports.create = async function(req, res) {
   try {
-    var uname    = req.body.uname;
-    var password = req.body.password;
-    var role     = 3; //Default role: user
-    var name     = req.body.name;
-    var email    = req.body.email;
+    let uname    = req.body.uname;
+    let password = req.body.password;
+    let role     = 3; // Default role: user
+    let name     = req.body.name;
+    let email    = req.body.email;
 
     if(!uname || !password || !name || !email) {
       res.status(400);
@@ -133,9 +133,9 @@ module.exports.create = async function(req, res) {
       return res.json({'successful': false, 'data': {}, 'error_field': ['uname', 'name', 'email'], 'error_msg': 'One or more parameters contain incorrect values.'});
     }
 
-    var User = userModel(req.mysql);
+    let User = userModel(req.mysql);
 
-    var result = await User.create(uname, password, role, name, email);
+    let result = await User.create(uname, password, role, name, email);
 
     // TODO: return access token and refresh token
 
@@ -145,7 +145,7 @@ module.exports.create = async function(req, res) {
     res.status(201);
     res.json({'successful': true, 'data': {'id': result.insertId, 'uname': uname, 'role': role, 'name': name, 'email': email}, 'error_field': [], 'error_msg': ''});
   }
-  catch (err) {
+  catch(err) {
     if(err.code === 'ER_DUP_ENTRY') {
       res.status(409);
       res.json({'successful': false, 'data': {}, 'error_field': ['uname'], 'error_msg': 'This username is already in use.'});
@@ -159,18 +159,18 @@ module.exports.create = async function(req, res) {
 
 module.exports.getById = async function(req, res) {
   try {
-    var userId = req.user_id;
+    let userId = req.user_id;
 
-    var User = userModel(req.mysql);
+    let User = userModel(req.mysql);
 
-    var userInfo = await User.getInfo(userId);
+    let userInfo = await User.getInfo(userId);
 
     if(Object.keys(userInfo).length === 0)
       throw 'Fail to get user info from the database.';
 
     res.json({'successful': true, 'data': userInfo, 'error_field': [], 'error_msg': ''});
   }
-  catch (err) {
+  catch(err) {
     res.status(500);
     res.json({'successful': false, 'data': {}, 'error_field': [], 'error_msg': err});
   }
@@ -178,10 +178,10 @@ module.exports.getById = async function(req, res) {
 
 module.exports.updateInfo = async function(req, res) {
   try {
-    var uname  = req.body.uname;
-    var name   = req.body.name;
-    var email  = req.body.email;
-    var userId = req.user_id;
+    let uname  = req.body.uname;
+    let name   = req.body.name;
+    let email  = req.body.email;
+    let userId = req.user_id;
 
     if(!uname || !name || !email) {
       res.status(400);
@@ -193,16 +193,16 @@ module.exports.updateInfo = async function(req, res) {
       return res.json({'successful': false, 'data': [], 'error_field': ['uname', 'name', 'email'], 'error_msg': 'One or more parameters contain incorrect values.'});
     }
 
-    var User = userModel(req.mysql);
+    let User = userModel(req.mysql);
 
-    var result = await User.updateInfo(userId, uname, name, email);
+    let result = await User.updateInfo(userId, uname, name, email);
     if(result.affectedRows === 0)
       throw 'Fail to update user info to the database.';
 
     res.status(204);
     return res.end();
   }
-  catch (err) {
+  catch(err) {
     if(err.code === 'ER_DUP_ENTRY') {
       res.status(409);
       res.json({'successful': false, 'data': [], 'error_field': ['uname'], 'error_msg': 'This username is already in use.'});
@@ -216,9 +216,9 @@ module.exports.updateInfo = async function(req, res) {
 
 module.exports.updatePassword = async function(req, res) {
   try {
-    var passwordCurrent = req.body.password_current;
-    var passwordNew     = req.body.password_new;
-    var userId          = req.user_id;
+    let passwordCurrent = req.body.password_current;
+    let passwordNew     = req.body.password_new;
+    let userId          = req.user_id;
 
     if(!passwordCurrent || !passwordNew) {
       res.status(400);
@@ -227,26 +227,26 @@ module.exports.updatePassword = async function(req, res) {
 
     // TODO: password constraint validation
 
-    var User = userModel(req.mysql);
+    let User = userModel(req.mysql);
 
-    var userInfo = await User.getInfo(userId);
+    let userInfo = await User.getInfo(userId);
     if(Object.keys(userInfo).length === 0)
       throw 'Fail to locate user info from the database.';
 
-    var loginInfo = await User.getLoginInfo(userInfo.uname);
+    let loginInfo = await User.getLoginInfo(userInfo.uname);
     if(Object.keys(loginInfo).length === 0 || !await verifyPassword(passwordCurrent, loginInfo.password)) {
       res.status(401);
       return res.json({'successful': false, 'data': [], 'error_field': ['password_current'], 'error_msg': 'Current password is incorrect.'});
     }
 
-    var result = await User.updatePassword(userId, await hashPassword(passwordNew));
+    let result = await User.updatePassword(userId, await hashPassword(passwordNew));
     if(result.affectedRows === 0)
       throw 'Fail to update user password to the database.';
 
     res.status(204);
     return res.end();
   }
-  catch (err) {
+  catch(err) {
     res.status(500);
     res.json({'successful': false, 'data': [], 'error_field': [], 'error_msg': err});
   }
