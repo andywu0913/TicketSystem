@@ -26,10 +26,11 @@ app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({'extended': false}));
 app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
 
+if(process.env.HOST_FRONTEND_SPA) // host frontend within the same app
+  app.use(express.static(path.join(__dirname, process.env.HOST_FRONTEND_SPA)));
 
-if(process.env.NODE_ENV === 'development') // allow cors in development environment
+if(process.env.NODE_ENV === 'development') // allow CORS in development environment
   app.use(corsMiddleware);
 
 app.use(mysqlMiddleware); // put mysql.pool instance into req.mysql
@@ -39,6 +40,11 @@ app.use('/api/user', userRouter);
 app.use('/api/event', eventRouter);
 app.use('/api/session', sessionRouter);
 app.use('/api/ticket', ticketRouter);
+
+if(process.env.HOST_FRONTEND_SPA) // host frontend within the same app
+  app.get('*', function(req, res, next) {
+    res.sendFile(path.join(__dirname, process.env.HOST_FRONTEND_SPA, 'index.html'));
+  });
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
