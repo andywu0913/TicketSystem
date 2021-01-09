@@ -46,8 +46,9 @@ module.exports.login = async function(req, res) {
 
     let userId = loginInfo.id;
     let role   = loginInfo.role;
+    let name   = loginInfo.name;
 
-    let accessToken = await jwt.create.accessToken({'user_id': userId, 'role': role}, exp = '35m');
+    let accessToken = await jwt.create.accessToken({'user_id': userId, 'role': role, 'name': name}, exp = '35m');
     let refreshToken = await jwt.create.refreshToken();
 
     // access token expiration time: 30 mins

@@ -7,6 +7,7 @@ const logger = require('morgan');
 global.__version = require('./package.json').version;
 global.__projdir = __dirname;
 
+const corsMiddleware = require('./middlewares/cors');
 const mysqlMiddleware = require('./middlewares/mysql');
 const redisMiddleware = require('./middlewares/redis');
 
@@ -26,6 +27,10 @@ app.use(express.json());
 app.use(express.urlencoded({'extended': false}));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+
+
+if(process.env.NODE_ENV === 'development') // allow cors in development environment
+  app.use(corsMiddleware);
 
 app.use(mysqlMiddleware); // put mysql.pool instance into req.mysql
 app.use(redisMiddleware); // put redis instance into req.redis

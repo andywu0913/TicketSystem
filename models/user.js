@@ -47,7 +47,7 @@ module.exports = function(dbConnection) {
       return result;
     },
     getLoginInfo: async function(uname) {
-      const sql = 'SELECT `id`, `uname`, `password`, `role` \
+      const sql = 'SELECT `id`, `uname`, `password`, `role`, `name` \
                    FROM `user` \
                    WHERE `uname` = ?';
       let [rows, fields] = await dbConnection.execute(sql, [uname]);
