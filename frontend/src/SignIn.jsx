@@ -21,8 +21,6 @@ class SignIn extends Component {
   }
 
   signInDefault(event) {
-    let signin = this.props.signin;
-
     event.preventDefault();
     Axios.post('http://localhost:3000/api/user/login', {
       uname: this.state.uname,
@@ -30,18 +28,18 @@ class SignIn extends Component {
     })
     .then(function(response) {
       let data = response.data.data;
-      let jwt = JWTDecode(data['access_token']);
       localStorage.setItem('access_token', data['access_token']);
       localStorage.setItem('refresh_token', data['refresh_token']);
       localStorage.setItem('expires_in', data['expires_in']);
+      
+      let jwt = JWTDecode(data['access_token']);
       localStorage.setItem('user_id', jwt['user_id']);
       localStorage.setItem('role', jwt['role']);
       localStorage.setItem('name', jwt['name']);
       
 
-      signin(jwt['name'], jwt['role']);
       Swal.fire({icon: 'success', title: 'Success', showConfirmButton: false, timer: 1500});
-
+      window.location.reload();
       // TODO:jwt countdown
       // redirect page
     })

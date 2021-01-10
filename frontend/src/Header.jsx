@@ -12,6 +12,9 @@ class Header extends Component {
   }
 
   render() {
+    let name = localStorage.getItem('name');
+    let role = localStorage.getItem('role');
+
     return (
       <header>
         <Navbar bg="light" expand="sm">
@@ -23,9 +26,9 @@ class Header extends Component {
           </Link>
           <Navbar.Toggle />
           <Navbar.Collapse className="justify-content-end">
-            {!this.props.name || !this.props.role
-              ? <ShowSignInSignUpButtons />
-              : <ShowUserFunctions name={this.props.name} role={this.props.role} signout={this.props.signout} />
+            {name && role
+              ? <NavBarUserFunctions name={name} role={role}/>
+              : <NavBarSignInSignUpButtons />
             }
           </Navbar.Collapse>
         </Navbar>
@@ -34,47 +37,61 @@ class Header extends Component {
   }
 }
 
-function ShowSignInSignUpButtons() {
-  return (
-    <Nav>
-      <Nav.Item>
-        <Link to="/signin" className="nav-link">
-          <Button variant="outline-secondary">Sign In</Button>
-        </Link>
-      </Nav.Item>
-      <Nav.Item>
-        <Link to="/signup" className="nav-link">
-          <Button variant="primary">Sign Up</Button>
-        </Link>
-      </Nav.Item>
-    </Nav>
-  );
+class NavBarSignInSignUpButtons extends Component {
+  render() {
+    return (
+      <Nav>
+        <Nav.Item>
+          <Link to="/signin" className="nav-link">
+            <Button variant="outline-secondary">Sign In</Button>
+          </Link>
+        </Nav.Item>
+        <Nav.Item>
+          <Link to="/signup" className="nav-link">
+            <Button variant="primary">Sign Up</Button>
+          </Link>
+        </Nav.Item>
+      </Nav>
+    );
+  }
 }
 
-function ShowUserFunctions(props) {
-  return (
-    <Nav>
-      <Nav.Item>
-        <Link to="/event" className="nav-link">
-          <span><Collection className="mr-1" />Event</span>
-        </Link>
-      </Nav.Item>
-      <Nav.Item>
-        <Link to="/ticket" className="nav-link">
-          <span><Wallet2 className="mr-1" />Ticket</span>
-        </Link>
-      </Nav.Item>
-      <NavDropdown title={<span><PersonCircle className="mr-1" />{props.name}</span>} alignRight>
+class NavBarUserFunctions extends Component {
+  constructor(props) {
+    super(props);
+    this.signout = this.signout.bind(this);
+  }
+
+  signout() {
+    localStorage.clear();
+    window.location.reload();
+  }
+
+  render() {
+    return (
+      <Nav>
         <Nav.Item>
-          <Link to="/profile" className="nav-link">Profile</Link>
+          <Link to="/manage/event" className="nav-link">
+            <span><Collection className="mr-1" />Event</span>
+          </Link>
         </Nav.Item>
-        <NavDropdown.Divider />
         <Nav.Item>
-          <Link to="#" onClick={props.signout} className="nav-link">Sign Out</Link>
+          <Link to="/ticket" className="nav-link">
+            <span><Wallet2 className="mr-1" />Ticket</span>
+          </Link>
         </Nav.Item>
-      </NavDropdown>
-    </Nav>
-  );
+        <NavDropdown title={<span><PersonCircle className="mr-1" />{this.props.name}</span>} alignRight>
+          <Nav.Item>
+            <Link to="/profile" className="nav-link">Profile</Link>
+          </Nav.Item>
+          <NavDropdown.Divider />
+          <Nav.Item>
+            <Link to="#" onClick={this.signout} className="nav-link">Sign Out</Link>
+          </Nav.Item>
+        </NavDropdown>
+      </Nav>
+    );
+  }
 }
 
 export default Header;
