@@ -35,7 +35,7 @@ class Home extends Component {
             <h1 className="text-dark">Latest</h1>
             <hr />
               {this.state.data.length
-                ? <Events data={this.state.data} />
+                ? <EventCards data={this.state.data} />
                 : <DefaultLoadingPlaceholder nums={8} />
               }
           </Col>
@@ -78,10 +78,11 @@ class DefaultLoadingPlaceholder extends Component {
   }
 }
 
-class Events extends Component {
+class EventCards extends Component {
   render() {
     let events = this.props.data;
     let cards = events.map((event) => {
+      let description = event.description.replace(/(<([^>]+)>)/gi, "");
       let start = new Date(event['start_date']).toLocaleDateString();
       let end = new Date(event['end_date']).toLocaleDateString();
       
@@ -92,7 +93,12 @@ class Events extends Component {
             <Card.Body>
               <Link to={`/event/${event.id}`} className="text-reset">
                 <Card.Title>{event.name}</Card.Title>
-                <Card.Text>{event.description}</Card.Text>
+                <Card.Text>
+                  {description.length < 30 
+                    ? description 
+                    : `${description.substring(0, 30)}...`
+                  }
+                </Card.Text>
               </Link>
             </Card.Body>
             <Card.Footer className="pt-2 pb-2 text-right">

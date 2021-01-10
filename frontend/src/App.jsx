@@ -4,8 +4,10 @@ import Header from './Header';
 import Home from './Home';
 import PageNotFound from './PageNotFound';
 import Footer from './Footer';
+import Event from './Event';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
+import './custom.css';
 
 import SignIn from './SignIn';
 
@@ -18,13 +20,14 @@ class App extends Component {
     return (
       <BrowserRouter>
         <Header />
-
-        <Switch>
-          <Route path="/" exact><Home /></Route>
-          <Route path="/signin"><SignIn /></Route>
-          <Route><PageNotFound /></Route>
-        </Switch>
-
+        <div id="content">
+          <Switch>
+            <Route path="/" exact component={Home} />
+            <Route path="/event/:id" component={Event} />
+            <Route path="/signin" component={SignIn} />
+            <Route component={PageNotFound} />
+          </Switch>
+        </div>
         <Footer />
       </BrowserRouter>
     );

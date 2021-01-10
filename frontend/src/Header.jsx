@@ -81,11 +81,11 @@ class NavBarUserFunctions extends Component {
           </Link>
         </Nav.Item>
         <NavDropdown title={<span><PersonCircle className="mr-1" />{this.props.name}</span>} alignRight>
-          <Nav.Item>
+          <Nav.Item className="pl-3 pr-3">
             <Link to="/profile" className="nav-link">Profile</Link>
           </Nav.Item>
           <NavDropdown.Divider />
-          <Nav.Item>
+          <Nav.Item className="pl-3 pr-3">
             <Link to="#" onClick={this.signout} className="nav-link">Sign Out</Link>
           </Nav.Item>
         </NavDropdown>
