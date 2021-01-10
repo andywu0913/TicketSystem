@@ -59,9 +59,9 @@ class SignIn extends Component {
 
   render() {
     return (
-      <Container>
+      <Container className="align-self-center">
         <Row className="justify-content-md-center">
-          <Col xs={true} md={7} lg={6} xl={5}>
+          <Col xs={true} md={6} lg={5} xl={4}>
             <Card>
               <Card.Body>
                 <Card.Text className="text-center text-secondary">Sign in to start your session</Card.Text>
