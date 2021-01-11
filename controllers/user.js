@@ -136,7 +136,7 @@ module.exports.create = async function(req, res) {
 
     let User = userModel(req.mysql);
 
-    let result = await User.create(uname, password, role, name, email);
+    let result = await User.create(uname, await hashPassword(password), role, name, email);
 
     // TODO: return access token and refresh token
 

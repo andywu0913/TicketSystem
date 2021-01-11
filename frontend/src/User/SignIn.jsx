@@ -6,12 +6,15 @@ import Axios from 'axios';
 import Swal from 'sweetalert2';
 import JWTDecode from "jwt-decode";
 
+import InputTextGroup from './InputTextGroup';
+
 class SignIn extends Component {
   constructor(props) {
     super(props);
     this.handleChange = this.handleChange.bind(this);
-    this.signInDefault = this.signInDefault.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
     this.signInGithub = this.signInGithub.bind(this);
+    this.state = {uname: '', password: ''};
   }
 
   handleChange(event) {
@@ -20,12 +23,16 @@ class SignIn extends Component {
     this.setState({[name]: val});
   }
 
-  signInDefault(event) {
+  handleSubmit(event) {
     event.preventDefault();
-    Axios.post('http://localhost:3000/api/user/login', {
-      uname: this.state.uname,
-      password: this.state.password
-    })
+    
+    let uname = this.state.uname;
+    let password = this.state.password;
+
+    if(!uname.length || !password.length)
+      return;
+
+    Axios.post('http://localhost:3000/api/user/login', {uname, password})
     .then(function(response) {
       let data = response.data.data;
       localStorage.setItem('access_token', data['access_token']);
@@ -36,10 +43,10 @@ class SignIn extends Component {
       localStorage.setItem('user_id', jwt['user_id']);
       localStorage.setItem('role', jwt['role']);
       localStorage.setItem('name', jwt['name']);
-      
 
-      Swal.fire({icon: 'success', title: 'Success', showConfirmButton: false, timer: 1500});
-      window.location.reload();
+      Swal.fire({icon: 'success', title: 'Success', showConfirmButton: false, timer: 1000})
+          .then(() => window.location.reload());
+
       // TODO:jwt countdown
       // redirect page
     })
@@ -59,44 +66,23 @@ class SignIn extends Component {
 
   render() {
     return (
-      <Container className="align-self-center">
+      <Container className="align-self-center mt-3 mb-3">
         <Row className="justify-content-md-center">
-          <Col xs={true} md={6} lg={5} xl={4}>
+          <Col xs={true} sm={8} md={6} lg={5} xl={4}>
             <Card>
               <Card.Body>
                 <Card.Text className="text-center text-secondary">Sign in to start your session</Card.Text>
-                <Form onSubmit={this.signInDefault}>
-                  
-                  <Form.Group controlId="formBasicUsername">
-                    <Form.Label>Username</Form.Label>
-                    <InputGroup className="mb-2">
-                      <Form.Control name="uname" type="text" onChange={this.handleChange} placeholder="Username" />
-                      <InputGroup.Append>
-                        <InputGroup.Text>
-                          <PersonFill />
-                        </InputGroup.Text>
-                      </InputGroup.Append>
-                    </InputGroup>
-                  </Form.Group>
+                <Form onSubmit={this.handleSubmit}>
+                  <InputTextGroup label="Username" name="uname" type="text" value={this.state.uname} icon={<PersonFill />} onChange={this.handleChange} />
+                  <InputTextGroup label="Password" name="password" type="password" value={this.state.password} icon={<LockFill />} onChange={this.handleChange} />
+                  <br />
+                  <Button variant="primary" type="submit" block><BoxArrowInRight />{' '}Sign In</Button>
 
-                  <Form.Group controlId="formBasicPassword">
-                    <Form.Label>Password</Form.Label>
-                    <InputGroup className="mb-2">
-                      <Form.Control name="password" type="password" onChange={this.handleChange} placeholder="Password" />
-                      <InputGroup.Append>
-                        <InputGroup.Text>
-                        <LockFill />
-                        </InputGroup.Text>
-                      </InputGroup.Append>
-                    </InputGroup>
-                  </Form.Group>
-
-                  <Button variant="primary" onClick={this.signInDefault} block><BoxArrowInRight /> {' '}Sign In</Button>
                   <Card.Text className="text-center text-secondary mt-1 mb-1">- or -</Card.Text>
-                  <Button variant="secondary" block><Github /> {' '}Sign In with GitHub</Button>
+                  <Button variant="secondary" block><Github />{' '}Sign In with GitHub</Button>
                 </Form>
                 <hr />
-                <Card.Text className="text-center text-secondary">Don't have an account? <Link to="/signup">Sign up</Link> now!</Card.Text>
+                <Card.Text className="text-center text-secondary">Don't have an account? <Link to="/user/signup">Sign up</Link> now!</Card.Text>
               </Card.Body>
             </Card>
           </Col>

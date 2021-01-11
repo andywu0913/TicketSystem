@@ -42,12 +42,12 @@ class NavBarSignInSignUpButtons extends Component {
     return (
       <Nav>
         <Nav.Item>
-          <Link to="/signin" className="nav-link">
+          <Link to="/user/signin" className="nav-link">
             <Button variant="outline-secondary">Sign In</Button>
           </Link>
         </Nav.Item>
         <Nav.Item>
-          <Link to="/signup" className="nav-link">
+          <Link to="/user/signup" className="nav-link">
             <Button variant="primary">Sign Up</Button>
           </Link>
         </Nav.Item>
@@ -82,7 +82,7 @@ class NavBarUserFunctions extends Component {
         </Nav.Item>
         <NavDropdown title={<span><PersonCircle className="mr-1" />{this.props.name}</span>} alignRight>
           <Nav.Item className="pl-3 pr-3">
-            <Link to="/profile" className="nav-link">Profile</Link>
+            <Link to="/user" className="nav-link">Profile</Link>
           </Nav.Item>
           <NavDropdown.Divider />
           <Nav.Item className="pl-3 pr-3">

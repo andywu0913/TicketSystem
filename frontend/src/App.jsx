@@ -5,11 +5,13 @@ import Home from './Home';
 import PageNotFound from './PageNotFound';
 import Footer from './Footer';
 import Event from './Event';
+import User from './User/User';
+import SignIn from './User/SignIn';
+import SignUp from './User/SignUp';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './custom.css';
 
-import SignIn from './SignIn';
 
 class App extends Component {
   constructor(props) {
@@ -24,7 +26,9 @@ class App extends Component {
           <Switch>
             <Route path="/" exact component={Home} />
             <Route path="/event/:id" component={Event} />
-            <Route path="/signin" component={SignIn} />
+            <Route path="/user" exact component={User} />
+            <Route path="/user/signin" component={SignIn} />
+            <Route path="/user/signup" component={SignUp} />
             <Route component={PageNotFound} />
           </Switch>
         </div>
