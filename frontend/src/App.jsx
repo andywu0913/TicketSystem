@@ -1,13 +1,14 @@
 import React, {Component} from 'react';
 import {BrowserRouter, Route, Switch, Redirect} from 'react-router-dom';
 import Header from './Header';
-import Home from './Home/Home';
-import PageNotFound from './PageNotFound';
 import Footer from './Footer';
+import PageNotFound from './PageNotFound';
+import Home from './Home/Home';
 import Event from './Event/Event';
 import User from './User/User';
 import SignIn from './User/SignIn';
 import SignUp from './User/SignUp';
+import ManageTicket from './Manage/Ticket';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './custom.css';
@@ -24,10 +25,11 @@ class App extends Component {
         <div id="content">
           <Switch>
             <Route path="/" exact component={Home} />
-            <Route path="/event/:id" component={Event} />
+            <Route path="/event/:id" exact component={Event} />
             <AuthRoute path="/user" exact allowRole={[1, 2, 3]} rejectToURL="/user/signin" component={User} />
-            <AuthRoute path="/user/signin" allowRole={[-1]} rejectToURL="/user" component={SignIn} />
-            <AuthRoute path="/user/signup" allowRole={[-1]} rejectToURL="/user" component={SignIn} />
+            <AuthRoute path="/user/signin" exact allowRole={[-1]} rejectToURL="/user" component={SignIn} />
+            <AuthRoute path="/user/signup" exact allowRole={[-1]} rejectToURL="/user" component={SignUp} />
+            <AuthRoute path="/manage/ticket" exact allowRole={[1, 2, 3]} rejectToURL="/user" component={ManageTicket} />
             <Route component={PageNotFound} />
           </Switch>
         </div>

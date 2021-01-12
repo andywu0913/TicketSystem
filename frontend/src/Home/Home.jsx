@@ -25,7 +25,7 @@ class Home extends Component {
   render() {
     return (
       <Container className="p-3">
-        <Row className="justify-content-md-center">
+        <Row>
           <Col xs={12} sm={12} lg={{span: 3, order: 'last'}}>
             <h1 className="text-dark">Categories</h1>
             <hr />
@@ -89,7 +89,7 @@ class EventCards extends Component {
       return (
         <Col xs={12} md={6} lg={6} className="mb-4" key={event.id}>
           <Card className="h-100">
-            <Card.Img variant="left" src="http://via.placeholder.com/300x180" />
+            <Card.Img src="http://via.placeholder.com/300x180" width="100%" height="auto" />
             <Card.Body>
               <Link to={`/event/${event.id}`} className="text-reset">
                 <Card.Title>{event.name}</Card.Title>

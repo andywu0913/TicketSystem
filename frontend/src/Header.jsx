@@ -76,7 +76,7 @@ class NavBarUserFunctions extends Component {
           </Link>
         </Nav.Item>
         <Nav.Item>
-          <Link to="/ticket" className="nav-link">
+          <Link to="/manage/ticket" className="nav-link">
             <span><Wallet2 className="mr-1" />Ticket</span>
           </Link>
         </Nav.Item>
