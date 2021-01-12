@@ -24,8 +24,18 @@ module.exports = function(dbConnection) {
 
       return rows;
     },
+    getAllByUserId: async function(userId) {
+      const sql = 'SELECT `ticket`.`id`, `event_id`, `name`, `creator_uid` AS "event_creator_uid", `session_id`, `time`, `address`, `price`, `user_id`, `seat_no`, `ticket`.`create_time`, `is_active` AS "session_is_active" \
+                   FROM `ticket` \
+                   LEFT JOIN `session` ON `ticket`.`session_id` = `session`.`id` \
+                   LEFT JOIN `event` ON `session`.`event_id` = `event`.`id` \
+                   ORDER BY `create_time` DESC';
+      let [rows, fields] = await dbConnection.execute(sql, [userId]);
+
+      return rows;
+    },
     get: async function(id) {
-      const sql = 'SELECT `ticket`.`id`, `event_id`, `name`, `session_id`, `time`, `address`, `price`, `user_id`, `seat_no`, `ticket`.`create_time` \
+      const sql = 'SELECT `ticket`.`id`, `event_id`, `name`, `creator_uid` AS "event_creator_uid", `session_id`, `time`, `address`, `price`, `user_id`, `seat_no`, `ticket`.`create_time`, `is_active` AS "session_is_active" \
                    FROM `ticket` \
                    LEFT JOIN `session` ON `ticket`.`session_id` = `session`.`id` \
                    LEFT JOIN `event` ON `session`.`event_id` = `event`.`id` \

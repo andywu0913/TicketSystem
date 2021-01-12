@@ -1,13 +1,43 @@
 const sessionModel = require(__projdir + '/models/session');
 const ticketModel = require(__projdir + '/models/ticket');
 
+module.exports.getAllByUserId = async function(req, res, next) {
+  try {
+    let userId = req.user_id;
+
+    let Ticket = ticketModel(req.mysql);
+
+    let ticket = await Ticket.getAllByUserId(userId);
+    res.json({'successful': true, 'data': ticket, 'error_field': [], 'error_msg': ''});
+  }
+  catch(err) {
+    res.status(500);
+    res.json({'successful': false, 'data': {}, 'error_field': [], 'error_msg': err});
+  }
+}
+
 module.exports.getAllBySessionId = async function(req, res, next) {
   try {
-    let sessionId = req.query.session_id;
+    let sessionId = req.params.session_id;
+    let userId    = req.user_id;
+    let role      = req.role;
 
     if(!sessionId) {
       res.status(400);
       return res.json({'successful': false, 'data': {}, 'error_field': ['session_id'], 'error_msg': 'Missing one or more required parameters.'});
+    }
+
+    let Session = sessionModel(req.mysql);
+
+    let session = await Session.get(sessionId);
+    if(Object.keys(session).length === 0) {
+      res.status(400);
+      return res.json({'successful': false, 'data': [], 'error_field': ['session_id'], 'error_msg': 'Fail to locate the session from the database.'});
+    }
+
+    if(userId !== session.creator_uid && role !== 1) {
+      res.status(403);
+      return res.json({'successful': false, 'data': [], 'error_field': [], 'error_msg': 'No permission to get the tickets from this session.'});
     }
 
     let Ticket = ticketModel(req.mysql);
@@ -24,6 +54,8 @@ module.exports.getAllBySessionId = async function(req, res, next) {
 module.exports.getById = async function(req, res, next) {
   try {
     let ticketId = req.params.ticket_id;
+    let userId    = req.user_id;
+    let role      = req.role;
 
     if(!ticketId) {
       res.status(400);
@@ -33,6 +65,12 @@ module.exports.getById = async function(req, res, next) {
     let Ticket = ticketModel(req.mysql);
 
     let ticket = await Ticket.get(ticketId);
+
+    if(userId !== ticket.user_id && userId !== ticket.creator_uid && role !== 1) {
+      res.status(403);
+      return res.json({'successful': false, 'data': [], 'error_field': [], 'error_msg': 'No permission to get the ticket.'});
+    }
+
     res.json({'successful': true, 'data': ticket, 'error_field': [], 'error_msg': ''});
   }
   catch(err) {

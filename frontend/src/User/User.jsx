@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import {Link} from 'react-router-dom';
 import {Button, Card, Col, Container, Form, InputGroup, Row, Tab, Tabs} from 'react-bootstrap';
-import {PersonCheckFill, EnvelopeFill, PersonBadge, PersonFill, LockFill} from 'react-bootstrap-icons';
+import {EnvelopeFill, KeyFill, PersonBadge, PersonCheckFill, PersonFill, LockFill} from 'react-bootstrap-icons';
 import Axios from 'axios';
 import Swal from 'sweetalert2';
 import JWTDecode from "jwt-decode";
@@ -92,6 +92,7 @@ class UpdateProfileTab extends Component {
             <InputTextGroup label="Username" name="uname" type="text" value={this.state.uname} icon={<PersonFill />} onChange={this.handleChange} />
             <InputTextGroup label="Nickname" name="name" type="text" value={this.state.name} icon={<PersonBadge />} onChange={this.handleChange} />
             <InputTextGroup label="Email" name="email" type="email" value={this.state.email} icon={<EnvelopeFill />} onChange={this.handleChange} />
+            <InputTextGroup label="Role" name="role" type="text" value={this.state.rname} icon={<KeyFill />} readOnly={true} />
             <br />
             <Button variant="primary" type="submit" disabled={!this.state.changed} block><PersonCheckFill />{' '}Update</Button>
           </Form>

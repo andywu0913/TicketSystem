@@ -6,7 +6,9 @@ const authorization = require(__projdir + '/middlewares/authorization');
 
 const ticketController = require(__projdir + '/controllers/ticket');
 
-router.get('/', authentication, authorization(roles = [1, 2]), ticketController.getAllBySessionId);
+router.get('/', authentication, ticketController.getAllByUserId);
+
+router.get('/session/:session_id', authentication, authorization(roles = [1, 2]), ticketController.getAllBySessionId);
 
 router.post('/', authentication, ticketController.create);
 

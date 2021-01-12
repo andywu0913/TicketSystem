@@ -91,8 +91,10 @@ module.exports.activation = async function(req, res, next) {
     let Session = sessionModel(req.mysql);
 
     let session = await Session.get(sessionId);
-    if(Object.keys(session).length === 0)
-      throw 'Fail to locate the session from the database.';
+    if(Object.keys(session).length === 0) {
+      res.status(400);
+      return res.json({'successful': false, 'data': [], 'error_field': ['session_id'], 'error_msg': 'Fail to locate the session from the database.'});
+    }
 
     if(userId !== session.creator_uid && role !== 1) {
       res.status(403);
@@ -171,8 +173,10 @@ module.exports.update = async function(req, res, next) {
     let Session = sessionModel(req.mysql);
 
     let session = await Session.get(sessionId);
-    if(Object.keys(session).length === 0)
-      throw 'Fail to locate the session from the database.';
+    if(Object.keys(session).length === 0) {
+      res.status(400);
+      return res.json({'successful': false, 'data': [], 'error_field': ['session_id'], 'error_msg': 'Fail to locate the session from the database.'});
+    }
 
     if(userId !== session.creator_uid && role !== 1) {
       res.status(403);
@@ -214,8 +218,10 @@ module.exports.delete = async function(req, res, next) {
     let Session = sessionModel(req.mysql);
 
     let session = await Session.get(sessionId);
-    if(Object.keys(session).length === 0)
-      throw 'Fail to locate the session from the database.';
+    if(Object.keys(session).length === 0) {
+      res.status(400);
+      return res.json({'successful': false, 'data': [], 'error_field': ['session_id'], 'error_msg': 'Fail to locate the session from the database.'});
+    }
 
     if(userId !== session.creator_uid && role !== 1) {
       res.status(403);
