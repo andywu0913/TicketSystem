@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import {BrowserRouter, Route, Switch, Redirect} from 'react-router-dom';
 import Header from './Header';
-import Home from './Home';
+import Home from './Home/Home';
 import PageNotFound from './PageNotFound';
 import Footer from './Footer';
 import Event from './Event/Event';
