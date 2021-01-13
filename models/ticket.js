@@ -29,6 +29,7 @@ module.exports = function(dbConnection) {
                    FROM `ticket` \
                    LEFT JOIN `session` ON `ticket`.`session_id` = `session`.`id` \
                    LEFT JOIN `event` ON `session`.`event_id` = `event`.`id` \
+                   WHERE `user_id` = ? \
                    ORDER BY `create_time` DESC';
       let [rows, fields] = await dbConnection.execute(sql, [userId]);
 

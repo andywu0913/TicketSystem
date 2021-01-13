@@ -121,16 +121,16 @@ module.exports.create = async function(req, res, next) {
     }
 
     try {
-      // let Session = sessionModel(req.mysql);
+      let Session = sessionModel(req.mysql);
 
-      // let session = await Session.get(sessionId);
-      // if(Object.keys(session).length === 0)
-      //   throw 'Fail to locate the session from the database.';
+      let session = await Session.get(sessionId);
+      if(Object.keys(session).length === 0)
+        throw 'Fail to locate the session from the database.';
 
-      // if(seatNo <= 0 || seatNo > session.max_seats) {
-      //   res.status(400);
-      //   return res.json({'successful': false, 'data': {}, 'error_field': ['seat_no'], 'error_msg': 'One or more parameters contain incorrect values.'});
-      // }
+      if(seatNo <= 0 || seatNo > session.max_seats) {
+        res.status(400);
+        return res.json({'successful': false, 'data': {}, 'error_field': ['seat_no'], 'error_msg': 'The selected seat is not valid.'});
+      }
 
       let Ticket = ticketModel(req.mysql);
 
@@ -188,11 +188,9 @@ module.exports.update = async function(req, res, next) {
       return res.json({'successful': false, 'data': [], 'error_field': ['is_active'], 'error_msg': 'Unable to update the ticket. This session is inactive currently.'});
     }
 
-    // TODO: check session time is between event period
-
     if(seatNo <= 0 || seatNo > session.max_seats) {
       res.status(400);
-      return res.json({'successful': false, 'data': {}, 'error_field': ['seat_no'], 'error_msg': 'One or more parameters contain incorrect values.'});
+      return res.json({'successful': false, 'data': {}, 'error_field': ['seat_no'], 'error_msg': 'The selected seat is not valid.'});
     }
 
     let result = await Ticket.update(ticketId, seatNo);
@@ -244,8 +242,6 @@ module.exports.delete = async function(req, res, next) {
       res.status(400);
       return res.json({'successful': false, 'data': [], 'error_field': ['is_active'], 'error_msg': 'Unable to delete the ticket. This session is inactive currently.'});
     }
-
-    // TODO: check session time is between event period
 
     let result = await Ticket.delete(ticketId);
     if(result.affectedRows === 0)
