@@ -37,7 +37,10 @@ class SignIn extends Component {
       let data = response.data.data;
       localStorage.setItem('access_token', data['access_token']);
       localStorage.setItem('refresh_token', data['refresh_token']);
-      localStorage.setItem('expires_in', data['expires_in']);
+      
+      let exp = new Date();
+      exp.setSeconds(exp.getSeconds() + data['expires_in']);
+      localStorage.setItem('expires_in', exp.getTime());
       
       let jwt = JWTDecode(data['access_token']);
       localStorage.setItem('user_id', jwt['user_id']);
@@ -47,7 +50,6 @@ class SignIn extends Component {
       Swal.fire({icon: 'success', title: 'Success', showConfirmButton: false, timer: 1000})
           .then(() => window.location.reload());
 
-      // TODO:jwt countdown
       // redirect page
     })
     .catch(function(error) {
