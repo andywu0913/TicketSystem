@@ -18,5 +18,8 @@
         "react"
     ],
     "rules": {
+        "max-len": ["off"],
+        "object-curly-newline": ["off"],
+        "react/jsx-one-expression-per-line": ["off"]
     }
 }

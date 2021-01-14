@@ -19,11 +19,27 @@ module.exports = function(dbConnection) {
 
       return rows[0];
     },
+    getAllInfo: async function() {
+      const sql = 'SELECT `user`.`id`, `uname`, `user`.`name`, `email`, `role`, `role`.`name` AS "rname", `last_login_time` \
+                   FROM `user` \
+                   LEFT JOIN `role` ON `user`.`role` = `role`.`id`';
+      let [rows, fields] = await dbConnection.execute(sql);
+
+      return rows;
+    },
     updateInfo: async function(id, uname, name, email) {
       const sql = 'UPDATE `user` \
                    SET `uname` = ?, `name` = ?, `email`= ?, `last_update_time` = NOW() \
                    WHERE `id` = ?';
       let [result, _] = await dbConnection.execute(sql, [uname, name, email, id]);
+
+      return result;
+    },
+    updateInfoFromAdmin: async function(id, name, email, role) {
+      const sql = 'UPDATE `user` \
+                   SET `name` = ?, `email`= ?, `role` = ?, `last_update_time` = NOW() \
+                   WHERE `id` = ?';
+      let [result, _] = await dbConnection.execute(sql, [name, email, role, id]);
 
       return result;
     },

@@ -8,6 +8,7 @@ import Event from './Event/Event';
 import User from './User/User';
 import SignIn from './User/SignIn';
 import SignUp from './User/SignUp';
+import ManageUser from './Manage/User';
 import ManageTicket from './Manage/Ticket';
 import Axios from 'axios';
 
@@ -31,6 +32,7 @@ class App extends Component {
             <AuthRoute path="/user" exact allowRole={[1, 2, 3]} rejectToURL="/user/signin" component={User} />
             <AuthRoute path="/user/signin" exact allowRole={[-1]} rejectToURL="/user" component={SignIn} />
             <AuthRoute path="/user/signup" exact allowRole={[-1]} rejectToURL="/user" component={SignUp} />
+            <AuthRoute path="/manage/user" exact allowRole={[1]} rejectToURL="/" component={ManageUser} />
             <AuthRoute path="/manage/ticket" exact allowRole={[1, 2, 3]} rejectToURL="/user" component={ManageTicket} />
             <Route component={PageNotFound} />
           </Switch>

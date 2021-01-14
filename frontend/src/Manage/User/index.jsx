@@ -1,0 +1,57 @@
+import React, { Component } from 'react';
+import { Container, Row, Col } from 'react-bootstrap';
+import Axios from 'axios';
+
+import UsersList from './UsersList';
+import UserUpdateModal from './UserUpdateModal';
+
+export default class extends Component {
+  constructor(props) {
+    super(props);
+    this.loadData = this.loadData.bind(this);
+    this.showUserUpdateModal = this.showUserUpdateModal.bind(this);
+    this.hideUserUpdateModal = this.hideUserUpdateModal.bind(this);
+    this.state = { data: [], showUserUpdateModal: false, userObj: null };
+  }
+
+  componentDidMount() {
+    this.loadData();
+  }
+
+  loadData() {
+    const self = this;
+    Axios.get('http://localhost:3000/api/user/all', {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('access_token')}`,
+      },
+    }).then((response) => {
+      self.setState({ data: response.data.data });
+    }).catch((error) => {
+      // TODO
+    });
+  }
+
+  showUserUpdateModal(userObj) {
+    this.setState({ showUserUpdateModal: true, userObj });
+  }
+
+  hideUserUpdateModal() {
+    this.setState({ showUserUpdateModal: false, userObj: null });
+  }
+
+  render() {
+    const { data, showUserUpdateModal, userObj } = this.state;
+    return (
+      <Container className="p-3">
+        <Row>
+          <Col>
+            <h1 className="text-dark">Users</h1>
+            <hr />
+          </Col>
+        </Row>
+        <UsersList data={data} showUserUpdateModal={this.showUserUpdateModal} />
+        <UserUpdateModal show={showUserUpdateModal} userObj={userObj} hideModal={this.hideUserUpdateModal} loadData={this.loadData} />
+      </Container>
+    );
+  }
+}

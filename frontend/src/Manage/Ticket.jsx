@@ -71,7 +71,6 @@ class TicketCardList extends Component {
 
 function TicketCard(props) {
   const { data } = props;
-  console.log(data);
   return (
     <Row className="mb-4">
       <Col>
@@ -228,7 +227,7 @@ class UpdateTicketModal extends Component {
         </Modal.Body>
         <Modal.Footer>
           <Button variant="danger" onClick={this.handleDelete}>Delete ticket</Button>
-          <Button variant="success" disabled={!this.state.changed} onClick={this.handleUpdate}>Update seat</Button>
+          <Button disabled={!this.state.changed} onClick={this.handleUpdate}>Update seat</Button>
         </Modal.Footer>
       </Modal>
     );

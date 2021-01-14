@@ -158,7 +158,7 @@ module.exports.create = async function(req, res) {
   }
 };
 
-module.exports.getById = async function(req, res) {
+module.exports.get = async function(req, res) {
   try {
     let userId = req.user_id;
 
@@ -170,6 +170,19 @@ module.exports.getById = async function(req, res) {
       throw 'Fail to get user info from the database.';
 
     res.json({'successful': true, 'data': userInfo, 'error_field': [], 'error_msg': ''});
+  }
+  catch(err) {
+    res.status(500);
+    res.json({'successful': false, 'data': {}, 'error_field': [], 'error_msg': err});
+  }
+};
+
+module.exports.getAll = async function(req, res) {
+  try {
+    let User = userModel(req.mysql);
+
+    let usersInfo = await User.getAllInfo();
+    res.json({'successful': true, 'data': usersInfo, 'error_field': [], 'error_msg': ''});
   }
   catch(err) {
     res.status(500);
@@ -197,6 +210,44 @@ module.exports.updateInfo = async function(req, res) {
     let User = userModel(req.mysql);
 
     let result = await User.updateInfo(userId, uname, name, email);
+    if(result.affectedRows === 0)
+      throw 'Fail to update user info to the database.';
+
+    res.status(204);
+    res.end();
+  }
+  catch(err) {
+    if(err.code === 'ER_DUP_ENTRY') {
+      res.status(409);
+      res.json({'successful': false, 'data': [], 'error_field': ['uname'], 'error_msg': 'This username is already in use.'});
+    }
+    else {
+      res.status(500);
+      res.json({'successful': false, 'data': [], 'error_field': [], 'error_msg': err});
+    }
+  }
+};
+
+module.exports.updateInfoById = async function(req, res) {
+  try {
+    let name   = req.body.name;
+    let email  = req.body.email;
+    let role  = req.body.role;
+    let userId = req.params.user_id;
+
+    if(!name || !email || !role || !userId) {
+      res.status(400);
+      res.json({'successful': false, 'data': [], 'error_field': ['name', 'email', 'role', 'user_id'], 'error_msg': 'Missing one or more required parameters.'});
+    }
+
+    if(name.length > 64 || email.length > 64 || role < 1 || role > 3) {
+      res.status(400);
+      return res.json({'successful': false, 'data': [], 'error_field': ['name', 'email', 'role', 'user_id'], 'error_msg': 'One or more parameters contain incorrect values.'});
+    }
+
+    let User = userModel(req.mysql);
+
+    let result = await User.updateInfoFromAdmin(userId, name, email, role);
     if(result.affectedRows === 0)
       throw 'Fail to update user info to the database.';
 
