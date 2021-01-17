@@ -6,7 +6,7 @@ import Axios from 'axios';
 import Swal from 'sweetalert2';
 
 import { saveAccessToken, saveRefreshToken, saveExpiration } from 'SRC/utils/jwt';
-import InputTextGroup from './InputTextGroup';
+import InputTextGroup from 'SRC/commons/InputTextGroup';
 
 class SignIn extends Component {
   constructor(props) {

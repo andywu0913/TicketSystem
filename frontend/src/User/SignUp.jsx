@@ -5,7 +5,7 @@ import {PersonPlusFill, Github, LockFill, PersonFill, PersonBadge, EnvelopeFill}
 import Axios from 'axios';
 import Swal from 'sweetalert2';
 
-import InputTextGroup from './InputTextGroup';
+import InputTextGroup from 'SRC/commons/InputTextGroup';
 
 class SignUp extends Component {
   constructor(props) {

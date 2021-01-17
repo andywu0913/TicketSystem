@@ -7,7 +7,7 @@ import Swal from 'sweetalert2';
 import JWTDecode from "jwt-decode";
 import { getAccessToken } from 'SRC/utils/jwt';
 
-import InputTextGroup from './InputTextGroup';
+import InputTextGroup from 'SRC/commons/InputTextGroup';
 
 class User extends Component {
   constructor(props) {

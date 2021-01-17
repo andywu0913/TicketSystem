@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Button, Form, InputGroup, Modal } from 'react-bootstrap';
+import { Button, Form, Modal } from 'react-bootstrap';
 import { EnvelopeFill, KeyFill, PersonBadge, PersonCheckFill } from 'react-bootstrap-icons';
 import Axios from 'axios';
 import Swal from 'sweetalert2';
 
-import InputTextGroup from './InputTextGroup';
+import InputTextGroup from 'SRC/commons/InputTextGroup';
+import InputSelectGroup from 'SRC/commons/InputSelectGroup';
 
 import { getAccessToken } from 'SRC/utils/jwt';
 
@@ -28,7 +29,10 @@ class UserUpdateModal extends Component {
   }
 
   handleChange(event) {
-    const { name, value } = event.target;
+    let { name, value } = event.target;
+    if (name === 'role') {
+      value = parseInt(value, 10);
+    }
     this.setState({ [name]: value, changed: true });
   }
 
@@ -74,19 +78,7 @@ class UserUpdateModal extends Component {
           <Modal.Body>
             <InputTextGroup label="Name" name="name" type="text" value={name} icon={<PersonBadge />} onChange={this.handleChange} />
             <InputTextGroup label="Email" name="email" type="email" value={email} icon={<EnvelopeFill />} onChange={this.handleChange} />
-            <Form.Group>
-              <Form.Label>Role</Form.Label>
-              <InputGroup>
-                <Form.Control as="select" name="role" value={role} onChange={this.handleChange}>
-                  <option value="1">Admin</option>
-                  <option value="2">Host</option>
-                  <option value="3">User</option>
-                </Form.Control>
-                <InputGroup.Append>
-                  <InputGroup.Text><KeyFill /></InputGroup.Text>
-                </InputGroup.Append>
-              </InputGroup>
-            </Form.Group>
+            <InputSelectGroup label="Role" name="role" options={[{value: 1, text: 'Admin'}, {value: 2, text: 'Host'}, {value: 3, text: 'User'}]} value={role} icon={<KeyFill />} onChange={this.handleChange} />
           </Modal.Body>
           <Modal.Footer>
             <Button variant="primary" type="submit" disabled={!changed} block><PersonCheckFill />{' '}Update</Button>
