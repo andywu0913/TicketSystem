@@ -1,3 +1,4 @@
+import Axios from 'axios';
 import JWTDecode from 'jwt-decode';
 
 const ACCESS_TOKEN = 'access_token';
@@ -18,29 +19,21 @@ export function saveExpiration(expiresIn) {
   localStorage.setItem(EXPIRES_IN, exp.getTime());
 }
 
-export function verifySaved() {
-  const accessToken = localStorage.getItem(ACCESS_TOKEN);
-  const refreshToken = localStorage.getItem(REFRESH_TOKEN);
-  const expiresIn = localStorage.getItem(EXPIRES_IN);
+export function getAccessToken() {
+  return localStorage.getItem(ACCESS_TOKEN);
+}
 
-  if (!accessToken || !refreshToken || !expiresIn) {
-    return false;
+export function getRefreshToken() {
+  return localStorage.getItem(REFRESH_TOKEN);
+}
+
+export function getExpiration() {
+  const exp = localStorage.getItem(EXPIRES_IN);
+  if (exp === null || exp === 'null') {
+    return null;
   }
 
-  const exp1 = new Date(parseInt(expiresIn));
-  if (isNaN(exp1) || (exp1 - new Date() < 0)) {
-    return false;
-  }
-
-  const jwt = JWTDecode(accessToken);
-  const iat = new Date(jwt.iat * 1000);
-  const exp2 = new Date(jwt.exp * 1000);
-  const now = new Date();
-  if (now < iat || now > exp2) {
-    return false;
-  }
-
-  return true;
+  return parseInt(exp);
 }
 
 export function clearSaved() {
@@ -49,57 +42,91 @@ export function clearSaved() {
   localStorage.removeItem(EXPIRES_IN);
 }
 
-export function getAccessToken() {
-  if (!verifySaved()) {
-    return null;
+export function verifySaved() {
+  const accessToken = getAccessToken();
+  const refreshToken = getRefreshToken();
+  const expiresIn = getExpiration();
+
+  if (!accessToken || !refreshToken || !expiresIn) {
+    clearSaved();
+    return false;
   }
 
-  return localStorage.getItem(ACCESS_TOKEN);
+  if (expiresIn === null || (expiresIn - new Date() < 0)) {
+    clearSaved();
+    return false;
+  }
+
+  const jwt = JWTDecode(accessToken);
+  const iat = new Date(jwt.iat * 1000);
+  const exp = new Date(jwt.exp * 1000);
+  const now = new Date();
+  if (now < iat || now > exp) {
+    clearSaved();
+    return false;
+  }
+
+  return true;
 }
 
-export function getRefreshToken() {
-  if (!verifySaved()) {
-    return null;
+export function setRenewTimer() {
+  let exp = getExpiration();
+
+  if (!exp) {
+    clearSaved();
+    return;
   }
 
-  return localStorage.getItem(REFRESH_TOKEN);
-}
+  const renew = () => {
+    const accessToken = getAccessToken();
+    const refreshToken = getRefreshToken();
 
-export function getExpiration() {
-  if (!verifySaved()) {
-    return null;
-  }
+    Axios.post('http://localhost:3000/api/user/refresh', { refresh_token: refreshToken }, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    }).then((response) => {
+      const { data } = response.data;
+      saveAccessToken(data.access_token);
+      saveRefreshToken(data.refresh_token);
+      saveExpiration(data.expires_in);
 
-  const exp = localStorage.getItem(EXPIRES_IN);
-  return parseInt(exp);
+      exp = getExpiration();
+      setTimeout(renew, exp - new Date());
+    }).catch((error) => {
+
+    });
+  };
+
+  setTimeout(renew, exp - new Date());
 }
 
 export function getUserId() {
-  const accessToken = getAccessToken();
-  if (accessToken === null) {
+  if (!verifySaved()) {
     return null;
   }
 
+  const accessToken = getAccessToken();
   const jwt = JWTDecode(accessToken);
   return jwt.user_id;
 }
 
 export function getUserName() {
-  const accessToken = getAccessToken();
-  if (accessToken === null) {
+  if (!verifySaved()) {
     return null;
   }
 
+  const accessToken = getAccessToken();
   const jwt = JWTDecode(accessToken);
   return jwt.name;
 }
 
 export function getUserRole() {
-  const accessToken = getAccessToken();
-  if (accessToken === null) {
+  if (!verifySaved()) {
     return -1; // -1 means guest
   }
 
+  const accessToken = getAccessToken();
   const jwt = JWTDecode(accessToken);
   return jwt.role;
 }
@@ -108,11 +135,12 @@ export default {
   saveAccessToken,
   saveRefreshToken,
   saveExpiration,
-  verifySaved,
-  clearSaved,
   getAccessToken,
   getRefreshToken,
   getExpiration,
+  clearSaved,
+  verifySaved,
+  setRenewTimer,
   getUserId,
   getUserName,
   getUserRole,

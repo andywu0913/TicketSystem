@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
+
 import Header from 'SRC/Header';
 import Footer from 'SRC/Footer';
 import PageNotFound from 'SRC/PageNotFound';
@@ -12,6 +13,7 @@ import ManageUser from 'SRC/Manage/User';
 import ManageTicket from 'SRC/Manage/Ticket';
 
 import AuthRoute from './AuthRoute';
+import { setRenewTimer } from 'SRC/utils/jwt';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './style.css';
@@ -19,6 +21,7 @@ import './style.css';
 class App extends Component {
   constructor(props) {
     super(props);
+    setRenewTimer();
   }
 
   render() {

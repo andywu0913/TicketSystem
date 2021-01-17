@@ -7,6 +7,8 @@ import Swal from 'sweetalert2';
 
 import InputTextGroup from './InputTextGroup';
 
+import { getAccessToken } from 'SRC/utils/jwt';
+
 class UserUpdateModal extends Component {
   constructor(props) {
     super(props);
@@ -34,9 +36,10 @@ class UserUpdateModal extends Component {
     event.preventDefault();
     const { name, email, role, id } = this.state;
 
+    const accessToken = getAccessToken();
     Axios.put(`http://localhost:3000/api/user/${id}`, { name, email, role }, {
       headers: {
-        Authorization: `Bearer ${localStorage.getItem('access_token')}`,
+        Authorization: `Bearer ${accessToken}`,
       },
     }).then(() => {
       const { loadData, hideModal } = this.props;

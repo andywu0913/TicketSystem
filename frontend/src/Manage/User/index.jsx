@@ -5,6 +5,8 @@ import Axios from 'axios';
 import UsersList from './UsersList';
 import UserUpdateModal from './UserUpdateModal';
 
+import { getAccessToken } from 'SRC/utils/jwt';
+
 export default class extends Component {
   constructor(props) {
     super(props);
@@ -20,9 +22,10 @@ export default class extends Component {
 
   loadData() {
     const self = this;
+    const accessToken = getAccessToken();
     Axios.get('http://localhost:3000/api/user/all', {
       headers: {
-        Authorization: `Bearer ${localStorage.getItem('access_token')}`,
+        Authorization: `Bearer ${accessToken}`,
       },
     }).then((response) => {
       self.setState({ data: response.data.data });

@@ -5,6 +5,7 @@ import {EnvelopeFill, KeyFill, PersonBadge, PersonCheckFill, PersonFill, LockFil
 import Axios from 'axios';
 import Swal from 'sweetalert2';
 import JWTDecode from "jwt-decode";
+import { getAccessToken } from 'SRC/utils/jwt';
 
 import InputTextGroup from './InputTextGroup';
 
@@ -44,8 +45,9 @@ class UpdateProfileTab extends Component {
 
   componentDidMount() {
     let self = this;
+    const accessToken = getAccessToken();
     Axios.get('http://localhost:3000/api/user', {headers: {
-      Authorization: 'Bearer ' + localStorage.getItem('access_token')
+      Authorization: `Bearer ${accessToken}`,
     }})
     .then(function(response) {
       let data = response.data.data;
@@ -65,11 +67,11 @@ class UpdateProfileTab extends Component {
   handleSubmit(event) {
     event.preventDefault();
     let self = this;
+    const accessToken = getAccessToken();
     Axios.put('http://localhost:3000/api/user', {...self.state}, {headers: {
-      Authorization: 'Bearer ' + localStorage.getItem('access_token')
+      Authorization: `Bearer ${accessToken}`,
     }})
     .then(function(response) {
-      localStorage.setItem('name', self.state.name);
       Swal.fire({icon: 'success', title: 'Success', showConfirmButton: false, timer: 1000})
           .then(() => window.location.reload());
     })
@@ -125,8 +127,9 @@ class UpdatePasswordTab extends Component {
     }
 
     let self = this;
+    const accessToken = getAccessToken();
     Axios.put('http://localhost:3000/api/user/password', {password_current: password, password_new: passwordNew}, {headers: {
-      Authorization: 'Bearer ' + localStorage.getItem('access_token')
+      Authorization: `Bearer ${accessToken}`,
     }})
     .then(function(response) {
       Swal.fire({icon: 'success', title: 'Success', showConfirmButton: false, timer: 1000})

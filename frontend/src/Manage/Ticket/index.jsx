@@ -5,6 +5,8 @@ import { ClockFill, GearFill, GeoAltFill } from 'react-bootstrap-icons';
 import Axios from 'axios';
 import Swal from 'sweetalert2';
 
+import { getAccessToken } from 'SRC/utils/jwt';
+
 export default function ContentFrame() {
   return (
     <Container className="p-3">
@@ -42,9 +44,10 @@ class TicketCardList extends Component {
 
   loadData() {
     const self = this;
+    const accessToken = getAccessToken();
     Axios.get('http://localhost:3000/api/ticket', {
       headers: {
-        Authorization: `Bearer ${localStorage.getItem('access_token')}`,
+        Authorization: `Bearer ${accessToken}`,
       },
     })
     .then((response) => {
@@ -147,11 +150,12 @@ class UpdateTicketModal extends Component {
 
   handleUpdate(event) {
     let { ticketId, seat } = this.state;
+    const accessToken = getAccessToken();
     Axios.put(`http://localhost:3000/api/ticket/${ticketId}`, {
       seat_no: parseInt(seat)
     }, {
       headers: {
-        Authorization: `Bearer ${localStorage.getItem('access_token')}`,
+        Authorization: `Bearer ${accessToken}`,
       },
     })
     .then((response) => {
@@ -171,6 +175,7 @@ class UpdateTicketModal extends Component {
   }
 
   handleDelete(event) {
+    const accessToken = getAccessToken();
     Swal.fire({
       title: 'Are you sure?',
       text: "You won't be able to revert this!",
@@ -185,7 +190,7 @@ class UpdateTicketModal extends Component {
       const { ticketId } = this.state;
       Axios.delete(`http://localhost:3000/api/ticket/${ticketId}`, {
         headers: {
-          Authorization: `Bearer ${localStorage.getItem('access_token')}`,
+          Authorization: `Bearer ${accessToken}`,
         },
       })
       .then((response) => {
