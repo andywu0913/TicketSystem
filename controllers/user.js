@@ -62,7 +62,7 @@ module.exports.login = async function(req, res) {
     if(result.affectedRows === 0)
       throw 'Fail to update new refresh token to the database.';
 
-    res.json({'successful': true, 'data': {'access_token': accessToken, 'expires_in': 30 * 60, 'refresh_token': refreshToken}, 'error_field': [], 'error_msg': ''});
+    res.json({'successful': true, 'data': {'access_token': accessToken, 'expires_in': [30 * 60, 'sec'], 'refresh_token': refreshToken}, 'error_field': [], 'error_msg': ''});
   }
   catch(err) {
     res.status(500);
@@ -103,7 +103,7 @@ module.exports.refreshLoginToken = async function(req, res) {
     if(result.affectedRows === 0)
       throw 'Fail to update new refresh token to the database.';
 
-    res.json({'successful': true, 'data': {'access_token': accessToken, 'expires_in': 30 * 60, 'refresh_token': refreshToken}, 'error_field': [], 'error_msg': ''});
+    res.json({'successful': true, 'data': {'access_token': accessToken, 'expires_in': [30 * 60, 'sec'], 'refresh_token': refreshToken}, 'error_field': [], 'error_msg': ''});
   }
   catch(err) {
     res.status(500);

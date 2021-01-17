@@ -32,10 +32,9 @@ export default class extends Component {
           </Col>
         </Row>
         <Row>
-        {data.length > 0
-          ? <EventCards data={data} />
-          : <DefaultLoadingPlaceholder nums={9} />
-        }
+          {data.length > 0
+            ? <EventCards data={data} />
+            : <DefaultLoadingPlaceholder nums={9} />}
         </Row>
       </Container>
     );

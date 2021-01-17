@@ -8,6 +8,15 @@ module.exports = {
     filename : 'bundle.[hash].js',
     publicPath: '/'
   },
+  resolve: {
+    modules: [
+        'node_modules',
+        path.resolve(__dirname + '/src')
+    ],
+    alias: {
+        SRC: path.resolve(__dirname + '/src')
+    }
+  },
   module: {
     rules: [
       {

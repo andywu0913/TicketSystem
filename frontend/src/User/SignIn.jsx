@@ -1,11 +1,11 @@
-import React, {Component} from 'react';
-import {Link} from 'react-router-dom';
-import {Button, Card, Col, Container, Form, InputGroup, Row} from 'react-bootstrap';
-import {BoxArrowInRight, Github, LockFill, PersonFill} from 'react-bootstrap-icons';
+import React, { Component } from 'react';
+import { Link } from 'react-router-dom';
+import { Button, Card, Col, Container, Form, Row } from 'react-bootstrap';
+import { BoxArrowInRight, Github, LockFill, PersonFill } from 'react-bootstrap-icons';
 import Axios from 'axios';
 import Swal from 'sweetalert2';
-import JWTDecode from "jwt-decode";
 
+import { saveAccessToken, saveRefreshToken, saveExpiration } from 'SRC/utils/jwt';
 import InputTextGroup from './InputTextGroup';
 
 class SignIn extends Component {
@@ -14,52 +14,43 @@ class SignIn extends Component {
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
     this.signInGithub = this.signInGithub.bind(this);
-    this.state = {uname: '', password: ''};
+    this.state = { uname: '', password: '' };
   }
 
   handleChange(event) {
-    let name = event.target.name;
-    let val = event.target.value;
-    this.setState({[name]: val});
+    const { name } = event.target;
+    const val = event.target.value;
+    this.setState({ [name]: val });
   }
 
   handleSubmit(event) {
     event.preventDefault();
-    
-    let uname = this.state.uname;
-    let password = this.state.password;
 
-    if(!uname.length || !password.length)
-      return;
+    const { uname } = this.state;
+    const { password } = this.state;
 
-    Axios.post('http://localhost:3000/api/user/login', {uname, password})
-    .then(function(response) {
-      let data = response.data.data;
-      localStorage.setItem('access_token', data['access_token']);
-      localStorage.setItem('refresh_token', data['refresh_token']);
-      
-      let exp = new Date();
-      exp.setSeconds(exp.getSeconds() + data['expires_in']);
-      localStorage.setItem('expires_in', exp.getTime());
-      
-      let jwt = JWTDecode(data['access_token']);
-      localStorage.setItem('user_id', jwt['user_id']);
-      localStorage.setItem('role', jwt['role']);
-      localStorage.setItem('name', jwt['name']);
+    if (!uname.length || !password.length) return;
 
-      Swal.fire({icon: 'success', title: 'Success', showConfirmButton: false, timer: 1000})
+    Axios.post('http://localhost:3000/api/user/login', { uname, password })
+      .then((response) => {
+        const { data } = response.data;
+        saveAccessToken(data.access_token);
+        saveRefreshToken(data.refresh_token);
+        saveExpiration(data.expires_in);
+
+        Swal.fire({ icon: 'success', title: 'Success', showConfirmButton: false, timer: 1000 })
           .then(() => window.location.reload());
 
       // redirect page
-    })
-    .catch(function(error) {
-      if(error.response && error.response.data) {
-        let message = error.response.data.error_msg || '';
-        Swal.fire({icon: 'error', title: 'Error', text: message});
-        return;
-      }
-      Swal.fire({icon: 'error', title: 'Error', text: 'Unknown error.'});
-    });
+      })
+      .catch((error) => {
+        if (error.response && error.response.data) {
+          const message = error.response.data.error_msg || '';
+          Swal.fire({ icon: 'error', title: 'Error', text: message });
+          return;
+        }
+        Swal.fire({ icon: 'error', title: 'Error', text: 'Unknown error.' });
+      });
   }
 
   signInGithub() {
@@ -67,16 +58,17 @@ class SignIn extends Component {
   }
 
   render() {
+    const { uname, password } = this.state;
     return (
       <Container className="align-self-center mt-3 mb-3">
         <Row className="justify-content-md-center">
-          <Col xs={true} sm={8} md={6} lg={5} xl={4}>
+          <Col xs sm={8} md={6} lg={5} xl={4}>
             <Card>
               <Card.Body>
                 <Card.Text className="text-center text-secondary">Sign in to start your session</Card.Text>
                 <Form onSubmit={this.handleSubmit}>
-                  <InputTextGroup label="Username" name="uname" type="text" value={this.state.uname} icon={<PersonFill />} onChange={this.handleChange} />
-                  <InputTextGroup label="Password" name="password" type="password" value={this.state.password} icon={<LockFill />} onChange={this.handleChange} />
+                  <InputTextGroup label="Username" name="uname" type="text" value={uname} icon={<PersonFill />} onChange={this.handleChange} />
+                  <InputTextGroup label="Password" name="password" type="password" value={password} icon={<LockFill />} onChange={this.handleChange} />
                   <br />
                   <Button variant="primary" type="submit" block><BoxArrowInRight />{' '}Sign In</Button>
 
