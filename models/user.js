@@ -44,7 +44,7 @@ module.exports = function(dbConnection) {
       return result;
     },
     compareRefreshToken: async function(id, refreshToken) {
-      const sql = 'SELECT `id`, `role` \
+      const sql = 'SELECT `id`, `role`, `name` \
                    FROM `user` \
                    WHERE `id` = ? AND `refresh_token` = ? AND `token_expires_in` > NOW()';
       let [rows, fields] = await dbConnection.execute(sql, [id, refreshToken]);

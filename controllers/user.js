@@ -89,7 +89,7 @@ module.exports.refreshLoginToken = async function(req, res) {
       return res.json({'successful': false, 'data': {}, 'error_field': [], 'error_msg': 'Current session is invalid. Try login again.'});
     }
 
-    let accessToken = await jwt.create.accessToken({'user_id': userId, 'role': role}, exp = '35m');
+    let accessToken = await jwt.create.accessToken({'user_id': result.id, 'role': result.role, 'name': result.name}, exp = '35m');
     refreshToken = await jwt.create.refreshToken();
 
     // access token expiration time: 30 mins
