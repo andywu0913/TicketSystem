@@ -20,8 +20,8 @@ router.get('/all', authentication, authorization(roles = [1]), userController.ge
 
 router.put('/', authentication, userController.updateInfo);
 
-router.put('/:user_id', authentication, authorization(roles = [1]), userController.updateInfoById);
-
 router.put('/password', authentication, userController.updatePassword);
+
+router.put('/:user_id', authentication, authorization(roles = [1]), userController.updateInfoById);
 
 module.exports = router;

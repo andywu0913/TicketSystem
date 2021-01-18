@@ -21,5 +21,15 @@
         "max-len": ["off"],
         "object-curly-newline": ["off"],
         "react/jsx-one-expression-per-line": ["off"]
+    },
+    "settings": {
+        "import/resolver": {
+            "alias": {
+                "map": [
+                  ["SRC", "./src/"]
+                ],
+                "extensions": [".js", ".jsx"]
+            }
+        }
     }
 }

@@ -78,7 +78,7 @@ class UserUpdateModal extends Component {
           <Modal.Body>
             <InputTextGroup label="Name" name="name" type="text" value={name} icon={<PersonBadge />} onChange={this.handleChange} />
             <InputTextGroup label="Email" name="email" type="email" value={email} icon={<EnvelopeFill />} onChange={this.handleChange} />
-            <InputSelectGroup label="Role" name="role" options={[{value: 1, text: 'Admin'}, {value: 2, text: 'Host'}, {value: 3, text: 'User'}]} value={role} icon={<KeyFill />} onChange={this.handleChange} />
+            <InputSelectGroup label="Role" name="role" options={[{ value: 1, text: 'Admin' }, { value: 2, text: 'Host' }, { value: 3, text: 'User' }]} value={role} icon={<KeyFill />} onChange={this.handleChange} />
           </Modal.Body>
           <Modal.Footer>
             <Button variant="primary" type="submit" disabled={!changed} block><PersonCheckFill />{' '}Update</Button>

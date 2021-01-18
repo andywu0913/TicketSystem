@@ -5,15 +5,15 @@ import Header from 'SRC/Header';
 import Footer from 'SRC/Footer';
 import PageNotFound from 'SRC/PageNotFound';
 import Home from 'SRC/Home';
-import Event from 'SRC/Event/Event';
-import User from 'SRC/User/User';
+import Event from 'SRC/Event';
+import Profile from 'SRC/User/Profile';
 import SignIn from 'SRC/User/SignIn';
 import SignUp from 'SRC/User/SignUp';
 import ManageUser from 'SRC/Manage/User';
 import ManageTicket from 'SRC/Manage/Ticket';
 
-import AuthRoute from './AuthRoute';
 import { setRenewTimer } from 'SRC/utils/jwt';
+import AuthRoute from './AuthRoute';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './style.css';
@@ -32,7 +32,7 @@ class App extends Component {
           <Switch>
             <Route path="/" exact component={Home} />
             <Route path="/event/:id" exact component={Event} />
-            <AuthRoute path="/user" exact allowRole={[1, 2, 3]} rejectToURL="/user/signin" component={User} />
+            <AuthRoute path="/user" exact allowRole={[1, 2, 3]} rejectToURL="/user/signin" component={Profile} />
             <AuthRoute path="/user/signin" exact allowRole={[-1]} rejectToURL="/user" component={SignIn} />
             <AuthRoute path="/user/signup" exact allowRole={[-1]} rejectToURL="/user" component={SignUp} />
             <AuthRoute path="/manage/user" exact allowRole={[1]} rejectToURL="/" component={ManageUser} />

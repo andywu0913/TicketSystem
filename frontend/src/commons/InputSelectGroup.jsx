@@ -3,12 +3,12 @@ import PropTypes from 'prop-types';
 import { Form, InputGroup } from 'react-bootstrap';
 
 function InputTextGroup(props) {
-  const { label, name, options, value, icon, readOnly, onChange } = props;
+  const { label, name, options, value, icon, disabled, onChange } = props;
   return (
     <Form.Group>
       <Form.Label>{label}</Form.Label>
       <InputGroup>
-        <Form.Control as="select" name={name} value={value} onChange={onChange} readOnly={readOnly}>
+        <Form.Control as="select" name={name} value={value} onChange={onChange} disabled={disabled}>
           {options.map((option) => <option key={option.value} value={option.value}>{option.text}</option>)}
         </Form.Control>
         <InputGroup.Append>

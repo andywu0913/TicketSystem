@@ -32,8 +32,7 @@ export function getExpiration() {
   if (exp === null || exp === 'null') {
     return null;
   }
-
-  return parseInt(exp);
+  return parseInt(exp, 10);
 }
 
 export function clearSaved() {
@@ -69,36 +68,38 @@ export function verifySaved() {
   return true;
 }
 
-export function setRenewTimer() {
-  let exp = getExpiration();
+export function renew(callback, ...params) {
+  const accessToken = getAccessToken();
+  const refreshToken = getRefreshToken();
 
+  Axios.post('http://localhost:3000/api/user/refresh', { refresh_token: refreshToken }, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  }).then((response) => {
+    const { data } = response.data;
+    saveAccessToken(data.access_token);
+    saveRefreshToken(data.refresh_token);
+    saveExpiration(data.expires_in);
+
+    if (callback) {
+      callback(...params);
+    }
+  }).catch((error) => {
+
+  });
+}
+
+export function setRenewTimer() {
+  const exp = getExpiration();
   if (!exp) {
     clearSaved();
     return;
   }
 
-  const renew = () => {
-    const accessToken = getAccessToken();
-    const refreshToken = getRefreshToken();
-
-    Axios.post('http://localhost:3000/api/user/refresh', { refresh_token: refreshToken }, {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    }).then((response) => {
-      const { data } = response.data;
-      saveAccessToken(data.access_token);
-      saveRefreshToken(data.refresh_token);
-      saveExpiration(data.expires_in);
-
-      exp = getExpiration();
-      setTimeout(renew, exp - new Date());
-    }).catch((error) => {
-
-    });
-  };
-
-  setTimeout(renew, exp - new Date());
+  setTimeout(renew, exp - new Date(), () => {
+    setInterval(renew, getExpiration() - new Date());
+  });
 }
 
 export function getUserId() {
@@ -140,6 +141,7 @@ export default {
   getExpiration,
   clearSaved,
   verifySaved,
+  renew,
   setRenewTimer,
   getUserId,
   getUserName,
