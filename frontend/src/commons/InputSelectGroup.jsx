@@ -25,7 +25,7 @@ InputTextGroup.propTypes = {
   options:  PropTypes.instanceOf(Array),
   value:    PropTypes.number,
   icon:     PropTypes.instanceOf(Object),
-  readOnly: PropTypes.bool,
+  disabled: PropTypes.bool,
   onChange: PropTypes.func,
 };
 
@@ -35,7 +35,7 @@ InputTextGroup.defaultProps = {
   options:  [],
   value:    '',
   icon:     null,
-  readOnly: false,
+  disabled: false,
   onChange: () => {},
 };
 

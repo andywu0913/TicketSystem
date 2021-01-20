@@ -53,7 +53,7 @@ export default class extends Component {
           </Col>
         </Row>
         <UsersList data={data} showUserUpdateModal={this.showUserUpdateModal} />
-        <UserUpdateModal show={showUserUpdateModal} userObj={userObj} hideModal={this.hideUserUpdateModal} loadData={this.loadData} />
+        <UserUpdateModal show={showUserUpdateModal} userObj={userObj} hideModal={this.hideUserUpdateModal} reloadData={this.loadData} />
       </Container>
     );
   }

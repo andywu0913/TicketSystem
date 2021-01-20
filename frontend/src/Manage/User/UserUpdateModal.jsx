@@ -46,8 +46,8 @@ class UserUpdateModal extends Component {
         Authorization: `Bearer ${accessToken}`,
       },
     }).then(() => {
-      const { loadData, hideModal } = this.props;
-      loadData();
+      const { reloadData, hideModal } = this.props;
+      reloadData();
       hideModal();
       Swal.fire({ icon: 'success', title: 'Success', showConfirmButton: false, timer: 1000 });
     }).catch((error) => {
@@ -93,14 +93,14 @@ UserUpdateModal.propTypes = {
   show: PropTypes.bool,
   userObj: PropTypes.instanceOf(Object),
   hideModal: PropTypes.func,
-  loadData: PropTypes.func,
+  reloadData: PropTypes.func,
 };
 
 UserUpdateModal.defaultProps = {
   show: false,
   userObj: {},
   hideModal: () => {},
-  loadData: () => {},
+  reloadData: () => {},
 };
 
 export default UserUpdateModal;
