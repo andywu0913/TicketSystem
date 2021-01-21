@@ -14,6 +14,11 @@ module.exports.getAllByEventId = async function(req, res, next) {
     let Session = sessionModel(req.mysql);
 
     let sessions = await Session.getAllByEventId(eventId);
+
+    await Promise.all(sessions.map(async function (session) {
+      let seats = await req.redis.hget(`session:${session.id}`, 'open_seats');
+      session.open_seats = seats === null ? null : parseInt(seats);
+    }));
     res.json({'successful': true, 'data': sessions, 'error_field': [], 'error_msg': ''});
   }
   catch(err) {
@@ -73,6 +78,25 @@ module.exports.create = async function(req, res, next) {
   catch(err) {
     res.status(500);
     res.json({'successful': false, 'data': {}, 'error_field': [], 'error_msg': err});
+  }
+};
+
+module.exports.getAvailableSeats = async function(req, res, next) {
+  try {
+    let sessionId = req.params.session_id;
+
+    if(!sessionId) {
+      res.status(400);
+      return res.json({'successful': false, 'data': [], 'error_field': ['session_id'], 'error_msg': 'Missing one or more required parameters.'});
+    }
+
+    let seats = await req.redis.hget(`session:${sessionId}`, 'open_seats');
+    seats = seats === null ? null : parseInt(seats);
+    res.json({'successful': true, 'data': {'open_seats' : seats}, 'error_field': [], 'error_msg': ''});
+  }
+  catch(err) {
+    res.status(500);
+    res.json({'successful': false, 'data': [], 'error_field': [], 'error_msg': err});
   }
 };
 

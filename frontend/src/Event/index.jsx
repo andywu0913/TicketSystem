@@ -1,37 +1,47 @@
 import React, { Component } from 'react';
-import { useParams } from 'react-router-dom';
-import { Card, Container, Row, Col, Image, Tab, Tabs } from 'react-bootstrap';
+import { Container, Row, Col, Image, Tab, Tabs } from 'react-bootstrap';
 import ContentLoader from 'react-content-loader';
 import Axios from 'axios';
 
-class Event extends Component {
+import SessionList from './SessionList';
+import BookTicketModal from './BookTicketModal';
+
+export default class extends Component {
   constructor(props) {
     super(props);
-    this.state = {};
+    this.showBootTicketModal = this.showBootTicketModal.bind(this);
+    this.hideBookTicketModal = this.hideBookTicketModal.bind(this);
+    this.state = { showBootTicketModal: false, sessionObj: null };
   }
 
   componentDidMount() {
     const self = this;
     const { id } = self.props.match.params;
     Axios.get(`http://localhost:3000/api/event/${id}`, {
-    })
-      .then((response) => {
-        const { data } = response.data;
-        self.setState({ ...data });
-        console.log(data);
-      })
-      .catch((error) => {
+    }).then((response) => {
+      const { data } = response.data;
+      self.setState({ ...data });
+    }).catch((error) => {
 
-      });
+    });
+  }
+
+  showBootTicketModal(sessionObj) {
+    this.setState({ showBootTicketModal: true, sessionObj });
+  }
+
+  hideBookTicketModal() {
+    this.setState({ showBootTicketModal: false, sessionObj: null });
   }
 
   render() {
+    const { id, name, description, showBootTicketModal, sessionObj } = this.state;
     return (
       <Container className="p-3">
         <Row>
           <Col>
-            {this.state.name
-              ? <h1 className="text-dark">{this.state.name}</h1>
+            {name
+              ? <h1 className="text-dark">{name}</h1>
               : (
                 <ContentLoader width="100%" height="40">
                   <rect x="0" y="0" rx="10" ry="10" width="80%" height="100%" />
@@ -47,13 +57,13 @@ class Event extends Component {
           <Col xs={12} md={8} lg={8} className="mb-4">
             <Row>
               <Col>
-                <Tabs>
-                  <Tab eventKey="session" title="Session" disabled>
-                    {this.state.name
-                      ? <p className="text-dark">12345678654sdaf;lajsdf a;sdlfj asd;fjasdflj asdfl;jk af as;lkdf sa;f </p>
+                <Tabs className="border-bottom-0">
+                  <Tab eventKey="session" title="Sessions" disabled>
+                    {id
+                      ? <SessionList eventId={id} bookTicket={this.showBootTicketModal} />
                       : (
-                        <ContentLoader width="100%" height="40">
-                          <rect x="0" y="0" rx="10" ry="10" width="80%" height="100%" />
+                        <ContentLoader width="100%" height="150">
+                          <rect x="0" y="0" rx="10" ry="10" width="100%" height="100%" />
                         </ContentLoader>
                       )}
                   </Tab>
@@ -72,8 +82,8 @@ class Event extends Component {
             </Row>
             <Row>
               <Col>
-                {this.state.description
-                  ? <div dangerouslySetInnerHTML={{ __html: this.state.description }} />
+                {description
+                  ? <div dangerouslySetInnerHTML={{ __html: description }} />
                   : (
                     <ContentLoader width="100%" height="150">
                       <rect x="0" y="0" rx="5" ry="50" width="95%" height="20" />
@@ -86,13 +96,8 @@ class Event extends Component {
             </Row>
           </Col>
         </Row>
+        <BookTicketModal show={showBootTicketModal} sessionObj={sessionObj} hideModal={this.hideBookTicketModal} />
       </Container>
     );
   }
 }
-
-function sessions() {
-  
-}
-
-export default Event;
