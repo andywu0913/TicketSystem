@@ -6,6 +6,7 @@ import { EaselFill, Check2 } from 'react-bootstrap-icons';
 import Axios from 'axios';
 import Swal from 'sweetalert2';
 
+import { verifySaved } from 'SRC/utils/jwt';
 import InputTextGroup from 'SRC/commons/InputTextGroup';
 
 import { getAccessToken } from 'SRC/utils/jwt';
@@ -23,7 +24,8 @@ class BookTicketModal extends Component {
       return { changed: null };
     }
     if (props.show && state.changed === null) {
-      return { ...props.sessionObj, changed: false };
+      const isVerified = verifySaved();
+      return { ...props.sessionObj, changed: false, isVerified };
     }
     return null;
   }
@@ -59,7 +61,7 @@ class BookTicketModal extends Component {
     if (!show) {
       return null;
     }
-    const { address, time, is_active, max_seats, open_seats, price, seat, changed, booked } = this.state;
+    const { address, time, open_seats: openSeats, price, seat, changed, isVerified, booked } = this.state;
     return (
       <Modal show={show} onHide={hideModal} size="md" centered>
         <Form onSubmit={this.handleSubmit}>
@@ -71,13 +73,14 @@ class BookTicketModal extends Component {
           <Modal.Body>
             <p>Time: {time}</p>
             <p>Price: {price}</p>
-            <p>Available seats left: {open_seats}</p>
+            <p>Available seats left: {openSeats}</p>
             <InputTextGroup label="Seat No" name="seat" type="number" value={seat} icon={<EaselFill />} onChange={this.handleChange} />
           </Modal.Body>
           <Modal.Footer>
             <Button variant="primary" type="submit" disabled={!changed} block><Check2 />{' '}Book</Button>
           </Modal.Footer>
         </Form>
+        {isVerified || <Redirect to="/user/signin" />}
         {booked && <Redirect to="/manage/ticket" />}
       </Modal>
     );
