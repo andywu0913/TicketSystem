@@ -56,8 +56,7 @@ module.exports.login = async function(req, res) {
     // refresh token expiration time: 10 hrs
 
     let expiresIn = new Date();
-    expiresIn.setDate(expiresIn.getHours() + 10);
-
+    expiresIn.setHours(expiresIn.getHours() + 10);
     let result = await User.updateRefreshToken(userId, refreshToken, expiresIn);
     if(result.affectedRows === 0)
       throw 'Fail to update new refresh token to the database.';
@@ -97,7 +96,7 @@ module.exports.refreshLoginToken = async function(req, res) {
     // refresh token expiration time: 10 hrs
 
     let expiresIn = new Date();
-    expiresIn.setDate(expiresIn.getHours() + 10);
+    expiresIn.setHours(expiresIn.getHours() + 10);
 
     result = await User.updateRefreshToken(userId, refreshToken, expiresIn);
     if(result.affectedRows === 0)
