@@ -22,6 +22,26 @@ module.exports.getMultipleByConstraints = async function(req, res, next) {
   }
 };
 
+module.exports.getMultipleByCreator = async function(req, res, next) {
+  try {
+    let creator = req.params.creator_uid;
+
+    if(isNaN(creator)) {
+      res.status(400);
+      return res.json({'successful': false, 'data': {}, 'error_field': ['creator_uid'], 'error_msg': 'One or more fields contain incorrect values.'});
+    }
+
+    let Event = eventModel(req.mysql);
+
+    let events = await Event.getMultipleByCreator(creator);
+    res.json({'successful': true, 'data': events, 'error_field': [], 'error_msg': ''});
+  }
+  catch(err) {
+    res.status(500);
+    res.json({'successful': false, 'data': [], 'error_field': [], 'error_msg': err});
+  }
+};
+
 module.exports.getById = async function(req, res, next) {
   try {
     let eventId = req.params.event_id;

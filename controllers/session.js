@@ -15,7 +15,7 @@ module.exports.getAllByEventId = async function(req, res, next) {
 
     let sessions = await Session.getAllByEventId(eventId);
 
-    await Promise.all(sessions.map(async function (session) {
+    await Promise.all(sessions.map(async function(session) {
       let seats = await req.redis.hget(`session:${session.id}`, 'open_seats');
       session.open_seats = seats === null ? null : parseInt(seats);
     }));
@@ -92,7 +92,7 @@ module.exports.getAvailableSeats = async function(req, res, next) {
 
     let seats = await req.redis.hget(`session:${sessionId}`, 'open_seats');
     seats = seats === null ? null : parseInt(seats);
-    res.json({'successful': true, 'data': {'open_seats' : seats}, 'error_field': [], 'error_msg': ''});
+    res.json({'successful': true, 'data': {'open_seats': seats}, 'error_field': [], 'error_msg': ''});
   }
   catch(err) {
     res.status(500);

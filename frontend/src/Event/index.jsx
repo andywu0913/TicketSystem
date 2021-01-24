@@ -52,7 +52,9 @@ export default class extends Component {
         </Row>
         <Row>
           <Col xs={12} md={4} lg={4} className="mb-4">
-            <Image src="https://static.tixcraft.com/images/activity/20_MAYDAY_8987933be02c14b4d8048f5fb91c1fab.jpg" rounded fluid />
+            <Image src="https://via.placeholder.com/300x200" className="mb-2" rounded fluid />
+            <Image src="https://via.placeholder.com/300x200" className="mb-2" rounded fluid />
+            <Image src="https://via.placeholder.com/300x200" className="mb-2" rounded fluid />
           </Col>
           <Col xs={12} md={8} lg={8} className="mb-4">
             <Row>
@@ -62,7 +64,7 @@ export default class extends Component {
                     {id
                       ? <SessionList eventId={id} bookTicket={this.showBootTicketModal} />
                       : (
-                        <ContentLoader width="100%" height="150">
+                        <ContentLoader width="100%" height="250">
                           <rect x="0" y="0" rx="10" ry="10" width="100%" height="100%" />
                         </ContentLoader>
                       )}

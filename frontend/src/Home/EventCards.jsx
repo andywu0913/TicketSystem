@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Card, Col } from 'react-bootstrap';
+import { Card, Carousel, Col } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 
 function EventCards(props) {
@@ -15,7 +15,17 @@ function EventCards(props) {
     return (
       <Col xs={12} md={6} lg={4} className="mb-4" key={id}>
         <Card className="h-100">
-          <Card.Img src="http://via.placeholder.com/300x180" width="100%" height="auto" />
+          <Carousel interval={2000}>
+            <Carousel.Item>
+              <img className="d-block w-100" src="https://via.placeholder.com/300x200" alt="" />
+            </Carousel.Item>
+            <Carousel.Item>
+              <img className="d-block w-100" src="https://via.placeholder.com/300x200" alt="" />
+            </Carousel.Item>
+            <Carousel.Item>
+              <img className="d-block w-100" src="https://via.placeholder.com/300x200" alt="" />
+            </Carousel.Item>
+          </Carousel>
           <Card.Body>
             <Link to={`/event/${id}`} className="text-reset">
               <Card.Title>{name}</Card.Title>
@@ -32,9 +42,7 @@ function EventCards(props) {
     );
   });
 
-  return (
-    <>{cards}</>
-  );
+  return <>{cards}</>;
 }
 
 EventCards.propTypes = {

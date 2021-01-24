@@ -74,21 +74,19 @@ class TicketUpdateModal extends Component {
         headers: {
           Authorization: `Bearer ${accessToken}`,
         },
-      })
-        .then((response) => {
-          const { reloadData, hideModal } = this.props;
-          reloadData();
-          hideModal();
-          Swal.fire({ icon: 'success', title: 'Success', showConfirmButton: false, timer: 1000 });
-        })
-        .catch((error) => {
-          if (error.response && error.response.data) {
-            const message = error.response.data.error_msg || '';
-            Swal.fire({ icon: 'error', title: 'Error', text: message });
-            return;
-          }
-          Swal.fire({ icon: 'error', title: 'Error', text: 'Unknown error.' });
-        });
+      }).then((response) => {
+        const { reloadData, hideModal } = this.props;
+        reloadData();
+        hideModal();
+        Swal.fire({ icon: 'success', title: 'Success', showConfirmButton: false, timer: 1000 });
+      }).catch((error) => {
+        if (error.response && error.response.data) {
+          const message = error.response.data.error_msg || '';
+          Swal.fire({ icon: 'error', title: 'Error', text: message });
+          return;
+        }
+        Swal.fire({ icon: 'error', title: 'Error', text: 'Unknown error.' });
+      });
     });
   }
 

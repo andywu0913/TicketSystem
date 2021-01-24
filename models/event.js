@@ -31,6 +31,15 @@ module.exports = function(dbConnection) {
 
       return rows;
     },
+    getMultipleByCreator: async function(creator) {
+      sql = 'SELECT `id`, `name`, `description`, `start_date`, `end_date`, `create_time` \
+             FROM `event` \
+             WHERE `creator_uid` = ? \
+             ORDER BY `id` DESC';
+      let [rows, fields] = await dbConnection.execute(sql, [creator]);
+
+      return rows;
+    },
     get: async function(id) {
       const sql = 'SELECT `id`, `name`, `description`, `start_date`, `end_date`, `creator_uid` \
                    FROM `event` \

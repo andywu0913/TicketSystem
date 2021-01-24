@@ -10,6 +10,9 @@ import Profile from 'SRC/User/Profile';
 import SignIn from 'SRC/User/SignIn';
 import SignUp from 'SRC/User/SignUp';
 import ManageUser from 'SRC/Manage/User';
+import ManageEvent from 'SRC/Manage/Event';
+import ManageEventCreate from 'SRC/Manage/Event/Create';
+import ManageEventUpdate from 'SRC/Manage/Event/Update';
 import ManageTicket from 'SRC/Manage/Ticket';
 
 import { setRenewTimer } from 'SRC/utils/jwt';
@@ -36,6 +39,9 @@ class App extends Component {
             <AuthRoute path="/user/signin" exact allowRole={[-1]} rejectToURL="/user" component={SignIn} />
             <AuthRoute path="/user/signup" exact allowRole={[-1]} rejectToURL="/user" component={SignUp} />
             <AuthRoute path="/manage/user" exact allowRole={[1]} rejectToURL="/" component={ManageUser} />
+            <AuthRoute path="/manage/event" exact allowRole={[1, 2]} rejectToURL="/" component={ManageEvent} />
+            <AuthRoute path="/manage/event/create" exact allowRole={[1, 2]} rejectToURL="/" component={ManageEventCreate} />
+            <AuthRoute path="/manage/event/:id" exact allowRole={[1, 2]} rejectToURL="/" component={ManageEventUpdate} />
             <AuthRoute path="/manage/ticket" exact allowRole={[1, 2, 3]} rejectToURL="/user" component={ManageTicket} />
             <Route component={PageNotFound} />
           </Switch>

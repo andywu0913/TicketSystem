@@ -10,6 +10,8 @@ router.get('/', eventController.getMultipleByConstraints);
 
 router.get('/:event_id', eventController.getById);
 
+router.get('/creator/:creator_uid', eventController.getMultipleByCreator);
+
 router.post('/', authentication, authorization(roles = [1, 2]), eventController.create);
 
 router.put('/:event_id', authentication, authorization(roles = [1, 2]), eventController.update);

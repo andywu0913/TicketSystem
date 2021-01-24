@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import { Card, Container, Row, Col, OverlayTrigger, Tooltip } from 'react-bootstrap';
+import { Card, Carousel, Container, Row, Col, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import { ClockFill, GearFill, GeoAltFill } from 'react-bootstrap-icons';
 
 function TicketCard(props) {
@@ -13,7 +13,17 @@ function TicketCard(props) {
           <Container>
             <Row>
               <Col sm={12} md={6} lg={3} className="pl-0 pr-0">
-                <img className="" src="http://via.placeholder.com/300x180" alt="" width="100%" height="auto" />
+                <Carousel interval={2000}>
+                  <Carousel.Item>
+                    <img className="d-block w-100" src="https://via.placeholder.com/300x200" alt="" />
+                  </Carousel.Item>
+                  <Carousel.Item>
+                    <img className="d-block w-100" src="https://via.placeholder.com/300x200" alt="" />
+                  </Carousel.Item>
+                  <Carousel.Item>
+                    <img className="d-block w-100" src="https://via.placeholder.com/300x200" alt="" />
+                  </Carousel.Item>
+                </Carousel>
               </Col>
               <Col sm={12} md={6} lg={4} className="pl-0 pr-0">
                 <Card.Body className="p-3">
