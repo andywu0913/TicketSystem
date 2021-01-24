@@ -51,12 +51,12 @@ export default class extends Component {
           </Col>
         </Row>
         <Row>
-          <Col xs={12} md={4} lg={4} className="mb-4">
+          <Col xs={12} md={4} lg={3} className="mb-4">
             <Image src="https://via.placeholder.com/300x200" className="mb-2" rounded fluid />
             <Image src="https://via.placeholder.com/300x200" className="mb-2" rounded fluid />
             <Image src="https://via.placeholder.com/300x200" className="mb-2" rounded fluid />
           </Col>
-          <Col xs={12} md={8} lg={8} className="mb-4">
+          <Col xs={12} md={8} lg={9} className="mb-4">
             <Row>
               <Col>
                 <Tabs className="border-bottom-0">

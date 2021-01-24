@@ -10,6 +10,7 @@ import EventCard from './EventCard';
 export default class extends Component {
   constructor(props) {
     super(props);
+    this.loadData = this.loadData.bind(this);
     this.state = { data: [] };
   }
 
@@ -39,7 +40,7 @@ export default class extends Component {
       startDate = new Date(startDate).toLocaleDateString();
       endDate = new Date(endDate).toLocaleDateString();
 
-      return <EventCard key={id} id={id} name={name} description={description} startDate={startDate} endDate={endDate} />;
+      return <EventCard key={id} id={id} name={name} description={description} startDate={startDate} endDate={endDate} reloadData={this.loadData} />;
     });
     return <>{events}</>;
   }

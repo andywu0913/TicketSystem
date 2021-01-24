@@ -36,9 +36,8 @@ class EventCard extends Component {
           Authorization: `Bearer ${accessToken}`,
         },
       }).then((response) => {
-        // const { reloadData, hideModal } = this.props;
-        // reloadData();
-        // hideModal();
+        const { reloadData } = this.props;
+        reloadData();
         Swal.fire({ icon: 'success', title: 'Success', showConfirmButton: false, timer: 1000 });
       }).catch((error) => {
         if (error.response && error.response.data) {
@@ -66,7 +65,7 @@ class EventCard extends Component {
               <EventCardSession show={tab === 'session'} id={id} />
             </Tab>
             <Tab eventKey="modify" title={<PencilSquare className="text-muted" size="1.25rem" />}>
-              {tab === 'modify' && <Redirect to={`/manage/event/${id}`} />}
+              {tab === 'modify' && <Redirect push to={`/manage/event/${id}`} />}
             </Tab>
             <Tab title={<TrashFill className="text-muted" size="1.25rem" onClick={() => this.handleDelete(id)} />}>
             </Tab>

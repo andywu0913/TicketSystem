@@ -80,7 +80,7 @@ module.exports.create = async function(req, res, next) {
 
     if(name.length > 50 || startDate.toString() === 'Invalid Date' || endDate.toString() === 'Invalid Date') {
       res.status(400);
-      return res.json({'successful': false, 'data': {}, 'error_field': ['name', 'start_date', 'end_date'], 'error_msg': 'One or more parameters contain incorrect values.'});
+      return res.json({'successful': false, 'data': {}, 'error_field': ['name', 'description', 'start_date', 'end_date'], 'error_msg': 'One or more parameters contain incorrect values.'});
     }
 
     let Event = eventModel(req.mysql);
