@@ -8,6 +8,7 @@ import Home from 'SRC/Home';
 import Event from 'SRC/Event';
 import Profile from 'SRC/User/Profile';
 import SignIn from 'SRC/User/SignIn';
+import SignInGitHub from 'SRC/User/SignIn/GitHub';
 import SignUp from 'SRC/User/SignUp';
 import ManageUser from 'SRC/Manage/User';
 import ManageEvent from 'SRC/Manage/Event';
@@ -37,6 +38,7 @@ class App extends Component {
             <Route path="/event/:id" exact component={Event} />
             <AuthRoute path="/user" exact allowRole={[1, 2, 3]} rejectToURL="/user/signin" component={Profile} />
             <AuthRoute path="/user/signin" exact allowRole={[-1]} rejectToURL="/user" component={SignIn} />
+            <AuthRoute path="/user/signin/github/callback" exact allowRole={[-1]} rejectToURL="/user" component={SignInGitHub} />
             <AuthRoute path="/user/signup" exact allowRole={[-1]} rejectToURL="/user" component={SignUp} />
             <AuthRoute path="/manage/user" exact allowRole={[1]} rejectToURL="/" component={ManageUser} />
             <AuthRoute path="/manage/event" exact allowRole={[1, 2]} rejectToURL="/" component={ManageEvent} />

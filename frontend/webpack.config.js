@@ -2,39 +2,39 @@ const path = require('path');
 const htmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
-  entry : './src/index.jsx',
-  output : {
+  entry: './src/index.jsx',
+  output: {
     path: path.join(__dirname, '/build'),
-    filename : 'bundle.[hash].js',
-    publicPath: '/'
+    filename: 'bundle.[hash].js',
+    publicPath: '/',
   },
   resolve: {
     modules: [
-        'node_modules',
-        path.resolve(__dirname + '/src')
+      'node_modules',
+      path.resolve(__dirname, '/src'),
     ],
     alias: {
-        SRC: path.resolve(__dirname + '/src')
-    }
+      SRC: path.resolve(__dirname, '/src'),
+    },
   },
   module: {
     rules: [
       {
         test: /\.jsx?$/,
         resolve: {
-          extensions: ['.js', '.jsx']
+          extensions: ['.js', '.jsx'],
         },
         exclude: /node_modules/,
         use: {
-          loader: 'babel-loader'
-        }
+          loader: 'babel-loader',
+        },
       },
       {
         test: /\.css$/,
         use: [
           'style-loader',
-          'css-loader'
-        ]
+          'css-loader',
+        ],
       },
       {
         test: /\.(png|jp(e*)g|svg|gif)$/,
@@ -46,15 +46,18 @@ module.exports = {
             },
           },
         ],
-      }
-    ]
+      },
+    ],
+  },
+  externals: {
+    OAuth: JSON.stringify(require('./config/oauth.js')),
   },
   devServer: {
     historyApiFallback: true,
   },
   plugins: [
     new htmlWebpackPlugin({
-      template: './index.html'
-    })
-  ]
-}
+      template: './index.html',
+    }),
+  ],
+};
