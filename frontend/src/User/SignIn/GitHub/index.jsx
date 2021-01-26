@@ -14,6 +14,7 @@ export default function GitHub() {
   if (error) {
     Swal.fire({ icon: 'error', title: 'Error', text: 'Fail to sign in with GitHub.' })
       .then(() => history.replace('/user/signin'));
+    return null;
   }
 
   const code = query.get('code');

@@ -97,6 +97,12 @@ module.exports = function(dbConnection) {
       let [result, _] = await dbConnection.execute(sql, [passwordNew, id]);
 
       return result;
+    },
+    revokeRefreshToken: async function(id) {
+      const sql = 'UPDATE `user` SET `refresh_token` = "", `token_expires_in` = NULL WHERE `id` = ?';
+      let [result, _] = await dbConnection.execute(sql, [id]);
+
+      return result;
     }
   };
 };

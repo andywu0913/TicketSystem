@@ -199,8 +199,15 @@ module.exports.refreshLoginToken = async function(req, res) {
   }
 };
 
-module.exports.logout = function(req, res) {
-  // TODO: delete refreshToken from database
+module.exports.logout = async function(req, res) {
+  let userId = req.user_id;
+
+  let User = userModel(req.mysql);
+
+  let result = await User.revokeRefreshToken(userId);
+  if(result.affectedRows === 0)
+    throw 'Fail to revoke refresh token.';
+
   res.json({'successful': true, 'data': [], 'error_field': [], 'error_msg': ''});
 };
 
@@ -320,7 +327,7 @@ module.exports.updateInfoById = async function(req, res) {
   try {
     let name   = req.body.name;
     let email  = req.body.email;
-    let role  = req.body.role;
+    let role   = req.body.role;
     let userId = req.params.user_id;
 
     if(!name || !email || !role || !userId) {

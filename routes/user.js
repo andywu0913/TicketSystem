@@ -12,7 +12,7 @@ router.post('/login/github', userController.loginWithGitHub);
 
 router.post('/refresh', authentication(ignoreExpiration = true), userController.refreshLoginToken);
 
-router.all('/logout', userController.logout);
+router.get('/logout', authentication(ignoreExpiration = true), userController.logout);
 
 router.post('/', userController.create);
 
