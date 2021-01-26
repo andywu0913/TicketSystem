@@ -46,24 +46,8 @@ export function verifySaved() {
   const refreshToken = getRefreshToken();
   const expiresIn = getExpiration();
 
-  if (!accessToken || !refreshToken || !expiresIn) {
-    clearSaved();
+  if (!accessToken || !refreshToken || !expiresIn)
     return false;
-  }
-
-  if (expiresIn === null || (expiresIn - new Date() < 0)) {
-    clearSaved();
-    return false;
-  }
-
-  const jwt = JWTDecode(accessToken);
-  const iat = new Date(jwt.iat * 1000);
-  const exp = new Date(jwt.exp * 1000);
-  const now = new Date();
-  if (now < iat || now > exp) {
-    clearSaved();
-    return false;
-  }
 
   return true;
 }
@@ -86,16 +70,15 @@ export function renew(callback, ...params) {
       callback(...params);
     }
   }).catch((error) => {
-
+    clearSaved();
+    window.location.reload();
   });
 }
 
 export function setRenewTimer() {
   const exp = getExpiration();
-  if (!exp) {
-    clearSaved();
+  if (!exp)
     return;
-  }
 
   setTimeout(renew, exp - new Date(), () => {
     setInterval(renew, getExpiration() - new Date());
