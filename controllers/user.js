@@ -1,8 +1,11 @@
+const axios = require('axios');
 const crypto = require('crypto');
 
 const userModel = require(__projdir + '/models/user');
 
 const jwt = require(__projdir + '/utils/jwt');
+
+const oauth = require(__projdir + '/config/oauth');
 
 function hashPassword(password) {
   return new Promise(function(resolve, reject) {
@@ -42,6 +45,92 @@ module.exports.login = async function(req, res) {
     if(Object.keys(loginInfo).length === 0 || !await verifyPassword(password, loginInfo.password)) {
       res.status(401);
       return res.json({'successful': false, 'data': {}, 'error_field': ['uname', 'password'], 'error_msg': 'Either username or password is incorrect.'});
+    }
+
+    let userId = loginInfo.id;
+    let role   = loginInfo.role;
+    let name   = loginInfo.name;
+
+    let accessToken = await jwt.create.accessToken({'user_id': userId, 'role': role, 'name': name}, exp = '35m');
+    let refreshToken = await jwt.create.refreshToken();
+
+    // access token expiration time: 30 mins
+    // access token expiration tolerance time: 5 mins
+    // refresh token expiration time: 10 hrs
+
+    let expiresIn = new Date();
+    expiresIn.setHours(expiresIn.getHours() + 10);
+    let result = await User.updateRefreshToken(userId, refreshToken, expiresIn);
+    if(result.affectedRows === 0)
+      throw 'Fail to update new refresh token to the database.';
+
+    res.json({'successful': true, 'data': {'access_token': accessToken, 'expires_in': [30 * 60, 'sec'], 'refresh_token': refreshToken}, 'error_field': [], 'error_msg': ''});
+  }
+  catch(err) {
+    res.status(500);
+    res.json({'successful': false, 'data': {}, 'error_field': [], 'error_msg': err});
+  }
+};
+
+module.exports.loginWithGitHub = async function(req, res) {
+  try {
+    let code = req.body.code;
+
+    if(!code) {
+      res.status(400);
+      return res.json({'successful': false, 'data': {}, 'error_field': ['code'], 'error_msg': 'Missing one or more required parameters.'});
+    }
+
+    let exchangeAccessTokenURL = oauth.GitHub.exchangeAccessTokenURL;
+    let clientId = oauth.GitHub.clientId;
+    let clientSecret = oauth.GitHub.clientSecret;
+
+    let response1 = await axios.post(exchangeAccessTokenURL, {'client_id': clientId, 'client_secret': clientSecret, 'code': code}, {'headers': {'Accept': 'application/json'}});
+    if(response1.status !== 200)
+      throw 'Fail to obtain access token from GitHub Server.';
+
+    let requestUserResourceURL = oauth.GitHub.requestUserResourceURL;
+    let tokenType = response1.data.token_type;
+    let token = response1.data.access_token;
+
+    let response2 = await axios.get(requestUserResourceURL, {'headers': {'Authorization': `${tokenType} ${token}`, 'Accept': 'application/json'}});
+    if(response2.status !== 200)
+      throw 'Fail to obtain user info from GitHub server.';
+
+    let userInfo = response2.data;
+
+    let User = userModel(req.mysql);
+
+    // compare db user info
+    let loginInfo = await User.getGitHubLoginInfo(userInfo.id);
+    if(Object.keys(loginInfo).length === 0) {
+      let requestUserEmailURL = oauth.GitHub.requestUserEmailURL;
+      let response3 = await axios.get(requestUserEmailURL, {'headers': {'Authorization': `${tokenType} ${token}`, 'Accept': 'application/json'}});
+      let email = response3.data.filter((e) => e.primary)[0].email;
+
+      let connection = await req.mysql.getConnection();
+      User = userModel(connection);
+      await connection.beginTransaction();
+      try {
+        let result1 = await User.create(`github:${userInfo.login}-${userInfo.id}`, `${tokenType}:${token}`, 3, userInfo.name, email);
+        if(result1.affectedRows === 0)
+          throw 'Fail to add user in the database.';
+
+        let result2 = await User.linkWithGitHub(result1.insertId, userInfo.id);
+        if(result2.affectedRows === 0)
+          throw 'Fail to link user with GitHub in the database.';
+
+        await connection.commit();
+
+        loginInfo = await User.getGitHubLoginInfo(userInfo.id);
+      }
+      catch(err) {
+        await connection.rollback();
+        throw err;
+      }
+      finally {
+        connection.release();
+      }
     }
 
     let userId = loginInfo.id;

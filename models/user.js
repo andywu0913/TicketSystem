@@ -7,6 +7,13 @@ module.exports = function(dbConnection) {
 
       return result;
     },
+    linkWithGitHub: async function(id, gid) {
+      const sql = 'INSERT INTO `user_github` (`id`, `github_id`) \
+                   VALUES (?, ?)';
+      let [result, _] = await dbConnection.execute(sql, [id, gid]);
+
+      return result;
+    },
     getInfo: async function(id) {
       const sql = 'SELECT `user`.`id`, `uname`, `user`.`name`, `email`, `role`, `role`.`name` AS "rname" \
                    FROM `user` \
@@ -67,6 +74,18 @@ module.exports = function(dbConnection) {
                    FROM `user` \
                    WHERE `uname` = ?';
       let [rows, fields] = await dbConnection.execute(sql, [uname]);
+
+      if(rows.length === 0)
+        return {};
+
+      return rows[0];
+    },
+    getGitHubLoginInfo: async function(id) {
+      const sql = 'SELECT `user`.`id`, `github_id`, `uname`, `role`, `name` \
+                   FROM `user_github` \
+                   LEFT JOIN `user` ON `user_github`.`id` = `user`.`id` \
+                   WHERE `github_id` = ?';
+      let [rows, fields] = await dbConnection.execute(sql, [id]);
 
       if(rows.length === 0)
         return {};

@@ -23,9 +23,9 @@ module.exports.create = {
   }
 };
 
-module.exports.decode = function(token) {
+module.exports.decode = function(token, ignoreExpiration) {
   return new Promise(function(resolve, reject) {
-    jwt.verify(token, secret, function(err, payload) {
+    jwt.verify(token, secret, {'ignoreExpiration': ignoreExpiration}, function(err, payload) {
       if(err)
         // TokenExpiredError
         // JsonWebTokenError

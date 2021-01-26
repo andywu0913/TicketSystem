@@ -8,14 +8,14 @@ const sessionController = require(__projdir + '/controllers/session');
 
 router.get('/', sessionController.getAllByEventId);
 
-router.post('/', authentication, authorization(roles = [1, 2]), sessionController.create);
+router.post('/', authentication(), authorization(roles = [1, 2]), sessionController.create);
 
 router.get('/:session_id/seats', sessionController.getAvailableSeats);
 
-router.post('/:session_id/activation', authentication, authorization(roles = [1, 2]), sessionController.activation);
+router.post('/:session_id/activation', authentication(), authorization(roles = [1, 2]), sessionController.activation);
 
-router.put('/:session_id', authentication, authorization(roles = [1, 2]), sessionController.update);
+router.put('/:session_id', authentication(), authorization(roles = [1, 2]), sessionController.update);
 
-router.delete('/:session_id', authentication, authorization(roles = [1, 2]), sessionController.delete);
+router.delete('/:session_id', authentication(), authorization(roles = [1, 2]), sessionController.delete);
 
 module.exports = router;

@@ -8,20 +8,22 @@ const userController = require(__projdir + '/controllers/user');
 
 router.post('/login', userController.login);
 
-router.post('/refresh', authentication, userController.refreshLoginToken);
+router.post('/login/github', userController.loginWithGitHub);
+
+router.post('/refresh', authentication(ignoreExpiration = true), userController.refreshLoginToken);
 
 router.all('/logout', userController.logout);
 
 router.post('/', userController.create);
 
-router.get('/', authentication, userController.get);
+router.get('/', authentication(), userController.get);
 
-router.get('/all', authentication, authorization(roles = [1]), userController.getAll);
+router.get('/all', authentication(), authorization(roles = [1]), userController.getAll);
 
-router.put('/', authentication, userController.updateInfo);
+router.put('/', authentication(), userController.updateInfo);
 
-router.put('/password', authentication, userController.updatePassword);
+router.put('/password', authentication(), userController.updatePassword);
 
-router.put('/:user_id', authentication, authorization(roles = [1]), userController.updateInfoById);
+router.put('/:user_id', authentication(), authorization(roles = [1]), userController.updateInfoById);
 
 module.exports = router;

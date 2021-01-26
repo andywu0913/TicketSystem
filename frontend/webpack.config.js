@@ -50,7 +50,7 @@ module.exports = {
     ],
   },
   externals: {
-    OAuth: JSON.stringify(require('./config/oauth.js')),
+    OAuth: JSON.stringify(require('./config/oauth')),
   },
   devServer: {
     historyApiFallback: true,
