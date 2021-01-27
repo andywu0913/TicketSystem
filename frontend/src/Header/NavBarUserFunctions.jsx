@@ -1,16 +1,16 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import PropTypes from 'prop-types';
 import { Nav, NavDropdown } from 'react-bootstrap';
 import { Collection, PeopleFill, PersonCircle, Wallet2 } from 'react-bootstrap-icons';
+import PropTypes from 'prop-types';
 
-function NavBarUserFunctions(props) {
+export default function NavBarUserFunctions(props) {
   const { name, role, signout } = props;
   return (
     <Nav>
-      { [1].includes(role) ? <ManageUsers /> : null }
-      { [1, 2].includes(role) ? <ManageEvents /> : null }
-      { [1, 2, 3].includes(role) ? <ManageTickets /> : null }
+      { [1].includes(role) && <ManageUsers /> }
+      { [1, 2].includes(role) && <ManageEvents /> }
+      { [1, 2, 3].includes(role) && <ManageTickets /> }
       <NavDropdown title={<span><PersonCircle className="mr-1" />{name}</span>} alignRight>
         <Nav.Item className="pl-3 pr-3">
           <Nav.Link as={Link} href="#" to="/user">Profile</Nav.Link>
@@ -65,4 +65,3 @@ NavBarUserFunctions.defaultProps = {
   signout: () => {},
 };
 
-export default NavBarUserFunctions;

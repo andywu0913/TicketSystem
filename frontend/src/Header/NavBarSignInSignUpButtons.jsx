@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Button, Nav } from 'react-bootstrap';
 
-function NavBarSignInSignUpButtons() {
+export default function NavBarSignInSignUpButtons() {
   return (
     <Nav>
       <Nav.Item>
@@ -18,5 +18,3 @@ function NavBarSignInSignUpButtons() {
     </Nav>
   );
 }
-
-export default NavBarSignInSignUpButtons;

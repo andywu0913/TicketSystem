@@ -22,7 +22,7 @@ import AuthRoute from './AuthRoute';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './style.css';
 
-class App extends Component {
+export default class App extends Component {
   constructor(props) {
     super(props);
     setRenewTimer();
@@ -53,5 +53,3 @@ class App extends Component {
     );
   }
 }
-
-export default App;

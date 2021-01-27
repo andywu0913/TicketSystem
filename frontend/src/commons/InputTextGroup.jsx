@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Form, InputGroup } from 'react-bootstrap';
 
-function InputTextGroup(props) {
+export default function InputTextGroup(props) {
   const { label, name, type, value, icon, onChange, onBlur, isValid, isInvalid, errorMsg, placeholder, readOnly } = props;
   return (
     <Form.Group>
@@ -55,5 +55,3 @@ InputTextGroup.defaultProps = {
   placeholder: null,
   readOnly:    false,
 };
-
-export default InputTextGroup;

@@ -1,5 +1,7 @@
-import Axios from 'axios';
+import axios from 'axios';
 import JWTDecode from 'jwt-decode';
+
+import BackendURL from 'BackendURL';
 
 const ACCESS_TOKEN = 'access_token';
 const REFRESH_TOKEN = 'refresh_token';
@@ -46,8 +48,9 @@ export function verifySaved() {
   const refreshToken = getRefreshToken();
   const expiresIn = getExpiration();
 
-  if (!accessToken || !refreshToken || !expiresIn)
+  if (!accessToken || !refreshToken || !expiresIn) {
     return false;
+  }
 
   return true;
 }
@@ -56,7 +59,7 @@ export function renew(callback, ...params) {
   const accessToken = getAccessToken();
   const refreshToken = getRefreshToken();
 
-  Axios.post('http://localhost:3000/api/user/refresh', { refresh_token: refreshToken }, {
+  axios.post(`${BackendURL}/user/refresh`, { refresh_token: refreshToken }, {
     headers: {
       Authorization: `Bearer ${accessToken}`,
     },
@@ -69,7 +72,7 @@ export function renew(callback, ...params) {
     if (callback) {
       callback(...params);
     }
-  }).catch((error) => {
+  }).catch(() => {
     clearSaved();
     window.location.reload();
   });
@@ -77,8 +80,9 @@ export function renew(callback, ...params) {
 
 export function setRenewTimer() {
   const exp = getExpiration();
-  if (!exp)
+  if (!exp) {
     return;
+  }
 
   setTimeout(renew, exp - new Date(), () => {
     setInterval(renew, getExpiration() - new Date());

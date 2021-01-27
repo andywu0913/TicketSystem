@@ -1,42 +1,45 @@
-import React, { Component } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Container, Row, Col } from 'react-bootstrap';
-import Axios from 'axios';
+import axios from 'axios';
+import swal from 'sweetalert2';
+
+import BackendURL from 'BackendURL';
 
 import DefaultLoadingPlaceholder from './DefaultLoadingPlaceholder';
 import EventCards from './EventCards';
 
-export default class extends Component {
-  constructor(props) {
-    super(props);
-    this.state = { data: [] };
-  }
+export default function Home() {
+  const [data, setData] = useState([]);
 
-  componentDidMount() {
-    const self = this;
-    Axios.get('http://localhost:3000/api/event', {
-    }).then((response) => {
-      self.setState({ data: response.data.data });
-    }).catch((error) => {
+  useEffect(() => {
+    axios.get(`${BackendURL}/event`)
+      .then((response) => {
+        const { data } = response.data;
+        setData(data);
+      })
+      .catch((error) => {
+        if (error.response && error.response.data) {
+          const { error_msg: message = '' } = error.response.data;
+          swal.fire({ icon: 'error', title: 'Error', text: message });
+          return;
+        }
+        swal.fire({ icon: 'error', title: 'Error', text: 'Unknown error.' });
+      });
+  }, []);
 
-    });
-  }
-
-  render() {
-    const { data } = this.state;
-    return (
-      <Container className="p-3">
-        <Row>
-          <Col>
-            <h1 className="text-dark">Latest</h1>
-            <hr />
-          </Col>
-        </Row>
-        <Row>
-          {data.length > 0
-            ? <EventCards data={data} />
-            : <DefaultLoadingPlaceholder nums={9} />}
-        </Row>
-      </Container>
-    );
-  }
+  return (
+    <Container className="p-3">
+      <Row>
+        <Col>
+          <h1 className="text-dark">Latest</h1>
+          <hr />
+        </Col>
+      </Row>
+      <Row>
+        {data.length > 0
+          ? <EventCards data={data} />
+          : <DefaultLoadingPlaceholder nums={9} />}
+      </Row>
+    </Container>
+  );
 }

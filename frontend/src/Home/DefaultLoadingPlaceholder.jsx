@@ -1,9 +1,9 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import { Card, Col } from 'react-bootstrap';
 import ContentLoader from 'react-content-loader';
+import PropTypes from 'prop-types';
 
-function DefaultLoadingPlaceholder(props) {
+export default function DefaultLoadingPlaceholder(props) {
   const { nums } = props;
   const cards = Array.from(Array(nums).keys()).map((key) => (
     <Col xs={12} md={6} lg={4} className="mb-4" key={key}>
@@ -29,5 +29,3 @@ DefaultLoadingPlaceholder.propTypes = {
 DefaultLoadingPlaceholder.defaultProps = {
   nums: 10,
 };
-
-export default DefaultLoadingPlaceholder;

@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Form, InputGroup } from 'react-bootstrap';
 
-function InputTextGroup(props) {
+export default function InputTextGroup(props) {
   const { label, name, options, value, icon, disabled, onChange } = props;
   return (
     <Form.Group>
@@ -38,5 +38,3 @@ InputTextGroup.defaultProps = {
   disabled: false,
   onChange: () => {},
 };
-
-export default InputTextGroup;

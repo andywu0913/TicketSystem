@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { Card, Carousel, Col } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 
-function EventCards(props) {
+export default function EventCards(props) {
   const { data } = props;
 
   const cards = data.map((event) => {
@@ -52,5 +52,3 @@ EventCards.propTypes = {
 EventCards.defaultProps = {
   data: [],
 };
-
-export default EventCards;
