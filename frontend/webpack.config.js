@@ -1,7 +1,7 @@
 const path = require('path');
 const htmlWebpackPlugin = require('html-webpack-plugin');
 
-module.exports = {
+module.exports = (env, argv) => ({
   entry: './src/index.jsx',
   output: {
     path: path.join(__dirname, '/build'),
@@ -51,6 +51,7 @@ module.exports = {
   },
   externals: {
     OAuth: JSON.stringify(require('./config/oauth')),
+    BackendURL: JSON.stringify(require('./config/backend_api')[argv.mode]),
   },
   devServer: {
     historyApiFallback: true,
@@ -60,4 +61,4 @@ module.exports = {
       template: './index.html',
     }),
   ],
-};
+});

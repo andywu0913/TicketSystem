@@ -1,32 +1,52 @@
-import React, { Component } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Col, Container, Row, Tab, Tabs } from 'react-bootstrap';
+import axios from 'axios';
+import swal from 'sweetalert2';
 
-import UpdatePasswordTab from './UpdatePasswordTab';
+import BackendURL from 'BackendURL';
+
+import { getAccessToken } from 'SRC/utils/jwt';
+
 import UpdateProfileTab from './UpdateProfileTab';
+import UpdatePasswordTab from './UpdatePasswordTab';
 
-export default class extends Component {
-  constructor(props) {
-    super(props);
-    this.state = { tab: 'profile' };
-  }
+export default function Profile() {
+  const [tab, setTab] = useState('profile');
+  const [data, setData] = useState({ uname: '', name: '', email: '', rname: '' });
 
-  render() {
-    const { tab } = this.state;
-    return (
-      <Container className="align-self-center mt-3 mb-3">
-        <Row className="justify-content-center">
-          <Col xs sm={8} md={6} lg={5} xl={4}>
-            <Tabs activeKey={tab} onSelect={(tab) => this.setState({ tab })} className="border-bottom-0">
-              <Tab eventKey="profile" title="Profile">
-                <UpdateProfileTab />
-              </Tab>
-              <Tab eventKey="password" title="Password">
-                <UpdatePasswordTab />
-              </Tab>
-            </Tabs>
-          </Col>
-        </Row>
-      </Container>
-    );
-  }
+  useEffect(() => {
+    swal.showLoading();
+    const accessToken = getAccessToken();
+    axios.get(`${BackendURL}/user`, { headers: { Authorization: `Bearer ${accessToken}` } })
+      .then((response) => {
+        const { data } = response.data;
+        setData(data);
+        swal.close();
+      })
+      .catch((error) => {
+        if (error.response && error.response.data) {
+          const { error_msg: message = '' } = error.response.data;
+          swal.fire({ icon: 'error', title: 'Error', text: message });
+          return;
+        }
+        swal.fire({ icon: 'error', title: 'Error', text: 'Unknown error.' });
+      });
+  }, []);
+
+  return (
+    <Container className="align-self-center mt-3 mb-3">
+      <Row className="justify-content-center">
+        <Col xs sm={8} md={6} lg={5} xl={4}>
+          <Tabs activeKey={tab} onSelect={(tab) => setTab(tab)} className="border-bottom-0">
+            <Tab eventKey="profile" title="Profile">
+              <UpdateProfileTab user={data} />
+            </Tab>
+            <Tab eventKey="password" title="Password">
+              <UpdatePasswordTab allowUpdate={!data.github_id} />
+            </Tab>
+          </Tabs>
+        </Col>
+      </Row>
+    </Container>
+  );
 }

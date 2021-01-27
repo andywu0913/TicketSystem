@@ -1,70 +1,105 @@
-import React, { Component } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button, Card, Form } from 'react-bootstrap';
 import { PersonCheckFill, LockFill } from 'react-bootstrap-icons';
-import Axios from 'axios';
-import Swal from 'sweetalert2';
+import PropTypes from 'prop-types';
+import { Formik } from 'formik';
+import axios from 'axios';
+import swal from 'sweetalert2';
+
+import BackendURL from 'BackendURL';
 
 import { getAccessToken } from 'SRC/utils/jwt';
 
 import InputTextGroup from 'SRC/commons/InputTextGroup';
 
-export default class UpdatePasswordTab extends Component {
-  constructor(props) {
-    super(props);
-    this.handleChange = this.handleChange.bind(this);
-    this.handleSubmit = this.handleSubmit.bind(this);
-    this.state = { password: '', passwordNew: '', passwordNewConfirm: '' };
-  }
+export default function UpdatePasswordTab(props) {
+  const [allowUpdate, setAllowUpdate] = useState(true);
 
-  handleChange(event) {
-    const { name } = event.target;
-    const val = event.target.value;
-    this.setState({ [name]: val });
-  }
+  useEffect(() => {
+    setAllowUpdate(props.allowUpdate);
+  }, [props]);
 
-  handleSubmit(event) {
-    event.preventDefault();
-    const { password, passwordNew, passwordNewConfirm } = this.state;
-    if (passwordNew !== passwordNewConfirm) {
-      Swal.fire({ icon: 'error', title: 'Error', text: 'Your confirm new password does not match your new password.' });
-      return;
-    }
-
-    const self = this;
-    const accessToken = getAccessToken();
-    Axios.put('http://localhost:3000/api/user/password', { password_current: password, password_new: passwordNew }, { headers: {
-      Authorization: `Bearer ${accessToken}`,
-    } })
-      .then((response) => {
-        Swal.fire({ icon: 'success', title: 'Success', showConfirmButton: false, timer: 1000 })
-          .then(() => window.location.reload());
-      })
-      .catch((error) => {
-        if (error.response && error.response.data) {
-          const message = error.response.data.error_msg || '';
-          Swal.fire({ icon: 'error', title: 'Error', text: message });
-          return;
-        }
-        Swal.fire({ icon: 'error', title: 'Error', text: 'Unknown error.' });
-      });
-  }
-
-  render() {
-    const { password, passwordNew, passwordNewConfirm } = this.state;
-    return (
-      <Card>
-        <Card.Body>
-          <Card.Text className="text-center text-secondary">Update Password</Card.Text>
-          <Form onSubmit={this.handleSubmit}>
-            <InputTextGroup label="Current Password" name="password" type="password" value={password} icon={<LockFill />} onChange={this.handleChange} />
-            <hr />
-            <InputTextGroup label="New Password" name="passwordNew" type="password" value={passwordNew} icon={<LockFill />} onChange={this.handleChange} />
-            <InputTextGroup label="Confirm New Password" name="passwordNewConfirm" type="password" value={passwordNewConfirm} icon={<LockFill />} onChange={this.handleChange} />
-            <br />
-            <Button variant="primary" type="submit" block><PersonCheckFill />{' '}Update</Button>
-          </Form>
-        </Card.Body>
-      </Card>
-    );
-  }
+  return (
+    <Card>
+      <Card.Body>
+        <Card.Text className="text-center text-secondary">Update Password</Card.Text>
+        <Formik
+          initialValues={{ password: '', passwordNew: '', passwordNewConfirm: '' }}
+          validate={allowUpdate ? handleValidation : null}
+          onSubmit={handleUpdate}
+          enableReinitialize
+        >
+          {({
+            values,
+            errors,
+            touched,
+            handleChange,
+            handleBlur,
+            handleSubmit,
+            dirty,
+            isSubmitting,
+          }) => (
+            <Form noValidate onSubmit={handleSubmit}>
+              <InputTextGroup label="Current Password" name="password" type="password" value={values.password} icon={<LockFill />} onChange={handleChange} onBlur={handleBlur} isInvalid={touched.password && !!errors.password} errorMsg={errors.password} readOnly={!allowUpdate} />
+              <hr />
+              <InputTextGroup label="New Password" name="passwordNew" type="password" value={values.passwordNew} icon={<LockFill />} onChange={handleChange} onBlur={handleBlur} isInvalid={touched.passwordNew && touched.passwordNewConfirm && !!errors.passwordNew} errorMsg={errors.passwordNew} readOnly={!allowUpdate} />
+              <InputTextGroup label="Confirm New Password" name="passwordNewConfirm" type="password" value={values.passwordNewConfirm} icon={<LockFill />} onChange={handleChange} onBlur={handleBlur} isInvalid={touched.passwordNew && touched.passwordNewConfirm && !!errors.passwordNewConfirm} errorMsg={errors.passwordNewConfirm} readOnly={!allowUpdate} />
+              <br />
+              <Button variant="primary" type="submit" disabled={!dirty || isSubmitting} block><PersonCheckFill />{' '}Update</Button>
+            </Form>
+          )}
+        </Formik>
+      </Card.Body>
+    </Card>
+  );
 }
+
+function handleValidation(values) {
+  const errors = {};
+
+  if (!values.password) errors.password = 'Required';
+
+  if (!values.passwordNew) errors.passwordNew = 'Required';
+  else if (values.passwordNew.trim().length < 4) errors.passwordNew = 'Min length is 4 characters';
+
+  if (!values.passwordNewConfirm) errors.passwordNewConfirm = 'Required';
+  else if (values.passwordNewConfirm.trim().length < 4) errors.passwordNewConfirm = 'Min length is 4 characters';
+
+  if (values.passwordNew !== values.passwordNewConfirm) errors.passwordNew = errors.passwordNewConfirm = 'Both not matching';
+
+  return errors;
+}
+
+function handleUpdate(values, { resetForm, setFieldError }) {
+  swal.showLoading();
+  const accessToken = getAccessToken();
+  axios.put(`${BackendURL}/user/password`, { password_current: values.password, password_new: values.passwordNew }, { headers: { Authorization: `Bearer ${accessToken}` } })
+    .then(() => {
+      resetForm();
+      swal.fire({ icon: 'success', title: 'Success', showConfirmButton: false, timer: 1000 });
+    })
+    .catch((error) => {
+      if (error.response && error.response.data) {
+        const { error_msg: message = '', error_field: fields } = error.response.data;
+
+        if (fields.includes('password_current')) {
+          setFieldError('password', message);
+        }
+        if (fields.includes('password_new')) {
+          setFieldError('passwordNew', message);
+          setFieldError('passwordNewConfirm', message);
+        }
+        swal.fire({ icon: 'error', title: 'Error', text: message });
+        return;
+      }
+      swal.fire({ icon: 'error', title: 'Error', text: 'Unknown error.' });
+    });
+}
+
+UpdatePasswordTab.propTypes = {
+  allowUpdate: PropTypes.bool,
+};
+
+UpdatePasswordTab.defaultProps = {
+  allowUpdate: true,
+};

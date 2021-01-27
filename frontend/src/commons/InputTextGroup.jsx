@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { Form, InputGroup } from 'react-bootstrap';
 
 function InputTextGroup(props) {
-  const { label, name, type, value, icon, onChange, isValid, isInvalid, errorMsg, placeholder, readOnly } = props;
+  const { label, name, type, value, icon, onChange, onBlur, isValid, isInvalid, errorMsg, placeholder, readOnly } = props;
   return (
     <Form.Group>
       <Form.Label>{label}</Form.Label>
@@ -13,6 +13,7 @@ function InputTextGroup(props) {
           type={type}
           value={value}
           onChange={onChange}
+          onBlur={onBlur}
           isValid={isValid}
           isInvalid={isInvalid}
           placeholder={placeholder || label}
@@ -32,6 +33,7 @@ InputTextGroup.propTypes = {
   value:       PropTypes.string,
   icon:        PropTypes.instanceOf(Object),
   onChange:    PropTypes.func,
+  onBlur:      PropTypes.func,
   isValid:     PropTypes.bool,
   isInvalid:   PropTypes.bool,
   errorMsg:    PropTypes.string,
@@ -46,6 +48,7 @@ InputTextGroup.defaultProps = {
   value:       '',
   icon:        null,
   onChange:    () => {},
+  onBlur:    () => {},
   isValid:     false,
   isInvalid:   false,
   errorMsg:    '',

@@ -51,7 +51,7 @@ module.exports.login = async function(req, res) {
     let role   = loginInfo.role;
     let name   = loginInfo.name;
 
-    let accessToken = await jwt.create.accessToken({'user_id': userId, 'role': role, 'name': name}, exp = '35m');
+    let accessToken = await jwt.create.accessToken({'user_id': userId, 'role': role, 'name': name}, '35m');
     let refreshToken = await jwt.create.refreshToken();
 
     // access token expiration time: 30 mins
@@ -101,8 +101,9 @@ module.exports.loginWithGitHub = async function(req, res) {
 
     let User = userModel(req.mysql);
 
-    // compare db user info
     let loginInfo = await User.getGitHubLoginInfo(userInfo.id);
+
+    // new user create info
     if(Object.keys(loginInfo).length === 0) {
       let requestUserEmailURL = oauth.GitHub.requestUserEmailURL;
       let response3 = await axios.get(requestUserEmailURL, {'headers': {'Authorization': `${tokenType} ${token}`, 'Accept': 'application/json'}});
@@ -137,7 +138,7 @@ module.exports.loginWithGitHub = async function(req, res) {
     let role   = loginInfo.role;
     let name   = loginInfo.name;
 
-    let accessToken = await jwt.create.accessToken({'user_id': userId, 'role': role, 'name': name}, exp = '35m');
+    let accessToken = await jwt.create.accessToken({'user_id': userId, 'role': role, 'name': name}, '35m');
     let refreshToken = await jwt.create.refreshToken();
 
     // access token expiration time: 30 mins
@@ -162,7 +163,6 @@ module.exports.refreshLoginToken = async function(req, res) {
   try {
     let refreshToken = req.body.refresh_token;
     let userId       = req.user_id;
-    let role         = req.role;
 
     if(!refreshToken) {
       res.status(400);
@@ -177,7 +177,7 @@ module.exports.refreshLoginToken = async function(req, res) {
       return res.json({'successful': false, 'data': {}, 'error_field': [], 'error_msg': 'Current session is invalid. Try login again.'});
     }
 
-    let accessToken = await jwt.create.accessToken({'user_id': result.id, 'role': result.role, 'name': result.name}, exp = '35m');
+    let accessToken = await jwt.create.accessToken({'user_id': result.id, 'role': result.role, 'name': result.name}, '35m');
     refreshToken = await jwt.create.refreshToken();
 
     // access token expiration time: 30 mins
@@ -232,8 +232,6 @@ module.exports.create = async function(req, res) {
     let User = userModel(req.mysql);
 
     let result = await User.create(uname, await hashPassword(password), role, name, email);
-
-    // TODO: return access token and refresh token
 
     if(result.affectedRows === 0)
       throw 'Fail to add user in the database.';
@@ -371,8 +369,6 @@ module.exports.updatePassword = async function(req, res) {
       res.status(400);
       res.json({'successful': false, 'data': [], 'error_field': ['password_current', 'password_new'], 'error_msg': 'Missing one or more required parameters.'});
     }
-
-    // TODO: password constraint validation
 
     let User = userModel(req.mysql);
 

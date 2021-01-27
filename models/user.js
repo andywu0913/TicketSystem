@@ -15,9 +15,10 @@ module.exports = function(dbConnection) {
       return result;
     },
     getInfo: async function(id) {
-      const sql = 'SELECT `user`.`id`, `uname`, `user`.`name`, `email`, `role`, `role`.`name` AS "rname" \
+      const sql = 'SELECT `user`.`id`, `github_id`, `uname`, `user`.`name`, `email`, `role`, `role`.`name` AS "rname" \
                    FROM `user` \
                    LEFT JOIN `role` ON `user`.`role` = `role`.`id` \
+                   LEFT JOIN `user_github` ON `user`.`id` = `user_github`.`id` \
                    WHERE `user`.`id` = ?';
       let [rows, fields] = await dbConnection.execute(sql, [id]);
 
