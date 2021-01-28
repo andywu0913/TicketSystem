@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import { Redirect } from 'react-router-dom';
-import PropTypes from 'prop-types';
 import { Button, Form, Modal } from 'react-bootstrap';
 import { EaselFill, Check2 } from 'react-bootstrap-icons';
+import PropTypes from 'prop-types';
 import Axios from 'axios';
 import Swal from 'sweetalert2';
 

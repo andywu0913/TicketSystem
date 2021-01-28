@@ -1,7 +1,10 @@
-import React, { Component } from 'react';
-import { Container, Row, Col, Image, Tab, Tabs } from 'react-bootstrap';
+import React, { Component, useEffect, useState } from 'react';
+import { Col, Container, Image, Row, Tab, Tabs } from 'react-bootstrap';
 import ContentLoader from 'react-content-loader';
-import Axios from 'axios';
+import axios from 'axios';
+import swal from 'sweetalert2';
+
+import BackendURL from 'BackendURL';
 
 import SessionList from './SessionList';
 import BookTicketModal from './BookTicketModal';
@@ -17,7 +20,7 @@ export default class extends Component {
   componentDidMount() {
     const self = this;
     const { id } = self.props.match.params;
-    Axios.get(`http://localhost:3000/api/event/${id}`, {
+    axios.get(`http://localhost:3000/api/event/${id}`, {
     }).then((response) => {
       const { data } = response.data;
       self.setState({ ...data });
@@ -102,4 +105,38 @@ export default class extends Component {
       </Container>
     );
   }
+}
+
+function useEvent(id) {
+  const [loading, setLoading] = useState(true);
+  const [event, setEvent] = useState({});
+  useEffect(() => {
+    setLoading(true);
+    axios.get(`${BackendURL}/event/${id}`)
+      .then((response) => {
+        const { data } = response.data;
+        setEvent(data);
+      })
+      .catch((error) => {
+        if (error.response && error.response.data) {
+          const { error_msg: message = '' } = error.response.data;
+          swal.fire({ icon: 'error', title: 'Error', text: message });
+          return;
+        }
+        swal.fire({ icon: 'error', title: 'Error', text: 'Unknown error.' });
+      })
+      .then(() => {
+        setLoading(false);
+      });
+  }, [id]);  
+  return [loading, event];
+}
+
+function useSessions(eventId) {
+  const [loading, setLoading] = useState(true);
+  const [sessions, setSessions] = useState({});
+  useEffect(() => {
+
+  }, [eventId]);  
+  return [loading, sessions];
 }

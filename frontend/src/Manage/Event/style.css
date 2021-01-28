@@ -1,0 +1,8 @@
+/* For making the carousel fit its parent. */
+.carousel-inner {
+  height: 100%;
+}
+
+.object-fit-cover {
+  objectFit: "cover";
+}

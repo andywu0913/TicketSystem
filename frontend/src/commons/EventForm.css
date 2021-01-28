@@ -1,0 +1,5 @@
+/* Make date fields to same width as thier parents */
+
+.react-datepicker-wrapper {
+	width: 100%;
+}
