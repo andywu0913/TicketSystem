@@ -1,17 +1,25 @@
 import React from 'react';
 import { useHistory } from 'react-router-dom';
 import { Alert, Button, Card, Container, Form, Row, Col } from 'react-bootstrap';
-import { CalendarPlus, ArrowLeftShort } from 'react-bootstrap-icons';
+import { ArrowLeftShort } from 'react-bootstrap-icons';
+import { Editor } from 'react-draft-wysiwyg';
+import { convertToRaw, ContentState, EditorState } from 'draft-js';
+import htmlToDraft from 'html-to-draftjs';
+import draftToHtml from 'draftjs-to-html';
 import DatePicker from 'react-datepicker';
+import PropTypes from 'prop-types';
 import { Formik } from 'formik';
 
 import InputTextGroup from 'SRC/commons/InputTextGroup';
 
+import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
 import 'react-datepicker/dist/react-datepicker.css';
 import './EventForm.css';
 
 export default function EventForm(props) {
   const history = useHistory();
+  const { formTitle, formSubmitBtnText, name, description, startDate, endDate, onSubmit } = props;
+  const editorState = description ? html2editorState(description) : EditorState.createEmpty();
   return (
     <Container className="align-self-center mt-3 mb-3">
       <Row className="justify-content-md-center">
@@ -19,9 +27,14 @@ export default function EventForm(props) {
           <Card>
             <Card.Body>
               <Formik
-                initialValues={{ name: '', description: '', startDate: new Date(), endDate: new Date() }}
+                initialValues={{ name, description, editorState, startDate: new Date(startDate), endDate: new Date(endDate) }}
                 validate={handleValidation}
-                onSubmit={props.onSubmit}
+                onSubmit={(values, formikBag) => {
+                  const { editorState, ...toSubmit } = values;
+                  toSubmit.description = editorState2html(editorState);
+                  onSubmit(toSubmit, formikBag);
+                }}
+                enableReinitialize
               >
                 {({
                   values,
@@ -33,9 +46,17 @@ export default function EventForm(props) {
                   isSubmitting,
                 }) => (
                   <Form noValidate onSubmit={handleSubmit}>
-                    <h2 className="text-dark mb-3">Create Event</h2>
+                    <h2 className="text-dark mb-3">{formTitle}</h2>
                     <InputTextGroup label="Event Title" name="name" type="text" value={values.name} onChange={handleChange} isInvalid={touched.name && !!errors.name} errorMsg={errors.name} placeholder="Add Title" />
-                    <InputTextGroup as="textarea" rows={5} label="Description" name="description" type="textarea" value={values.description} onChange={handleChange} isInvalid={touched.description && !!errors.description} errorMsg={errors.description} placeholder="Add some description here..." />
+                    <Form.Label>Description</Form.Label>
+                    <Editor
+                      editorState={values.editorState}
+                      toolbarClassName="toolbar-class editor-toolbar"
+                      wrapperClassName="wrapper-class"
+                      editorClassName="editor-class editor-content pl-3 pr-3"
+                      onEditorStateChange={(editorState) => setFieldValue('editorState', editorState)}
+                      placeholder="Add some description here..."
+                    />
                     <Form.Label>Event Period</Form.Label>
                     <Row>
                       <Col>
@@ -54,7 +75,7 @@ export default function EventForm(props) {
                     </Row>
                     {errors.date && <Alert variant="danger">{errors.date}</Alert> }
                     <hr />
-                    <Button variant="primary" type="submit" disabled={isSubmitting} block><CalendarPlus />{' '}Create</Button>
+                    <Button variant="primary" type="submit" disabled={isSubmitting} block>{formSubmitBtnText}</Button>
                     <Card.Text className="text-center text-secondary mt-1 mb-1">- or -</Card.Text>
                     <Button variant="secondary" onClick={() => history.goBack()} block><ArrowLeftShort />{' '}Go Back</Button>
                   </Form>
@@ -68,15 +89,44 @@ export default function EventForm(props) {
   );
 }
 
+function html2editorState(html) {
+  const { contentBlocks, entityMap } = htmlToDraft(html);
+  const contentState = ContentState.createFromBlockArray(contentBlocks);
+  return EditorState.createWithContent(contentState);
+}
+
+function editorState2html(editorState) {
+  const currentContent = editorState.getCurrentContent();
+  return draftToHtml(convertToRaw(currentContent));
+}
+
 function handleValidation(values) {
   const errors = {};
 
   if (!values.name) errors.name = 'Required';
   else if (values.name.length >= 50) errors.name = 'Max length is 50 characters';
 
-  if (!values.description) errors.description = 'Required';
-
   if (values.startDate - values.endDate > 0) errors.date = 'Event start date is greater than end date.';
 
   return errors;
 }
+
+EventForm.propTypes = {
+  formTitle: PropTypes.string,
+  formSubmitBtnText: PropTypes.instanceOf(Object),
+  name: PropTypes.string,
+  description: PropTypes.string,
+  startDate: PropTypes.string,
+  endDate: PropTypes.string,
+  onSubmit: PropTypes.func,
+};
+
+EventForm.defaultProps = {
+  formTitle: '',
+  formSubmitBtnText: '',
+  name: '',
+  description: '',
+  startDate: Date(),
+  endDate: Date(),
+  onSubmit: '',
+};

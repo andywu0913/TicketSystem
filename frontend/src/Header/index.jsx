@@ -42,10 +42,7 @@ function signout() {
   swal.showLoading();
   const accessToken = getAccessToken();
   axios.get(`${BackendURL}/user/logout`, { headers: { Authorization: `Bearer ${accessToken}` } })
-    .then(() => {
-      clearSaved();
-      window.location.reload();
-    })
+    .then(() => {})
     .catch((error) => {
       if (error.response && error.response.data) {
         const { error_msg: message = '' } = error.response.data;
@@ -53,5 +50,9 @@ function signout() {
         return;
       }
       swal.fire({ icon: 'error', title: 'Error', text: 'Unknown error.' });
+    })
+    .then(() => {
+      clearSaved();
+      window.location.reload();
     });
 }

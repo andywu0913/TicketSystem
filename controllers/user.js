@@ -107,7 +107,7 @@ module.exports.loginWithGitHub = async function(req, res) {
     if(Object.keys(loginInfo).length === 0) {
       let requestUserEmailURL = oauth.GitHub.requestUserEmailURL;
       let response3 = await axios.get(requestUserEmailURL, {'headers': {'Authorization': `${tokenType} ${token}`, 'Accept': 'application/json'}});
-      let email = response3.data.filter((e) => e.primary)[0].email;
+      let email = response3.data.find((e) => e.primary).email;
 
       let connection = await req.mysql.getConnection();
       User = userModel(connection);
@@ -200,15 +200,21 @@ module.exports.refreshLoginToken = async function(req, res) {
 };
 
 module.exports.logout = async function(req, res) {
-  let userId = req.user_id;
+  try {
+    let userId = req.user_id;
 
-  let User = userModel(req.mysql);
+    let User = userModel(req.mysql);
 
-  let result = await User.revokeRefreshToken(userId);
-  if(result.affectedRows === 0)
-    throw 'Fail to revoke refresh token.';
+    let result = await User.revokeRefreshToken(userId);
+    if(result.affectedRows === 0)
+      throw 'Fail to revoke refresh token.';
 
-  res.json({'successful': true, 'data': [], 'error_field': [], 'error_msg': ''});
+    res.json({'successful': true, 'data': [], 'error_field': [], 'error_msg': ''});
+  }
+  catch(err) {
+    res.status(500);
+    res.json({'successful': false, 'data': {}, 'error_field': [], 'error_msg': err});
+  }
 };
 
 module.exports.create = async function(req, res) {

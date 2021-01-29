@@ -1,87 +1,63 @@
-import React, { Component } from 'react';
-import { Link } from 'react-router-dom';
-import { Button, Card, Container, Form, Row, Col, OverlayTrigger, Tooltip } from 'react-bootstrap';
-import { ArrowLeftShort, CalendarPlus } from 'react-bootstrap-icons';
-import Axios from 'axios';
+import React, { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
+import { CalendarCheck } from 'react-bootstrap-icons';
+import axios from 'axios';
+import swal from 'sweetalert2';
 
-import { getAccessToken, getUserId } from 'SRC/utils/jwt';
+import BackendURL from 'BackendURL';
 
-export default class extends Component {
-  constructor(props) {
-    super(props);
-    this.handleChange = this.handleChange.bind(this);
-    this.handleSubmit = this.handleSubmit.bind(this);
-    this.goBack = this.goBack.bind(this);
-    this.state = { name: '', description: '', startDate: '', endDate: '' };
-  }
+import { getAccessToken } from 'SRC/utils/jwt';
 
-  handleChange(event) {
-    const { name } = event.target;
-    const val = event.target.value;
-    this.setState({ [name]: val });
-  }
+import EventForm from 'SRC/commons/EventForm';
 
-  handleSubmit(event) {
-    event.preventDefault();
+export default function Create() {
+  const params = useParams();
+  const [data, setData] = useState({});
 
-    const { name, description, startDate, endDate } = this.state;
+  useEffect(() => {
+    swal.showLoading();
+    const accessToken = getAccessToken();
+    axios.get(`${BackendURL}/event/${params.id}`, { headers: { Authorization: `Bearer ${accessToken}` } })
+      .then((response) => {
+        const { data } = response.data;
+        setData(data);
+        swal.close();
+      })
+      .catch((error) => {
+        if (error.response && error.response.data) {
+          const { error_msg: message = '' } = error.response.data;
+          swal.fire({ icon: 'error', title: 'Error', text: message });
+          return;
+        }
+        swal.fire({ icon: 'error', title: 'Error', text: 'Unknown error.' });
+      });
+  }, []);
 
-    if (!name.length || !description.length || !startDate.length || !endDate.length) return;
-  }
+  return (
+    <EventForm formTitle="Update Event" formSubmitBtnText={<><CalendarCheck /> Update</>} name={data.name} description={data.description} startDate={data.start_date} endDate={data.end_date} onSubmit={handleUpdate(params.id)} />
+  );
+}
 
-  componentDidMount() {
-    const self = this;
-    const { id } = self.props.match.params;
-    Axios.get(`http://localhost:3000/api/event/${id}`, {
-    }).then((response) => {
-      const { name, description, start_date: startDate, end_date: endDate } = response.data.data;
-      self.setState({ name, description, startDate, endDate });
-    }).catch((error) => {
+function handleUpdate(id) {
+  return (values, { setSubmitting }) => {
+    swal.showLoading();
+    const { startDate: start_date, endDate: end_date, ...others } = values;
 
-    });
-  }
-
-  goBack() {
-    this.props.history.goBack();
-  }
-
-  render() {
-    console.log(this.state);
-    const { name, description, startDate, endDate } = this.state;
-    return (
-      <Container className="align-self-center mt-3 mb-3">
-        <Row className="justify-content-md-center">
-          <Col xs sm={12} md={9} lg={8} xl={6}>
-            <Card>
-              <Card.Body>
-                <Form onSubmit={this.handleSubmit}>
-                  <h2 className="text-dark mb-3">Update Event</h2>
-                  <Form.Group>
-                    <Form.Label>Event Title</Form.Label>
-                    <Form.Control type="text" name="name" value={name} onChange={this.handleChange} placeholder="Add title" />
-                  </Form.Group>
-                  <Form.Group>
-                    <Form.Label>Description</Form.Label>
-                    <Form.Control as="textarea" name="description" value={description} onChange={this.handleChange} placeholder="Add some description here..." rows={5} />
-                  </Form.Group>
-                  <Form.Group>
-                    <Form.Label>Event Period</Form.Label>
-                    <Row>
-                      <Col><Form.Control type="text" name="startDate" value={startDate} onChange={this.handleChange} placeholder="Start" /></Col>
-                      <Col md={1}>~</Col>
-                      <Col><Form.Control type="text" name="endDate" value={endDate} onChange={this.handleChange} placeholder="End" /></Col>
-                    </Row>
-                  </Form.Group>
-                  <hr />
-                  <Button variant="primary" type="submit" block><CalendarPlus />{' '}Update</Button>
-                  <Card.Text className="text-center text-secondary mt-1 mb-1">- or -</Card.Text>
-                  <Button variant="secondary" block onClick={this.goBack}><ArrowLeftShort />{' '}Go Back</Button>
-                </Form>
-              </Card.Body>
-            </Card>
-          </Col>
-        </Row>
-      </Container>
-    );
-  }
+    const accessToken = getAccessToken();
+    axios.put(`${BackendURL}/event/${id}`, { start_date, end_date, ...others }, { headers: { Authorization: `Bearer ${accessToken}` } })
+      .then(() => {
+        swal.fire({ icon: 'success', title: 'Success', showConfirmButton: false, timer: 1000 });
+      })
+      .catch((error) => {
+        if (error.response && error.response.data) {
+          const { error_msg: message = '' } = error.response.data;
+          swal.fire({ icon: 'error', title: 'Error', text: message });
+          return;
+        }
+        swal.fire({ icon: 'error', title: 'Error', text: 'Unknown error.' });
+      })
+      .then(() => {
+        setSubmitting(false);
+      });
+  };
 }

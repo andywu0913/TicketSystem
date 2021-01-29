@@ -1,5 +1,6 @@
 import React from 'react';
 import { useHistory } from 'react-router-dom';
+import { CalendarPlus } from 'react-bootstrap-icons';
 import axios from 'axios';
 import swal from 'sweetalert2';
 
@@ -12,7 +13,7 @@ import EventForm from 'SRC/commons/EventForm';
 export default function Create() {
   const history = useHistory();
   return (
-    <EventForm onSubmit={handleCreate(() => history.replace('/manage/event'))} />
+    <EventForm formTitle="Create Event" formSubmitBtnText={<><CalendarPlus /> Create</>} onSubmit={handleCreate(() => history.replace('/manage/event'))} />
   );
 }
 

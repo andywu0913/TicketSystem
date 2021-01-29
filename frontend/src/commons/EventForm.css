@@ -3,3 +3,15 @@
 .react-datepicker-wrapper {
 	width: 100%;
 }
+
+.editor-toolbar, .editor-content {
+    color: #495057;
+    border: 1px solid #ced4da;
+    border-radius: .25rem;
+}
+
+.editor-content {
+    min-height: 300px;
+    max-height: 300px;
+    overflow: auto;
+}
