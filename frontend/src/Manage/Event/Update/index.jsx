@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
 import { CalendarCheck } from 'react-bootstrap-icons';
+import { useParams } from 'react-router-dom';
+
 import axios from 'axios';
 import swal from 'sweetalert2';
 
-import BackendURL from 'BackendURL';
-
+import EventForm from 'SRC/commons/EventForm';
 import { getAccessToken } from 'SRC/utils/jwt';
 
-import EventForm from 'SRC/commons/EventForm';
+import BackendURL from 'BackendURL';
 
 export default function Create() {
   const params = useParams();

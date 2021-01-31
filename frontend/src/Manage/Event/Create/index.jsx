@@ -1,14 +1,14 @@
 import React from 'react';
-import { useHistory } from 'react-router-dom';
 import { CalendarPlus } from 'react-bootstrap-icons';
+import { useHistory } from 'react-router-dom';
+
 import axios from 'axios';
 import swal from 'sweetalert2';
 
-import BackendURL from 'BackendURL';
-
+import EventForm from 'SRC/commons/EventForm';
 import { getAccessToken } from 'SRC/utils/jwt';
 
-import EventForm from 'SRC/commons/EventForm';
+import BackendURL from 'BackendURL';
 
 export default function Create() {
   const history = useHistory();
@@ -25,7 +25,7 @@ function handleCreate(redirect) {
     const accessToken = getAccessToken();
     axios.post(`${BackendURL}/event/`, { start_date, end_date, ...others }, { headers: { Authorization: `Bearer ${accessToken}` } })
       .then(() => {
-        swal.fire({ icon: 'success', title: 'Success', showConfirmButton: false, timer: 1000 })
+        swal.fire({ icon: 'success', title: 'Success', text: 'You can start adding some sessions to this event.' })
           .then(() => redirect());
       })
       .catch((error) => {

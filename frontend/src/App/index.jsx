@@ -43,7 +43,7 @@ export default class App extends Component {
             <AuthRoute path="/manage/user" exact allowRole={[1]} rejectToURL="/" component={ManageUser} />
             <AuthRoute path="/manage/event" exact allowRole={[1, 2]} rejectToURL="/" component={ManageEvent} />
             <AuthRoute path="/manage/event/create" exact allowRole={[1, 2]} rejectToURL="/" component={ManageEventCreate} />
-            <AuthRoute path="/manage/event/:id" exact allowRole={[1, 2]} rejectToURL="/" component={ManageEventUpdate} />
+            <AuthRoute path="/manage/event/:id/edit" exact allowRole={[1, 2]} rejectToURL="/" component={ManageEventUpdate} />
             <AuthRoute path="/manage/ticket" exact allowRole={[1, 2, 3]} rejectToURL="/user" component={ManageTicket} />
             <Route component={PageNotFound} />
           </Switch>

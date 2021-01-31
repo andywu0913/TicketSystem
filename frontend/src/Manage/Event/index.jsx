@@ -1,16 +1,17 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
 import { Button, Col, Container, Row } from 'react-bootstrap';
 import { CalendarPlus } from 'react-bootstrap-icons';
-import moment from 'moment';
-import axios from 'axios';
-import swal from 'sweetalert2';
+import { Link } from 'react-router-dom';
 
-import BackendURL from 'BackendURL';
+import axios from 'axios';
+import moment from 'moment';
+import swal from 'sweetalert2';
 
 import { getAccessToken, getUserId } from 'SRC/utils/jwt';
 
 import EventCard from './EventCard';
+
+import BackendURL from 'BackendURL';
 
 export default function Event() {
   const [data, setData] = useState([]);

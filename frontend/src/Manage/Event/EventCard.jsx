@@ -1,17 +1,18 @@
-import React, { useEffect, useState } from 'react';
-import { Redirect } from 'react-router-dom';
-import { Row, Col, Tab, Tabs } from 'react-bootstrap';
+import React, { useState } from 'react';
+import { Col, Row, Tab, Tabs } from 'react-bootstrap';
 import { PencilSquare, TrashFill } from 'react-bootstrap-icons';
-import PropTypes from 'prop-types';
-import axios from 'axios';
-import swal from 'sweetalert2';
+import { Redirect } from 'react-router-dom';
 
-import BackendURL from 'BackendURL';
+import axios from 'axios';
+import PropTypes from 'prop-types';
+import swal from 'sweetalert2';
 
 import { getAccessToken } from 'SRC/utils/jwt';
 
 import EventCardInfo from './EventCardInfo';
 import EventCardSession from './EventCardSession';
+
+import BackendURL from 'BackendURL';
 
 export default function EventCard(props) {
   const [tab, seTab] = useState('info');
@@ -28,7 +29,7 @@ export default function EventCard(props) {
             <EventCardSession show={tab === 'session'} id={id} />
           </Tab>
           <Tab eventKey="modify" title={<PencilSquare className="text-muted" size="1.25rem" />}>
-            {tab === 'modify' && <Redirect push to={`/manage/event/${id}`} />}
+            {tab === 'modify' && <Redirect push to={`/manage/event/${id}/edit`} />}
           </Tab>
           <Tab title={<TrashFill className="text-muted" size="1.25rem" onClick={() => handleDelete(id, reloadData)} />} />
         </Tabs>
