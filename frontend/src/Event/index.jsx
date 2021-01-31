@@ -128,7 +128,7 @@ function useEvent(id) {
       .then(() => {
         setLoading(false);
       });
-  }, [id]);  
+  }, [id]);
   return [loading, event];
 }
 
@@ -137,6 +137,6 @@ function useSessions(eventId) {
   const [sessions, setSessions] = useState({});
   useEffect(() => {
 
-  }, [eventId]);  
+  }, [eventId]);
   return [loading, sessions];
 }

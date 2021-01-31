@@ -30,6 +30,9 @@
                   ["SRC", "./src/"]
                 ],
                 "extensions": [".js", ".jsx"]
+            },
+            "webpack": {
+                "config": "./webpack.config.js"
             }
         }
     }

@@ -23,7 +23,7 @@ export default function EventForm(props) {
   return (
     <Container className="align-self-center mt-3 mb-3">
       <Row className="justify-content-md-center">
-        <Col xs sm={12} md={9} lg={8} xl={6}>
+        <Col xs sm={12} md={10} lg={9} xl={8}>
           <Card>
             <Card.Body>
               <Formik

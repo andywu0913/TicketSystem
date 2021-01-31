@@ -14,7 +14,7 @@ module.exports.getAllByUserId = async function(req, res, next) {
     res.status(500);
     res.json({'successful': false, 'data': {}, 'error_field': [], 'error_msg': err});
   }
-}
+};
 
 module.exports.getAllBySessionId = async function(req, res, next) {
   try {

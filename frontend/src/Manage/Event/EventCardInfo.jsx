@@ -1,12 +1,12 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import PropTypes from 'prop-types';
 import { Card, Carousel, Container, Row, Col } from 'react-bootstrap';
 import { ClockFill } from 'react-bootstrap-icons';
+import PropTypes from 'prop-types';
 
 import './style.css';
 
-function EventCardInfo(props) {
+export default function EventCardInfo(props) {
   const { id, name, description, startDate, endDate } = props;
   return (
     <Card>
@@ -61,5 +61,3 @@ EventCardInfo.defaultProps = {
   startDate: null,
   endDate: null,
 };
-
-export default EventCardInfo;
