@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
-import { Container, Row, Col } from 'react-bootstrap';
+import { Col, Container, Row } from 'react-bootstrap';
+
 import Axios from 'axios';
+
+import { getAccessToken } from 'SRC/utils/jwt';
 
 import UsersList from './UsersList';
 import UserUpdateModal from './UserUpdateModal';
-
-import { getAccessToken } from 'SRC/utils/jwt';
 
 export default class extends Component {
   constructor(props) {

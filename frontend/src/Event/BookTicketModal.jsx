@@ -1,15 +1,14 @@
 import React, { Component } from 'react';
-import { Redirect } from 'react-router-dom';
 import { Button, Form, Modal } from 'react-bootstrap';
-import { EaselFill, Check2 } from 'react-bootstrap-icons';
-import PropTypes from 'prop-types';
+import { Check2, EaselFill } from 'react-bootstrap-icons';
+import { Redirect } from 'react-router-dom';
+
 import Axios from 'axios';
+import PropTypes from 'prop-types';
 import Swal from 'sweetalert2';
 
-import { verifySaved } from 'SRC/utils/jwt';
 import InputTextGroup from 'SRC/commons/InputTextGroup';
-
-import { getAccessToken } from 'SRC/utils/jwt';
+import { getAccessToken, verifySaved } from 'SRC/utils/jwt';
 
 class BookTicketModal extends Component {
   constructor(props) {

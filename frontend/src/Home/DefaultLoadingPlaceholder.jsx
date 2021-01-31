@@ -1,6 +1,7 @@
 import React from 'react';
 import { Card, Col } from 'react-bootstrap';
 import ContentLoader from 'react-content-loader';
+
 import PropTypes from 'prop-types';
 
 export default function DefaultLoadingPlaceholder(props) {

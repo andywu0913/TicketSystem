@@ -18,10 +18,34 @@
         "react"
     ],
     "rules": {
+        "import/order": [
+            "error",
+            {
+              "groups": ["builtin", "external", "internal", "unknown", "parent", "sibling", "index", "object"],
+              "pathGroups": [
+                {
+                  "pattern": "react*",
+                  "group": "external",
+                  "position": "before"
+                },
+                {
+                    "pattern": "BackendURL",
+                    "group": "object",
+                    "position": "before"
+                }
+              ],
+              "pathGroupsExcludedImportTypes": ["react"],
+              "newlines-between": "always",
+              "alphabetize": {
+                "order": "asc",
+                "caseInsensitive": true
+              }
+            }
+        ],
         "max-len": ["off"],
+        "no-use-before-define": ["error", {"functions": false}],
         "object-curly-newline": ["off"],
-        "react/jsx-one-expression-per-line": ["off"],
-        "no-use-before-define": ["error", {"functions": false}]
+        "react/jsx-one-expression-per-line": ["off"]
     },
     "settings": {
         "import/resolver": {

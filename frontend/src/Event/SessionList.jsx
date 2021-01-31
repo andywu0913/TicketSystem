@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
-import { Link } from 'react-router-dom';
-import PropTypes from 'prop-types';
-import { Table, OverlayTrigger, Tooltip } from 'react-bootstrap';
+import { OverlayTrigger, Table, Tooltip } from 'react-bootstrap';
 import { BagCheckFill, BagXFill } from 'react-bootstrap-icons';
+import { Link } from 'react-router-dom';
+
 import Axios from 'axios';
+import PropTypes from 'prop-types';
 
 class SessionList extends Component {
   constructor(props) {

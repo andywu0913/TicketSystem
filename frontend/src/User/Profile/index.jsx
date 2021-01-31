@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { Col, Container, Row, Tab, Tabs } from 'react-bootstrap';
+
 import axios from 'axios';
 import swal from 'sweetalert2';
 
-import BackendURL from 'BackendURL';
-
 import { getAccessToken } from 'SRC/utils/jwt';
 
-import UpdateProfileTab from './UpdateProfileTab';
 import UpdatePasswordTab from './UpdatePasswordTab';
+import UpdateProfileTab from './UpdateProfileTab';
+
+import BackendURL from 'BackendURL';
 
 export default function Profile() {
   const [tab, setTab] = useState('profile');

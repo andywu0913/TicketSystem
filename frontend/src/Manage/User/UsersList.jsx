@@ -1,8 +1,9 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
-import PropTypes from 'prop-types';
-import { Button, Table, OverlayTrigger, Tooltip } from 'react-bootstrap';
+import { Button, OverlayTrigger, Table, Tooltip } from 'react-bootstrap';
 import { PencilSquare } from 'react-bootstrap-icons';
+import { Link } from 'react-router-dom';
+
+import PropTypes from 'prop-types';
 
 import { getUserId } from 'SRC/utils/jwt';
 

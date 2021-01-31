@@ -1,22 +1,22 @@
 import React, { Component } from 'react';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
 
-import Header from 'SRC/Header';
-import Footer from 'SRC/Footer';
-import PageNotFound from 'SRC/PageNotFound';
-import Home from 'SRC/Home';
 import Event from 'SRC/Event';
-import Profile from 'SRC/User/Profile';
-import SignIn from 'SRC/User/SignIn';
-import SignInGitHub from 'SRC/User/SignIn/GitHub';
-import SignUp from 'SRC/User/SignUp';
-import ManageUser from 'SRC/Manage/User';
+import Footer from 'SRC/Footer';
+import Header from 'SRC/Header';
+import Home from 'SRC/Home';
 import ManageEvent from 'SRC/Manage/Event';
 import ManageEventCreate from 'SRC/Manage/Event/Create';
 import ManageEventUpdate from 'SRC/Manage/Event/Update';
 import ManageTicket from 'SRC/Manage/Ticket';
-
+import ManageUser from 'SRC/Manage/User';
+import PageNotFound from 'SRC/PageNotFound';
+import Profile from 'SRC/User/Profile';
+import SignIn from 'SRC/User/SignIn';
+import SignInGitHub from 'SRC/User/SignIn/GitHub';
+import SignUp from 'SRC/User/SignUp';
 import { setRenewTimer } from 'SRC/utils/jwt';
+
 import AuthRoute from './AuthRoute';
 
 import 'bootstrap/dist/css/bootstrap.min.css';

@@ -1,14 +1,15 @@
 import React from 'react';
-import { Link, useHistory } from 'react-router-dom';
 import { Button, Card, Col, Container, Form, Row } from 'react-bootstrap';
-import { EnvelopeFill, LockFill, PersonFill, PersonBadge, PersonPlusFill } from 'react-bootstrap-icons';
-import { Formik } from 'formik';
+import { EnvelopeFill, LockFill, PersonBadge, PersonFill, PersonPlusFill } from 'react-bootstrap-icons';
+import { Link, useHistory } from 'react-router-dom';
+
 import axios from 'axios';
+import { Formik } from 'formik';
 import swal from 'sweetalert2';
 
-import BackendURL from 'BackendURL';
-
 import InputTextGroup from 'SRC/commons/InputTextGroup';
+
+import BackendURL from 'BackendURL';
 
 export default function SignUp() {
   const history = useHistory();

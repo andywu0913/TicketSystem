@@ -1,19 +1,20 @@
 import React from 'react';
-import { useHistory } from 'react-router-dom';
-import { Alert, Button, Card, Container, Form, Row, Col } from 'react-bootstrap';
+import { Alert, Button, Card, Col, Container, Form, Row } from 'react-bootstrap';
 import { ArrowLeftShort } from 'react-bootstrap-icons';
-import { Editor } from 'react-draft-wysiwyg';
-import { convertToRaw, ContentState, EditorState } from 'draft-js';
-import htmlToDraft from 'html-to-draftjs';
-import draftToHtml from 'draftjs-to-html';
 import DatePicker from 'react-datepicker';
-import PropTypes from 'prop-types';
+import { Editor } from 'react-draft-wysiwyg';
+import { useHistory } from 'react-router-dom';
+
+import { ContentState, convertToRaw, EditorState } from 'draft-js';
+import draftToHtml from 'draftjs-to-html';
 import { Formik } from 'formik';
+import htmlToDraft from 'html-to-draftjs';
+import PropTypes from 'prop-types';
 
 import InputTextGroup from 'SRC/commons/InputTextGroup';
 
-import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
 import 'react-datepicker/dist/react-datepicker.css';
+import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
 import './EventForm.css';
 
 export default function EventForm(props) {

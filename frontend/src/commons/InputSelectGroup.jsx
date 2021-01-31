@@ -1,6 +1,7 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import { Form, InputGroup } from 'react-bootstrap';
+
+import PropTypes from 'prop-types';
 
 export default function InputTextGroup(props) {
   const { label, name, options, value, icon, disabled, onChange } = props;

@@ -1,16 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import { Button, Card, Form } from 'react-bootstrap';
-import { PersonCheckFill, LockFill } from 'react-bootstrap-icons';
-import PropTypes from 'prop-types';
-import { Formik } from 'formik';
+import { LockFill, PersonCheckFill } from 'react-bootstrap-icons';
+
 import axios from 'axios';
+import { Formik } from 'formik';
+import PropTypes from 'prop-types';
 import swal from 'sweetalert2';
 
-import BackendURL from 'BackendURL';
-
+import InputTextGroup from 'SRC/commons/InputTextGroup';
 import { getAccessToken } from 'SRC/utils/jwt';
 
-import InputTextGroup from 'SRC/commons/InputTextGroup';
+import BackendURL from 'BackendURL';
 
 export default function UpdatePasswordTab(props) {
   const [allowUpdate, setAllowUpdate] = useState(true);

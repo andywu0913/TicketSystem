@@ -1,5 +1,6 @@
 import React from 'react';
-import { Route, Redirect } from 'react-router-dom';
+import { Redirect, Route } from 'react-router-dom';
+
 import PropTypes from 'prop-types';
 
 import { getUserRole } from 'SRC/utils/jwt';

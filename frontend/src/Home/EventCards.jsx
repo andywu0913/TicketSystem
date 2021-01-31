@@ -1,7 +1,8 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import { Card, Carousel, Col } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
+
+import PropTypes from 'prop-types';
 
 export default function EventCards(props) {
   const { data } = props;

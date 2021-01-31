@@ -1,13 +1,13 @@
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
 import { Button, Form, Modal } from 'react-bootstrap';
 import { EnvelopeFill, KeyFill, PersonBadge, PersonCheckFill } from 'react-bootstrap-icons';
+
 import Axios from 'axios';
+import PropTypes from 'prop-types';
 import Swal from 'sweetalert2';
 
-import InputTextGroup from 'SRC/commons/InputTextGroup';
 import InputSelectGroup from 'SRC/commons/InputSelectGroup';
-
+import InputTextGroup from 'SRC/commons/InputTextGroup';
 import { getAccessToken } from 'SRC/utils/jwt';
 
 class UserUpdateModal extends Component {

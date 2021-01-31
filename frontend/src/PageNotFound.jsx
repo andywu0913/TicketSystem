@@ -1,7 +1,7 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
-import { Container, Row, Col } from 'react-bootstrap';
+import { Col, Container, Row } from 'react-bootstrap';
 import { HouseFill } from 'react-bootstrap-icons';
+import { Link } from 'react-router-dom';
 
 export default function Error() {
   return (

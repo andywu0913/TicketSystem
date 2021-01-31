@@ -1,17 +1,17 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
 import { Image, Navbar } from 'react-bootstrap';
+import { Link } from 'react-router-dom';
+
 import axios from 'axios';
 import swal from 'sweetalert2';
 
-import BackendURL from 'BackendURL';
-
-import { getAccessToken, getUserName, getUserRole, verifySaved, clearSaved } from 'SRC/utils/jwt';
-
 import logo from 'SRC/images/logo.svg';
+import { clearSaved, getAccessToken, getUserName, getUserRole, verifySaved } from 'SRC/utils/jwt';
 
 import NavBarSignInSignUpButtons from './NavBarSignInSignUpButtons';
 import NavBarUserFunctions from './NavBarUserFunctions';
+
+import BackendURL from 'BackendURL';
 
 export default function Header() {
   const isVerified = verifySaved();

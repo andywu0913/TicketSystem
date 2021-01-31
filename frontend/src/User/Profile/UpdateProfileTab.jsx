@@ -1,16 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import { Button, Card, Form } from 'react-bootstrap';
 import { EnvelopeFill, KeyFill, PersonBadge, PersonCheckFill, PersonFill } from 'react-bootstrap-icons';
-import PropTypes from 'prop-types';
-import { Formik } from 'formik';
+
 import axios from 'axios';
+import { Formik } from 'formik';
+import PropTypes from 'prop-types';
 import swal from 'sweetalert2';
 
-import BackendURL from 'BackendURL';
-
+import InputTextGroup from 'SRC/commons/InputTextGroup';
 import { getAccessToken, renew } from 'SRC/utils/jwt';
 
-import InputTextGroup from 'SRC/commons/InputTextGroup';
+import BackendURL from 'BackendURL';
 
 export default function UpdateProfileTab(props) {
   const [data, setData] = useState({ uname: '', name: '', email: '', rname: '' });

@@ -1,7 +1,8 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
 import { Nav, NavDropdown } from 'react-bootstrap';
 import { Collection, PeopleFill, PersonCircle, Wallet2 } from 'react-bootstrap-icons';
+import { Link } from 'react-router-dom';
+
 import PropTypes from 'prop-types';
 
 export default function NavBarUserFunctions(props) {
@@ -64,4 +65,3 @@ NavBarUserFunctions.defaultProps = {
   role: null,
   signout: () => {},
 };
-

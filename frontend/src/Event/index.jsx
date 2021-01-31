@@ -1,13 +1,14 @@
 import React, { Component, useEffect, useState } from 'react';
 import { Col, Container, Image, Row, Tab, Tabs } from 'react-bootstrap';
 import ContentLoader from 'react-content-loader';
+
 import axios from 'axios';
 import swal from 'sweetalert2';
 
-import BackendURL from 'BackendURL';
-
-import SessionList from './SessionList';
 import BookTicketModal from './BookTicketModal';
+import SessionList from './SessionList';
+
+import BackendURL from 'BackendURL';
 
 export default class extends Component {
   constructor(props) {

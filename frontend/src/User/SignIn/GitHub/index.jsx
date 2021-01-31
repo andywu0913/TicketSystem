@@ -1,10 +1,11 @@
 import { useHistory, useLocation } from 'react-router-dom';
+
 import axios from 'axios';
-import swal from 'sweetalert2'; 
+import swal from 'sweetalert2';
+
+import { saveAccessToken, saveExpiration, saveRefreshToken } from 'SRC/utils/jwt';
 
 import BackendURL from 'BackendURL';
-
-import { saveAccessToken, saveRefreshToken, saveExpiration } from 'SRC/utils/jwt';
 
 export default function GitHub() {
   swal.showLoading();
