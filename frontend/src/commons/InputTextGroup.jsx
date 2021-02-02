@@ -8,7 +8,7 @@ export default function InputTextGroup(props) {
   return (
     <Form.Group>
       <Form.Label>{label}</Form.Label>
-      <InputGroup className="mb-2">{isInvalid}
+      <InputGroup className="mb-2">
         <Form.Control
           name={name}
           type={type}

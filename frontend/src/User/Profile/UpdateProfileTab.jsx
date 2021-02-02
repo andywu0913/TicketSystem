@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { Button, Card, Form } from 'react-bootstrap';
 import { EnvelopeFill, KeyFill, PersonBadge, PersonCheckFill, PersonFill } from 'react-bootstrap-icons';
 
@@ -13,19 +13,13 @@ import { getAccessToken, renew } from 'SRC/utils/jwt';
 import BackendURL from 'BackendURL';
 
 export default function UpdateProfileTab(props) {
-  const [data, setData] = useState({ uname: '', name: '', email: '', rname: '' });
-
-  useEffect(() => {
-    const { user } = props;
-    setData(user);
-  }, [props]);
-
+  const { user } = props;
   return (
     <Card>
       <Card.Body>
         <Card.Text className="text-center text-secondary">Update Profile</Card.Text>
         <Formik
-          initialValues={data}
+          initialValues={user}
           validate={handleValidation}
           onSubmit={handleUpdate}
           enableReinitialize

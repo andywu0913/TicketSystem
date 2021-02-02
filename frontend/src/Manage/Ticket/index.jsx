@@ -1,60 +1,73 @@
-import React, { Component } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Container, Row, Col } from 'react-bootstrap';
-import Axios from 'axios';
 
-import TicketCardList from './TicketCardList';
-import TicketUpdateModal from './TicketUpdateModal';
+import axios from 'axios';
+import swal from 'sweetalert2';
 
 import { getAccessToken } from 'SRC/utils/jwt';
 
-export default class extends Component {
-  constructor(props) {
-    super(props);
-    this.loadData = this.loadData.bind(this);
-    this.showTicketUpdateModal = this.showTicketUpdateModal.bind(this);
-    this.hideTicketUpdateModal = this.hideTicketUpdateModal.bind(this);
-    this.state = { data: [], showTicketUpdateModal: false, selectedTicketId: null, selectedSeat: null };
-  }
+import TicketCard from './TicketCard';
+import TicketUpdateModal from './TicketUpdateModal';
 
-  componentDidMount() {
-    this.loadData();
-  }
+import BackendURL from 'BackendURL';
 
-  loadData() {
-    const self = this;
+export default function Ticket() {
+  const [data, setData] = useState([]);
+  const [needReload, setNeedReload] = useState(true);
+  const [showTicketUpdateModal, setShowTicketUpdateModal] = useState(false);
+  const [selectedTicketId, setSelectedTicketId] = useState(null);
+  const [selectedSeat, setSelectedSeat] = useState(null);
+
+  useEffect(() => {
+    if (!needReload) {
+      return;
+    }
+
+    swal.showLoading();
     const accessToken = getAccessToken();
-    Axios.get('http://localhost:3000/api/ticket', {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    }).then((response) => {
-      self.setState({ data: response.data.data });
-    }).catch((error) => {
+    axios.get(`${BackendURL}/ticket`, { headers: { Authorization: `Bearer ${accessToken}` } })
+      .then((response) => {
+        const { data } = response.data;
+        setData(data);
+        swal.close();
+      })
+      .catch((error) => {
+        if (error.response && error.response.data) {
+          const { error_msg: message = '' } = error.response.data;
+          swal.fire({ icon: 'error', title: 'Error', text: message });
+          return;
+        }
+        swal.fire({ icon: 'error', title: 'Error', text: 'Unknown error.' });
+      })
+      .then(() => {
+        setNeedReload(false);
+      });
+  }, [needReload]);
 
-    });
+  function updateTicket(ticketId, seatNo) {
+    setSelectedTicketId(ticketId);
+    setSelectedSeat(seatNo);
+    setShowTicketUpdateModal(true);
   }
 
-  showTicketUpdateModal(ticketId, seat) {
-    this.setState({ showTicketUpdateModal: true, selectedTicketId: ticketId, selectedSeat: seat });
-  }
-
-  hideTicketUpdateModal() {
-    this.setState({ showTicketUpdateModal: false });
-  }
-
-  render() {
-    const { data, showTicketUpdateModal, selectedTicketId, selectedSeat } = this.state;
-    return (
-      <Container className="p-3">
-        <Row>
-          <Col>
-            <h1 className="text-dark">My Tickets</h1>
-            <hr />
-          </Col>
-        </Row>
-        <TicketCardList data={data} showTicketUpdateModal={this.showTicketUpdateModal} />
-        <TicketUpdateModal show={showTicketUpdateModal} ticketId={selectedTicketId} seat={selectedSeat} hideModal={this.hideTicketUpdateModal} reloadData={this.loadData} />
-      </Container>
-    );
-  }
+  return (
+    <Container className="p-3">
+      <Row>
+        <Col>
+          <h1 className="text-dark">My Tickets</h1>
+          <hr />
+        </Col>
+      </Row>
+      {data.length > 0
+        ? data.map((ticket) => <TicketCard key={ticket.id} data={ticket} updateTicket={updateTicket} />)
+        : (
+          <Row className="m-5 p-5 text-center text-muted">
+            <Col>
+              <h6>No available ticket currently.</h6>
+            </Col>
+          </Row>
+        )}
+      <TicketUpdateModal show={showTicketUpdateModal} ticketId={selectedTicketId} seat={selectedSeat} hideModal={() => setShowTicketUpdateModal(false)} reloadData={() => setNeedReload(true)} />
+    </Container>
+  );
 }

@@ -61,7 +61,7 @@ export default function Event() {
           <hr />
         </Col>
       </Row>
-      {data.length ? renderEventCardList(data, () => setNeedReload(true)) : renderEmpty()}
+      {data.length > 0 ? renderEventCardList(data, () => setNeedReload(true)) : renderEmpty()}
     </Container>
   );
 }
