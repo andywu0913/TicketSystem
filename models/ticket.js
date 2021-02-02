@@ -16,8 +16,9 @@ module.exports = function(dbConnection) {
       return rows[0]['count'];
     },
     getAllBySessionId: async function(sessionId) {
-      const sql = 'SELECT `id`, `session_id`, `user_id`, `seat_no`, `create_time` AS "book_time" \
+      const sql = 'SELECT `ticket`.`id`, `session_id`, `user_id`, `name`, `email`, `seat_no`, `create_time` AS "book_time" \
                    FROM `ticket` \
+                   LEFT JOIN `user` ON `ticket`.`user_id` = `user`.`id` \
                    WHERE `session_id` = ? \
                    ORDER BY `seat_no`';
       let [rows, fields] = await dbConnection.execute(sql, [sessionId]);

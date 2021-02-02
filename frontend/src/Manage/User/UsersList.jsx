@@ -12,13 +12,13 @@ function UsersList(props) {
   const { data } = props;
   const users = data.map((user) => (
     <tr key={user.id}>
-      <td className="align-middle">{user.id}</td>
-      <td className="align-middle">{user.uname}</td>
-      <td className="align-middle">{user.name}</td>
-      <td className="align-middle">{user.email}</td>
-      <td className="align-middle">{user.rname}</td>
-      <td className="align-middle">{new Date(user.last_login_time).toLocaleString()}</td>
-      <td className="align-middle">
+      <td className="align-middle text-nowrap">{user.id}</td>
+      <td className="align-middle text-nowrap">{user.uname}</td>
+      <td className="align-middle text-nowrap">{user.name}</td>
+      <td className="align-middle text-nowrap">{user.email}</td>
+      <td className="align-middle text-nowrap">{user.rname}</td>
+      <td className="align-middle text-nowrap">{new Date(user.last_login_time).toLocaleString()}</td>
+      <td className="align-middle text-nowrap">
         {selfUserId === user.id
           ? (
             <OverlayTrigger overlay={<Tooltip>Update your own profile from the user profile page.</Tooltip>}>
@@ -43,7 +43,7 @@ function UsersList(props) {
   return (
     <Table striped bordered hover responsive>
       <thead>
-        <tr className="text-center">
+        <tr className="text-center text-nowrap">
           <th>Uid</th>
           <th>Uname</th>
           <th>Name</th>

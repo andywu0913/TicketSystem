@@ -47,13 +47,13 @@ export default function EventCardSession(props) {
             <Table striped bordered hover responsive="xl" className="mb-0 text-center" size="sm">
               <thead>
                 <tr>
-                  <th className="align-middle">Location</th>
-                  <th className="align-middle">Time</th>
-                  <th className="align-middle">Sell Open Time</th>
-                  <th className="align-middle">Available Seats</th>
-                  <th className="align-middle">Price</th>
-                  <th className="align-middle">Activate</th>
-                  <th className="align-middle">Action</th>
+                  <th className="align-middle text-nowrap">Location</th>
+                  <th className="align-middle text-nowrap">Time</th>
+                  <th className="align-middle text-nowrap">Sell Open Time</th>
+                  <th className="align-middle text-nowrap">Available Seats</th>
+                  <th className="align-middle text-nowrap">Price</th>
+                  <th className="align-middle text-nowrap">Activate</th>
+                  <th className="align-middle text-nowrap">Action</th>
                 </tr>
               </thead>
               <tbody>
@@ -65,15 +65,15 @@ export default function EventCardSession(props) {
 
                     return (
                       <tr key={session.id}>
-                        <td className="align-middle">{session.address}</td>
-                        <td className="align-middle">{time}</td>
-                        <td className="align-middle"><span>{sellTimeOpen}</span> - <span>{sellTimeEnd}</span></td>
-                        <td className="align-middle">{session.open_seats ? session.open_seats : '--'} / {session.max_seats}</td>
-                        <td className="align-middle">{session.price}</td>
-                        <td className="align-middle">
+                        <td className="align-middle text-nowrap">{session.address}</td>
+                        <td className="align-middle text-nowrap">{time}</td>
+                        <td className="align-middle text-nowrap"><span>{sellTimeOpen}</span> - <span>{sellTimeEnd}</span></td>
+                        <td className="align-middle text-nowrap">{session.open_seats ? session.open_seats : '--'} / {session.max_seats}</td>
+                        <td className="align-middle text-nowrap">{session.price}</td>
+                        <td className="align-middle text-nowrap">
                           <Form.Check id={`activationSwitch${session.id}`} type="switch" label="" checked={session.is_active} onChange={() => handleActivation(session.id, !session.is_active, () => setNeedReload(true))} />
                         </td>
-                        <td className="align-middle">
+                        <td className="align-middle text-nowrap">
                           <div className="d-flex">
                             <Link to={`/manage/session/${session.id}/audiance`}>
                               <Button variant="info" className="m-1 text-nowrap">
