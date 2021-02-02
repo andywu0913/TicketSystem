@@ -27,6 +27,26 @@ module.exports.getAllByEventId = async function(req, res, next) {
   }
 };
 
+module.exports.getById = async function(req, res, next) {
+  try {
+    let sessionId = req.params.session_id;
+
+    if(!sessionId) {
+      res.status(400);
+      return res.json({'successful': false, 'data': {}, 'error_field': ['session_id'], 'error_msg': 'Missing one or more required parameters.'});
+    }
+
+    let Session = sessionModel(req.mysql);
+
+    let session = await Session.get(sessionId);
+    res.json({'successful': true, 'data': session, 'error_field': [], 'error_msg': ''});
+  }
+  catch(err) {
+    res.status(500);
+    res.json({'successful': false, 'data': {}, 'error_field': [], 'error_msg': err});
+  }
+};
+
 module.exports.create = async function(req, res, next) {
   try {
     let eventId            = req.query.event_id;

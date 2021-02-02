@@ -91,6 +91,7 @@ function handleSignIn(values, { setSubmitting, setFieldError }) {
 }
 
 function handleSignInGithub() {
+  swal.showLoading();
   const clientId = GitHub.CLIENT_ID;
   const scope = GitHub.SCOPE;
   const url = GitHub.REQUEST_AUTHORIZATION_URL;

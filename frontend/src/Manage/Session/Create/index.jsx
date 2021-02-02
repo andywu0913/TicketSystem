@@ -1,22 +1,24 @@
 import React, { useEffect, useState } from 'react';
-import { CalendarCheck } from 'react-bootstrap-icons';
-import { useParams } from 'react-router-dom';
+import { JournalPlus } from 'react-bootstrap-icons';
+import { useHistory, useLocation } from 'react-router-dom';
 
 import axios from 'axios';
 import swal from 'sweetalert2';
 
-import EventForm from 'SRC/commons/EventForm';
+import SessionForm from 'SRC/commons/SessionForm';
 import { getAccessToken } from 'SRC/utils/jwt';
 
 import BackendURL from 'BackendURL';
 
 export default function Create() {
-  const params = useParams();
+  const history = useHistory();
+  const query = new URLSearchParams(useLocation().search);
+  const eventId = query.get('event_id');
   const [data, setData] = useState({});
 
   useEffect(() => {
     swal.showLoading();
-    axios.get(`${BackendURL}/event/${params.id}`)
+    axios.get(`${BackendURL}/event/${eventId}`)
       .then((response) => {
         const { data } = response.data;
         setData(data);
@@ -33,30 +35,29 @@ export default function Create() {
   }, []);
 
   return (
-    <EventForm formTitle="Update Event" formSubmitBtnText={<><CalendarCheck /> Update</>} name={data.name} description={data.description} startDate={data.start_date} endDate={data.end_date} onSubmit={handleUpdate(params.id)} />
+    <SessionForm formTitle="Create Session" name={data.name} eventStartDate={data.start_date} eventEndDate={data.end_date} formSubmitBtnText={<><JournalPlus /> Create</>} onSubmit={handleCreate(eventId, () => history.replace('/manage/event'))} />
   );
 }
 
-function handleUpdate(id) {
+function handleCreate(eventId, redirect) {
   return (values, { setSubmitting }) => {
     swal.showLoading();
-    const { startDate: start_date, endDate: end_date, ...others } = values;
+    const { sellTimeOpen: ticket_sell_time_open, sellTimeEnd: ticket_sell_time_end, maxSeats: max_seats, ...others } = values;
 
     const accessToken = getAccessToken();
-    axios.put(`${BackendURL}/event/${id}`, { start_date, end_date, ...others }, { headers: { Authorization: `Bearer ${accessToken}` } })
+    axios.post(`${BackendURL}/session?event_id=${eventId}`, { ticket_sell_time_open, ticket_sell_time_end, max_seats, ...others }, { headers: { Authorization: `Bearer ${accessToken}` } })
       .then(() => {
-        swal.fire({ icon: 'success', title: 'Success', showConfirmButton: false, timer: 1000 });
+        swal.fire({ icon: 'success', title: 'Success', text: 'You can view this session under the event session tab.' })
+          .then(() => redirect());
       })
       .catch((error) => {
+        setSubmitting(false);
         if (error.response && error.response.data) {
           const { error_msg: message = '' } = error.response.data;
           swal.fire({ icon: 'error', title: 'Error', text: message });
           return;
         }
         swal.fire({ icon: 'error', title: 'Error', text: 'Unknown error.' });
-      })
-      .then(() => {
-        setSubmitting(false);
       });
   };
 }

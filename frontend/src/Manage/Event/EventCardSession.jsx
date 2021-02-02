@@ -61,7 +61,7 @@ export default function EventCardSession(props) {
                   ? data.map((session) => {
                     const time = moment(session.time).format('lll');
                     const sellTimeOpen = moment(session.ticket_sell_time_open).format('lll');
-                    const sellTimeEnd = moment(session.ticket_sell_time_End).format('lll');
+                    const sellTimeEnd = moment(session.ticket_sell_time_end).format('lll');
 
                     return (
                       <tr key={session.id}>
@@ -80,27 +80,38 @@ export default function EventCardSession(props) {
                                 <PeopleFill size="1.25rem" />{' '}Audiance
                               </Button>
                             </Link>
-                            <Link to={`/manage/session/${session.id}/edit`}>
-                              <Button variant="primary" className="m-1 text-nowrap">
-                                <PencilSquare size="1.25rem" />{' '}Edit
-                              </Button>
-                            </Link>
                             {session.is_active
                               ? (
-                                <OverlayTrigger overlay={<Tooltip>Deactivate the session first.</Tooltip>}>
-                                  <span>
-                                    <Button variant="danger" className="m-1 text-nowrap" style={{ pointerEvents: 'none' }} disabled>
-                                      <TrashFill size="1.25rem" />{' '}Delete
-                                    </Button>
-                                  </span>
-                                </OverlayTrigger>
+                                <>
+                                  <OverlayTrigger overlay={<Tooltip>Deactivate the session first.</Tooltip>}>
+                                    <span>
+                                      <Button variant="primary" className="m-1 text-nowrap" style={{ pointerEvents: 'none' }} disabled>
+                                        <PencilSquare size="1.25rem" />{' '}Edit
+                                      </Button>
+                                    </span>
+                                  </OverlayTrigger>
+                                  <OverlayTrigger overlay={<Tooltip>Deactivate the session first.</Tooltip>}>
+                                    <span>
+                                      <Button variant="danger" className="m-1 text-nowrap" style={{ pointerEvents: 'none' }} disabled>
+                                        <TrashFill size="1.25rem" />{' '}Delete
+                                      </Button>
+                                    </span>
+                                  </OverlayTrigger>
+                                </>
                               )
                               : (
-                                <Link to="#" onClick={() => handleDelete(session.id, () => setNeedReload(true))}>
-                                  <Button variant="danger" className="m-1 text-nowrap">
-                                    <TrashFill size="1.25rem" />{' '}Delete
-                                  </Button>
-                                </Link>
+                                <>
+                                  <Link to={`/manage/session/${session.id}/edit`}>
+                                    <Button variant="primary" className="m-1 text-nowrap">
+                                      <PencilSquare size="1.25rem" />{' '}Edit
+                                    </Button>
+                                  </Link>
+                                  <Link to="#" onClick={() => handleDelete(session.id, () => setNeedReload(true))}>
+                                    <Button variant="danger" className="m-1 text-nowrap">
+                                      <TrashFill size="1.25rem" />{' '}Delete
+                                    </Button>
+                                  </Link>
+                                </>
                               )}
                           </div>
                         </td>

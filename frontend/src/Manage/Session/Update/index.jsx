@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { CalendarCheck } from 'react-bootstrap-icons';
+import { JournalCheck } from 'react-bootstrap-icons';
 import { useParams } from 'react-router-dom';
 
 import axios from 'axios';
 import swal from 'sweetalert2';
 
-import EventForm from 'SRC/commons/EventForm';
+import SessionForm from 'SRC/commons/SessionForm';
 import { getAccessToken } from 'SRC/utils/jwt';
 
 import BackendURL from 'BackendURL';
@@ -16,7 +16,8 @@ export default function Create() {
 
   useEffect(() => {
     swal.showLoading();
-    axios.get(`${BackendURL}/event/${params.id}`)
+    const accessToken = getAccessToken();
+    axios.get(`${BackendURL}/session/${params.id}`, { headers: { Authorization: `Bearer ${accessToken}` } })
       .then((response) => {
         const { data } = response.data;
         setData(data);
@@ -33,17 +34,17 @@ export default function Create() {
   }, []);
 
   return (
-    <EventForm formTitle="Update Event" formSubmitBtnText={<><CalendarCheck /> Update</>} name={data.name} description={data.description} startDate={data.start_date} endDate={data.end_date} onSubmit={handleUpdate(params.id)} />
+    <SessionForm formTitle="Update Session" formSubmitBtnText={<><JournalCheck /> Update</>} name={data.name} address={data.address} time={data.time} eventStartDate={data.start_date} eventEndDate={data.end_date} sellTimeOpen={data.ticket_sell_time_open} sellTimeEnd={data.ticket_sell_time_end} maxSeats={`${data.max_seats}`} price={`${data.price}`} onSubmit={handleUpdate(params.id)} />
   );
 }
 
 function handleUpdate(id) {
   return (values, { setSubmitting }) => {
     swal.showLoading();
-    const { startDate: start_date, endDate: end_date, ...others } = values;
+    const { sellTimeOpen: ticket_sell_time_open, sellTimeEnd: ticket_sell_time_end, maxSeats: max_seats, ...others } = values;
 
     const accessToken = getAccessToken();
-    axios.put(`${BackendURL}/event/${id}`, { start_date, end_date, ...others }, { headers: { Authorization: `Bearer ${accessToken}` } })
+    axios.put(`${BackendURL}/session/${id}`, { ticket_sell_time_open, ticket_sell_time_end, max_seats, ...others }, { headers: { Authorization: `Bearer ${accessToken}` } })
       .then(() => {
         swal.fire({ icon: 'success', title: 'Success', showConfirmButton: false, timer: 1000 });
       })

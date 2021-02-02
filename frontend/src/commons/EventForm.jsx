@@ -129,5 +129,5 @@ EventForm.defaultProps = {
   description: '',
   startDate: Date(),
   endDate: Date(),
-  onSubmit: '',
+  onSubmit: () => {},
 };

@@ -17,7 +17,7 @@ module.exports = function(dbConnection) {
       return rows;
     },
     get: async function(id) {
-      const sql = 'SELECT `event_id`, `name`, `session`.`id` AS "session_id", `time`, `address`, `ticket_sell_time_open`, `ticket_sell_time_end`, `max_seats`, `price`, `creator_uid`, `is_active` \
+      const sql = 'SELECT `event_id`, `start_date`, `end_date`, `name`, `session`.`id` AS "session_id", `time`, `address`, `ticket_sell_time_open`, `ticket_sell_time_end`, `max_seats`, `price`, `creator_uid`, `is_active` \
                    FROM `session` \
                    LEFT JOIN `event` ON `session`.`event_id` = `event`.`id` \
                    WHERE `session`.`id` = ?';
