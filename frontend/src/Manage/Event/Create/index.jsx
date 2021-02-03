@@ -5,7 +5,7 @@ import { useHistory } from 'react-router-dom';
 import axios from 'axios';
 import swal from 'sweetalert2';
 
-import EventForm from 'SRC/commons/EventForm';
+import EventForm from 'SRC/commons/Form/EventForm';
 import { getAccessToken } from 'SRC/utils/jwt';
 
 import BackendURL from 'BackendURL';

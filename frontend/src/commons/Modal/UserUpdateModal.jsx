@@ -6,8 +6,8 @@ import Axios from 'axios';
 import PropTypes from 'prop-types';
 import Swal from 'sweetalert2';
 
-import InputSelectGroup from 'SRC/commons/InputSelectGroup';
-import InputTextGroup from 'SRC/commons/InputTextGroup';
+import InputSelectGroup from 'SRC/commons/Input/InputSelectGroup';
+import InputTextGroup from 'SRC/commons/Input/InputTextGroup';
 import { getAccessToken } from 'SRC/utils/jwt';
 
 class UserUpdateModal extends Component {

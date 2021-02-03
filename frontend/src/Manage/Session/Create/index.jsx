@@ -5,7 +5,7 @@ import { useHistory, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import swal from 'sweetalert2';
 
-import SessionForm from 'SRC/commons/SessionForm';
+import SessionForm from 'SRC/commons/Form/SessionForm';
 import { getAccessToken } from 'SRC/utils/jwt';
 
 import BackendURL from 'BackendURL';

@@ -6,7 +6,7 @@ import Axios from 'axios';
 import { getAccessToken } from 'SRC/utils/jwt';
 
 import UsersList from './UsersList';
-import UserUpdateModal from './UserUpdateModal';
+import UserUpdateModal from 'SRC/commons/Modal/UserUpdateModal';
 
 export default class extends Component {
   constructor(props) {

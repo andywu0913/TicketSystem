@@ -7,7 +7,7 @@ import { Formik } from 'formik';
 import PropTypes from 'prop-types';
 import swal from 'sweetalert2';
 
-import InputTextGroup from 'SRC/commons/InputTextGroup';
+import InputTextGroup from 'SRC/commons/Input/InputTextGroup';
 import { getAccessToken, renew } from 'SRC/utils/jwt';
 
 import BackendURL from 'BackendURL';

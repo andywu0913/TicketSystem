@@ -11,7 +11,7 @@ import { Formik } from 'formik';
 import htmlToDraft from 'html-to-draftjs';
 import PropTypes from 'prop-types';
 
-import InputTextGroup from 'SRC/commons/InputTextGroup';
+import InputTextGroup from 'SRC/commons/Input/InputTextGroup';
 
 import 'react-datepicker/dist/react-datepicker.css';
 import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';

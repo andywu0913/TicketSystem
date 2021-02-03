@@ -8,7 +8,7 @@ import { Formik } from 'formik';
 import { GitHub } from 'OAuth';
 import swal from 'sweetalert2';
 
-import InputTextGroup from 'SRC/commons/InputTextGroup';
+import InputTextGroup from 'SRC/commons/Input/InputTextGroup';
 import { saveAccessToken, saveExpiration, saveRefreshToken } from 'SRC/utils/jwt';
 
 import BackendURL from 'BackendURL';

@@ -7,7 +7,7 @@ import swal from 'sweetalert2';
 import { getAccessToken } from 'SRC/utils/jwt';
 
 import TicketCard from './TicketCard';
-import TicketUpdateModal from './TicketUpdateModal';
+import TicketUpdateModal from 'SRC/commons/modal/TicketUpdateModal';
 
 import BackendURL from 'BackendURL';
 

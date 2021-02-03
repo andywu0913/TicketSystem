@@ -7,7 +7,7 @@ import axios from 'axios';
 import { Formik } from 'formik';
 import swal from 'sweetalert2';
 
-import InputTextGroup from 'SRC/commons/InputTextGroup';
+import InputTextGroup from 'SRC/commons/Input/InputTextGroup';
 
 import BackendURL from 'BackendURL';
 
