@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Col, Container, Image, Row, Tab, Tabs } from 'react-bootstrap';
 import ContentLoader from 'react-content-loader';
-import { useParams } from 'react-router-dom';
+import { useHistory, useParams } from 'react-router-dom';
 
 import axios from 'axios';
 import swal from 'sweetalert2';
@@ -14,6 +14,7 @@ import BackendURL from 'BackendURL';
 
 export default function Event() {
   const params = useParams();
+  const history = useHistory();
   const [showBootTicketModal, setShowBootTicketModal] = useState(false);
   const [event, setEvent] = useState({});
   const [session, setSession] = useState({});
@@ -108,7 +109,7 @@ export default function Event() {
           </Row>
         </Col>
       </Row>
-      <BookTicketModal show={showBootTicketModal} sessionId={session.id} address={session.address} time={session.time} price={session.price} openSeats={session.open_seats} seat={session.seat} hideModal={hideBookTicketModal} />
+      <BookTicketModal show={showBootTicketModal} sessionId={session.id} address={session.address} time={session.time} price={session.price} openSeats={session.open_seats} seat={session.seat} hideModal={hideBookTicketModal} redirect={() => history.push('/manage/ticket')} />
     </Container>
   );
 }

@@ -4,10 +4,10 @@ import { Container, Row, Col } from 'react-bootstrap';
 import axios from 'axios';
 import swal from 'sweetalert2';
 
+import UpdateTicketModal from 'SRC/commons/Modal/UpdateTicketModal';
 import { getAccessToken } from 'SRC/utils/jwt';
 
 import TicketCard from './TicketCard';
-import UpdateTicketModal from 'SRC/commons/modal/UpdateTicketModal';
 
 import BackendURL from 'BackendURL';
 
@@ -22,13 +22,13 @@ export default function Ticket() {
     if (!needReload) {
       return;
     }
-
     swal.showLoading();
     const accessToken = getAccessToken();
     axios.get(`${BackendURL}/ticket`, { headers: { Authorization: `Bearer ${accessToken}` } })
       .then((response) => {
         const { data } = response.data;
         setData(data);
+        setNeedReload(false);
         swal.close();
       })
       .catch((error) => {
@@ -38,9 +38,6 @@ export default function Ticket() {
           return;
         }
         swal.fire({ icon: 'error', title: 'Error', text: 'Unknown error.' });
-      })
-      .then(() => {
-        setNeedReload(false);
       });
   }, [needReload]);
 

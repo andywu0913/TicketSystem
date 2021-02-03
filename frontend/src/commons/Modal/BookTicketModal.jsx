@@ -1,7 +1,6 @@
 import React from 'react';
 import { Button, Form, Modal } from 'react-bootstrap';
 import { Check2, EaselFill } from 'react-bootstrap-icons';
-import { useHistory } from 'react-router-dom';
 
 import axios from 'axios';
 import { Formik } from 'formik';
@@ -14,15 +13,14 @@ import { getAccessToken } from 'SRC/utils/jwt';
 import BackendURL from 'BackendURL';
 
 export default function BookTicketModal(props) {
-  const { show, sessionId, address, time, price, openSeats, seat, hideModal } = props;
-  const history = useHistory();
+  const { show, sessionId, address, time, price, openSeats, seat, hideModal, redirect } = props;
 
   return (
     <Modal show={show} onHide={hideModal} size="md" centered>
       <Formik
         initialValues={{ seat }}
         validate={handleValidation}
-        onSubmit={handleSubmit(sessionId, () => history.push('/manage/ticket'))}
+        onSubmit={handleCreate(sessionId, redirect)}
         enableReinitialize
       >
         {({
@@ -62,8 +60,9 @@ function handleValidation(values) {
   return errors;
 }
 
-function handleSubmit(id, redirect) {
+function handleCreate(id, redirect) {
   return (values, { setSubmitting }) => {
+    swal.showLoading();
     const accessToken = getAccessToken();
     axios.post(`${BackendURL}/ticket/?session_id=${id}`, { seat_no: values.seat }, { headers: { Authorization: `Bearer ${accessToken}` } })
       .then(() => {
@@ -91,6 +90,7 @@ BookTicketModal.propTypes = {
   openSeats: PropTypes.string,
   seat: PropTypes.string,
   hideModal: PropTypes.func,
+  redirect: PropTypes.func,
 };
 
 BookTicketModal.defaultProps = {
@@ -102,4 +102,5 @@ BookTicketModal.defaultProps = {
   openSeats: '',
   seat: '',
   hideModal: () => {},
+  redirect: () => {},
 };

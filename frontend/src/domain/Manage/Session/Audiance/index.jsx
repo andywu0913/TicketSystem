@@ -5,6 +5,7 @@ import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import swal from 'sweetalert2';
 
+import UpdateTicketModal from 'SRC/commons/Modal/UpdateTicketModal';
 import { getAccessToken } from 'SRC/utils/jwt';
 
 import UsersList from './UsersList';
@@ -15,6 +16,9 @@ export default function Audiance() {
   const params = useParams();
   const [data, setData] = useState([]);
   const [needReload, setNeedReload] = useState(true);
+  const [showUpdateTicketModal, setShowUpdateTicketModal] = useState(false);
+  const [selectedTicketId, setSelectedTicketId] = useState(null);
+  const [selectedSeat, setSelectedSeat] = useState(null);
 
   useEffect(() => {
     if (!needReload) {
@@ -39,6 +43,42 @@ export default function Audiance() {
       });
   }, [needReload]);
 
+  function updateTicket(id, seatNo) {
+    setSelectedTicketId(id);
+    setSelectedSeat(seatNo);
+    setShowUpdateTicketModal(true);
+  }
+
+  function deleteTicket(id) {
+    const accessToken = getAccessToken();
+    swal.fire({
+      title: 'Are you sure?',
+      text: "You won't be able to revert this!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Yes, delete it!',
+    }).then((result) => {
+      if (!result.isConfirmed) {
+        return;
+      }
+      axios.delete(`${BackendURL}/ticket/${id}`, { headers: { Authorization: `Bearer ${accessToken}` } })
+        .then(() => {
+          swal.fire({ icon: 'success', title: 'Success', showConfirmButton: false, timer: 1000 })
+            .then(() => setNeedReload(true));
+        })
+        .catch((error) => {
+          if (error.response && error.response.data) {
+            const message = error.response.data.error_msg || '';
+            swal.fire({ icon: 'error', title: 'Error', text: message });
+            return;
+          }
+          swal.fire({ icon: 'error', title: 'Error', text: 'Unknown error.' });
+        });
+    });
+  }
+
   return (
     <Container className="p-3">
       <Row>
@@ -47,7 +87,8 @@ export default function Audiance() {
           <hr />
         </Col>
       </Row>
-      <UsersList data={data} reloadData={() => setNeedReload(true)} />
+      <UsersList data={data} updateTicket={updateTicket} deleteTicket={deleteTicket} />
+      <UpdateTicketModal show={showUpdateTicketModal} ticketId={selectedTicketId} seat={selectedSeat} hideModal={() => setShowUpdateTicketModal(false)} reloadData={() => setNeedReload(true)} />
     </Container>
   );
 }

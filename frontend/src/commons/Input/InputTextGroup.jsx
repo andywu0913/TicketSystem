@@ -50,7 +50,7 @@ InputTextGroup.defaultProps = {
   value:       '',
   icon:        null,
   onChange:    () => {},
-  onBlur:    () => {},
+  onBlur:      () => {},
   isValid:     false,
   isInvalid:   false,
   errorMsg:    '',

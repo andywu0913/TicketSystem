@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button, Card, Carousel, Col, Container, OverlayTrigger, Row, Tooltip } from 'react-bootstrap';
-import { ClockFill, GearFill, GeoAltFill } from 'react-bootstrap-icons';
+import { ClockFill, GearFill, GeoAltFill, TrashFill } from 'react-bootstrap-icons';
 import { Link } from 'react-router-dom';
 
 import PropTypes from 'prop-types';
@@ -54,9 +54,14 @@ export default function TicketCard(props) {
               <Col sm={12} md={12} lg={1} className="align-self-center text-center p-2">
                 {data.session_is_active
                   ? (
-                    <Button variant="link" onClick={() => updateTicket(data.id, data.seat_no)}>
-                      <GearFill className="text-muted" size="1.25rem" />
-                    </Button>
+                    <>
+                      <Button variant="link" onClick={() => updateTicket(data.id, data.seat_no)}>
+                        <GearFill className="text-muted" size="1.25rem" />
+                      </Button>
+                      <Button variant="link" onClick={() => updateTicket(data.id, data.seat_no)}>
+                        <TrashFill className="text-muted" size="1.25rem" />
+                      </Button>
+                    </>
                   )
                   : (
                     <OverlayTrigger overlay={<Tooltip>Cannot modify this ticket right now. The event host has locked this session.</Tooltip>}>

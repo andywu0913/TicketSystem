@@ -1,5 +1,6 @@
 import React from 'react';
 import { Button, Col, Container, Form, FormControl, InputGroup, Modal, Row } from 'react-bootstrap';
+import { Check2Square } from 'react-bootstrap-icons';
 
 import axios from 'axios';
 import { Formik } from 'formik';
@@ -11,17 +12,14 @@ import { getAccessToken } from 'SRC/utils/jwt';
 import BackendURL from 'BackendURL';
 
 export default function UpdateTicketModal(props) {
-  const { ticketId, seat, show, hideModal, reloadData } = props;
+  const { show, ticketId, seat, hideModal, reloadData } = props;
 
   return (
     <Modal show={show} onHide={hideModal} size="sm" centered>
-      <Modal.Header closeButton>
-        <Modal.Title id="contained-modal-title-vcenter">Seat Selection</Modal.Title>
-      </Modal.Header>
       <Formik
         initialValues={{ seat }}
         validate={handleValidation}
-        onSubmit={handleUpdate(ticketId, reloadData, hideModal)}
+        onSubmit={handleUpdate(ticketId, hideModal, reloadData)}
         enableReinitialize
       >
         {({
@@ -34,6 +32,9 @@ export default function UpdateTicketModal(props) {
           isSubmitting,
         }) => (
           <Form noValidate onSubmit={handleSubmit}>
+            <Modal.Header closeButton>
+              <Modal.Title id="contained-modal-title-vcenter">Seat Selection</Modal.Title>
+            </Modal.Header>
             <Modal.Body>
               <Container>
                 <Row>
@@ -52,8 +53,9 @@ export default function UpdateTicketModal(props) {
               </Container>
             </Modal.Body>
             <Modal.Footer>
-              <Button variant="danger" onClick={() => handleDelete(ticketId, reloadData, hideModal)}>Delete ticket</Button>
-              <Button variant="primary" type="submit" disabled={!dirty || isSubmitting}>Update seat</Button>
+              <Button variant="primary" type="submit" disabled={!dirty || isSubmitting}>
+                <Check2Square size="1.25rem" />&nbsp;Update seat
+              </Button>
             </Modal.Footer>
           </Form>
         )}
@@ -71,8 +73,9 @@ function handleValidation(values) {
   return errors;
 }
 
-function handleUpdate(ticketId, reloadData, hideModal) {
+function handleUpdate(ticketId, hideModal, reloadData) {
   return (values, { setSubmitting }) => {
+    swal.showLoading();
     const accessToken = getAccessToken();
     axios.put(`${BackendURL}/ticket/${ticketId}`, { seat_no: values.seat }, { headers: { Authorization: `Bearer ${accessToken}` } })
       .then(() => {
@@ -92,49 +95,18 @@ function handleUpdate(ticketId, reloadData, hideModal) {
   };
 }
 
-function handleDelete(ticketId, reloadData, hideModal) {
-  const accessToken = getAccessToken();
-  swal.fire({
-    title: 'Are you sure?',
-    text: "You won't be able to revert this!",
-    icon: 'warning',
-    showCancelButton: true,
-    confirmButtonColor: '#d33',
-    cancelButtonColor: '#3085d6',
-    confirmButtonText: 'Yes, delete it!',
-  }).then((result) => {
-    if (!result.isConfirmed) {
-      return;
-    }
-    axios.delete(`${BackendURL}/ticket/${ticketId}`, { headers: { Authorization: `Bearer ${accessToken}` } })
-      .then(() => {
-        hideModal();
-        swal.fire({ icon: 'success', title: 'Success', showConfirmButton: false, timer: 1000 })
-          .then(() => reloadData());
-      })
-      .catch((error) => {
-        if (error.response && error.response.data) {
-          const message = error.response.data.error_msg || '';
-          swal.fire({ icon: 'error', title: 'Error', text: message });
-          return;
-        }
-        swal.fire({ icon: 'error', title: 'Error', text: 'Unknown error.' });
-      });
-  });
-}
-
 UpdateTicketModal.propTypes = {
   show: PropTypes.bool,
   ticketId: PropTypes.number,
-  seat: PropTypes.number,
+  seat: PropTypes.string,
   hideModal: PropTypes.func,
   reloadData: PropTypes.func,
 };
 
 UpdateTicketModal.defaultProps = {
   show: false,
-  ticketId: PropTypes.number,
-  seat: PropTypes.number,
+  ticketId: null,
+  seat: '',
   hideModal: () => {},
   reloadData: () => {},
 };

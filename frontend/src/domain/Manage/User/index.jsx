@@ -14,7 +14,7 @@ export default class extends Component {
     this.loadData = this.loadData.bind(this);
     this.showUpdateUserModal = this.showUpdateUserModal.bind(this);
     this.hideUpdateUserModal = this.hideUpdateUserModal.bind(this);
-    this.state = { data: [], showUpdateUserModal: false, userObj: null };
+    this.state = { data: [], showUpdateUserModal: false, userObj: {} };
   }
 
   componentDidMount() {
@@ -40,7 +40,7 @@ export default class extends Component {
   }
 
   hideUpdateUserModal() {
-    this.setState({ showUpdateUserModal: false, userObj: null });
+    this.setState({ showUpdateUserModal: false, userObj: {} });
   }
 
   render() {
@@ -54,7 +54,7 @@ export default class extends Component {
           </Col>
         </Row>
         <UsersList data={data} showUpdateUserModal={this.showUpdateUserModal} />
-        <UpdateUserModal show={showUpdateUserModal} userObj={userObj} hideModal={this.hideUpdateUserModal} reloadData={this.loadData} />
+        <UpdateUserModal show={showUpdateUserModal} userId={userObj.id} name={userObj.name} email={userObj.email} role={`${userObj.role}`} hideModal={this.hideUpdateUserModal} reloadData={this.loadData} />
       </Container>
     );
   }

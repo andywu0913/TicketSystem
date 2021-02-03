@@ -1,18 +1,11 @@
 import React from 'react';
 import { Button, Table } from 'react-bootstrap';
 import { PencilSquare, TrashFill } from 'react-bootstrap-icons';
-import { Link } from 'react-router-dom';
 
-import axios from 'axios';
 import PropTypes from 'prop-types';
-import swal from 'sweetalert2';
-
-import { getAccessToken } from 'SRC/utils/jwt';
-
-import BackendURL from 'BackendURL';
 
 function TicketList(props) {
-  const { data, reloadData } = props;
+  const { data, updateTicket, deleteTicket } = props;
   const tickets = data.map((ticket) => (
     <tr key={ticket.id}>
       <td className="align-middle text-nowrap">{ticket.id}</td>
@@ -22,10 +15,10 @@ function TicketList(props) {
       <td className="align-middle text-nowrap">{ticket.seat_no}</td>
       <td className="align-middle text-nowrap">{new Date(ticket.book_time).toLocaleString()}</td>
       <td className="align-middle d-flex">
-        <Button variant="primary" className="m-1 text-nowrap" onClick={() => {}}>
+        <Button variant="primary" className="m-1 text-nowrap" onClick={() => updateTicket(ticket.id, ticket.seat_no)}>
           <PencilSquare size="1.25rem" />{' '}Edit
         </Button>
-        <Button variant="danger" className="m-1 text-nowrap" onClick={() => handleDelete(ticket.id, reloadData)}>
+        <Button variant="danger" className="m-1 text-nowrap" onClick={() => deleteTicket(ticket.id)}>
           <TrashFill size="1.25rem" />{' '}Delete
         </Button>
       </td>
@@ -52,44 +45,14 @@ function TicketList(props) {
   );
 }
 
-function handleDelete(id, reloadData) {
-  const accessToken = getAccessToken();
-  swal.fire({
-    title: 'Are you sure?',
-    text: "You won't be able to revert this!",
-    icon: 'warning',
-    showCancelButton: true,
-    confirmButtonColor: '#d33',
-    cancelButtonColor: '#3085d6',
-    confirmButtonText: 'Yes, delete it!',
-  }).then((result) => {
-    if (!result.isConfirmed) {
-      return;
-    }
-    axios.delete(`${BackendURL}/ticket/${id}`, { headers: { Authorization: `Bearer ${accessToken}` } })
-      .then(() => {
-        swal.fire({ icon: 'success', title: 'Success', showConfirmButton: false, timer: 1000 })
-          .then(() => reloadData());
-      })
-      .catch((error) => {
-        if (error.response && error.response.data) {
-          const message = error.response.data.error_msg || '';
-          swal.fire({ icon: 'error', title: 'Error', text: message });
-          return;
-        }
-        swal.fire({ icon: 'error', title: 'Error', text: 'Unknown error.' });
-      });
-  });
-}
-
 TicketList.propTypes = {
   data: PropTypes.instanceOf(Array),
-  reloadData: PropTypes.func,
+  deleteTicket: PropTypes.func,
 };
 
 TicketList.defaultProps = {
   data: [],
-  reloadData: () => {},
+  deleteTicket: () => {},
 };
 
 export default TicketList;
