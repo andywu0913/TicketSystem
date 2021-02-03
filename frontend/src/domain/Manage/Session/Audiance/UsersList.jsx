@@ -84,12 +84,12 @@ function handleDelete(id, reloadData) {
 
 TicketList.propTypes = {
   data: PropTypes.instanceOf(Array),
-  showUserUpdateModal: PropTypes.func,
+  reloadData: PropTypes.func,
 };
 
 TicketList.defaultProps = {
   data: [],
-  showUserUpdateModal: () => {},
+  reloadData: () => {},
 };
 
 export default TicketList;

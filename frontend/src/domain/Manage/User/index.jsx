@@ -6,15 +6,15 @@ import Axios from 'axios';
 import { getAccessToken } from 'SRC/utils/jwt';
 
 import UsersList from './UsersList';
-import UserUpdateModal from 'SRC/commons/Modal/UserUpdateModal';
+import UpdateUserModal from 'SRC/commons/Modal/UpdateUserModal';
 
 export default class extends Component {
   constructor(props) {
     super(props);
     this.loadData = this.loadData.bind(this);
-    this.showUserUpdateModal = this.showUserUpdateModal.bind(this);
-    this.hideUserUpdateModal = this.hideUserUpdateModal.bind(this);
-    this.state = { data: [], showUserUpdateModal: false, userObj: null };
+    this.showUpdateUserModal = this.showUpdateUserModal.bind(this);
+    this.hideUpdateUserModal = this.hideUpdateUserModal.bind(this);
+    this.state = { data: [], showUpdateUserModal: false, userObj: null };
   }
 
   componentDidMount() {
@@ -35,16 +35,16 @@ export default class extends Component {
     });
   }
 
-  showUserUpdateModal(userObj) {
-    this.setState({ showUserUpdateModal: true, userObj });
+  showUpdateUserModal(userObj) {
+    this.setState({ showUpdateUserModal: true, userObj });
   }
 
-  hideUserUpdateModal() {
-    this.setState({ showUserUpdateModal: false, userObj: null });
+  hideUpdateUserModal() {
+    this.setState({ showUpdateUserModal: false, userObj: null });
   }
 
   render() {
-    const { data, showUserUpdateModal, userObj } = this.state;
+    const { data, showUpdateUserModal, userObj } = this.state;
     return (
       <Container className="p-3">
         <Row>
@@ -53,8 +53,8 @@ export default class extends Component {
             <hr />
           </Col>
         </Row>
-        <UsersList data={data} showUserUpdateModal={this.showUserUpdateModal} />
-        <UserUpdateModal show={showUserUpdateModal} userObj={userObj} hideModal={this.hideUserUpdateModal} reloadData={this.loadData} />
+        <UsersList data={data} showUpdateUserModal={this.showUpdateUserModal} />
+        <UpdateUserModal show={showUpdateUserModal} userObj={userObj} hideModal={this.hideUpdateUserModal} reloadData={this.loadData} />
       </Container>
     );
   }

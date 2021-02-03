@@ -6,7 +6,8 @@ import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import swal from 'sweetalert2';
 
-import BookTicketModal from './BookTicketModal';
+import BookTicketModal from 'SRC/commons/Modal/BookTicketModal';
+
 import SessionList from './SessionList';
 
 import BackendURL from 'BackendURL';

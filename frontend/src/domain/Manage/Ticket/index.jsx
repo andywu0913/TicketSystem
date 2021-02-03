@@ -7,14 +7,14 @@ import swal from 'sweetalert2';
 import { getAccessToken } from 'SRC/utils/jwt';
 
 import TicketCard from './TicketCard';
-import TicketUpdateModal from 'SRC/commons/modal/TicketUpdateModal';
+import UpdateTicketModal from 'SRC/commons/modal/UpdateTicketModal';
 
 import BackendURL from 'BackendURL';
 
 export default function Ticket() {
   const [data, setData] = useState([]);
   const [needReload, setNeedReload] = useState(true);
-  const [showTicketUpdateModal, setShowTicketUpdateModal] = useState(false);
+  const [showUpdateTicketModal, setShowUpdateTicketModal] = useState(false);
   const [selectedTicketId, setSelectedTicketId] = useState(null);
   const [selectedSeat, setSelectedSeat] = useState(null);
 
@@ -47,7 +47,7 @@ export default function Ticket() {
   function updateTicket(ticketId, seatNo) {
     setSelectedTicketId(ticketId);
     setSelectedSeat(seatNo);
-    setShowTicketUpdateModal(true);
+    setShowUpdateTicketModal(true);
   }
 
   return (
@@ -67,7 +67,7 @@ export default function Ticket() {
             </Col>
           </Row>
         )}
-      <TicketUpdateModal show={showTicketUpdateModal} ticketId={selectedTicketId} seat={selectedSeat} hideModal={() => setShowTicketUpdateModal(false)} reloadData={() => setNeedReload(true)} />
+      <UpdateTicketModal show={showUpdateTicketModal} ticketId={selectedTicketId} seat={selectedSeat} hideModal={() => setShowUpdateTicketModal(false)} reloadData={() => setNeedReload(true)} />
     </Container>
   );
 }

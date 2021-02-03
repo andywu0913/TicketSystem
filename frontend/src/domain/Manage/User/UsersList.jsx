@@ -30,7 +30,7 @@ function UsersList(props) {
             </OverlayTrigger>
           )
           : (
-            <Link to="#" onClick={() => props.showUserUpdateModal(user)} className="text-reset">
+            <Link to="#" onClick={() => props.showUpdateUserModal(user)} className="text-reset">
               <Button variant="primary" className="text-nowrap">
                 <PencilSquare size="1.25rem" />{' '}Edit
               </Button>
@@ -62,12 +62,12 @@ function UsersList(props) {
 
 UsersList.propTypes = {
   data: PropTypes.instanceOf(Array),
-  showUserUpdateModal: PropTypes.func,
+  showUpdateUserModal: PropTypes.func,
 };
 
 UsersList.defaultProps = {
   data: [],
-  showUserUpdateModal: () => {},
+  showUpdateUserModal: () => {},
 };
 
 export default UsersList;

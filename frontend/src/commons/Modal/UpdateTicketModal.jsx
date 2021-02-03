@@ -10,7 +10,7 @@ import { getAccessToken } from 'SRC/utils/jwt';
 
 import BackendURL from 'BackendURL';
 
-export default function TicketUpdateModal(props) {
+export default function UpdateTicketModal(props) {
   const { ticketId, seat, show, hideModal, reloadData } = props;
 
   return (
@@ -123,7 +123,7 @@ function handleDelete(ticketId, reloadData, hideModal) {
   });
 }
 
-TicketUpdateModal.propTypes = {
+UpdateTicketModal.propTypes = {
   show: PropTypes.bool,
   ticketId: PropTypes.number,
   seat: PropTypes.number,
@@ -131,7 +131,7 @@ TicketUpdateModal.propTypes = {
   reloadData: PropTypes.func,
 };
 
-TicketUpdateModal.defaultProps = {
+UpdateTicketModal.defaultProps = {
   show: false,
   ticketId: PropTypes.number,
   seat: PropTypes.number,

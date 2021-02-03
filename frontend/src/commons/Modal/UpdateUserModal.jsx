@@ -10,7 +10,7 @@ import InputSelectGroup from 'SRC/commons/Input/InputSelectGroup';
 import InputTextGroup from 'SRC/commons/Input/InputTextGroup';
 import { getAccessToken } from 'SRC/utils/jwt';
 
-class UserUpdateModal extends Component {
+class UpdateUserModal extends Component {
   constructor(props) {
     super(props);
     this.handleChange = this.handleChange.bind(this);
@@ -89,18 +89,18 @@ class UserUpdateModal extends Component {
   }
 }
 
-UserUpdateModal.propTypes = {
+UpdateUserModal.propTypes = {
   show: PropTypes.bool,
   userObj: PropTypes.instanceOf(Object),
   hideModal: PropTypes.func,
   reloadData: PropTypes.func,
 };
 
-UserUpdateModal.defaultProps = {
+UpdateUserModal.defaultProps = {
   show: false,
   userObj: {},
   hideModal: () => {},
   reloadData: () => {},
 };
 
-export default UserUpdateModal;
+export default UpdateUserModal;
