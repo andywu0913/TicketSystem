@@ -1,101 +1,105 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { Button, Form, Modal } from 'react-bootstrap';
 import { Check2, EaselFill } from 'react-bootstrap-icons';
-import { Redirect } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 
-import Axios from 'axios';
+import axios from 'axios';
+import { Formik } from 'formik';
 import PropTypes from 'prop-types';
-import Swal from 'sweetalert2';
+import swal from 'sweetalert2';
 
 import InputTextGroup from 'SRC/commons/InputTextGroup';
-import { getAccessToken, verifySaved } from 'SRC/utils/jwt';
+import { getAccessToken } from 'SRC/utils/jwt';
 
-class BookTicketModal extends Component {
-  constructor(props) {
-    super(props);
-    this.handleChange = this.handleChange.bind(this);
-    this.handleSubmit = this.handleSubmit.bind(this);
-    this.state = { changed: null, booked: false };
-  }
+import BackendURL from 'BackendURL';
 
-  static getDerivedStateFromProps(props, state) {
-    if (!props.show) {
-      return { changed: null };
-    }
-    if (props.show && state.changed === null) {
-      const isVerified = verifySaved();
-      return { ...props.sessionObj, changed: false, isVerified };
-    }
-    return null;
-  }
+export default function BookTicketModal(props) {
+  const { show, sessionId, address, time, price, openSeats, seat, hideModal } = props;
+  const history = useHistory();
 
-  handleChange(event) {
-    const { name, value } = event.target;
-    this.setState({ [name]: value, changed: true });
-  }
+  return (
+    <Modal show={show} onHide={hideModal} size="md" centered>
+      <Formik
+        initialValues={{ seat }}
+        validate={handleValidation}
+        onSubmit={handleSubmit(sessionId, () => history.push('/manage/ticket'))}
+        enableReinitialize
+      >
+        {({
+          values,
+          errors,
+          handleChange,
+          handleBlur,
+          handleSubmit,
+          isSubmitting,
+        }) => (
+          <Form noValidate onSubmit={handleSubmit}>
+            <Modal.Header closeButton>
+              <Modal.Title id="contained-modal-title-vcenter">{address}</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+              <p>Time: {time}</p>
+              <p>Price: {price}</p>
+              <p>Available seats left: {openSeats}</p>
+              <InputTextGroup label="Seat No" name="seat" type="text" value={values.seat} icon={<EaselFill />} onChange={handleChange} onBlur={handleBlur} isInvalid={!!errors.seat} errorMsg={errors.seat} />
+            </Modal.Body>
+            <Modal.Footer>
+              <Button variant="primary" type="submit" disabled={isSubmitting} block><Check2 />{' '}Book</Button>
+            </Modal.Footer>
+          </Form>
+        )}
+      </Formik>
+    </Modal>
+  );
+}
 
-  handleSubmit(event) {
-    event.preventDefault();
-    const { id, seat } = this.state;
+function handleValidation(values) {
+  const errors = {};
+
+  if (!values.seat) errors.seat = 'Required';
+  else if (!/^[0-9]+$/.test(values.seat)) errors.seat = 'Not valid number';
+
+  return errors;
+}
+
+function handleSubmit(id, redirect) {
+  return (values, { setSubmitting }) => {
     const accessToken = getAccessToken();
-    Axios.post(`http://localhost:3000/api/ticket/?session_id=${id}`, { seat_no: seat }, {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    }).then(() => {
-      Swal.fire({ icon: 'success', title: 'Success', showConfirmButton: false, timer: 1000 });
-      this.setState({ booked: true });
-    }).catch((error) => {
-      if (error.response && error.response.data) {
-        const message = error.response.data.error_msg || '';
-        Swal.fire({ icon: 'error', title: 'Error', text: message });
-        return;
-      }
-      Swal.fire({ icon: 'error', title: 'Error', text: 'Unknown error.' });
-    });
-  }
-
-  render() {
-    const { show, hideModal } = this.props;
-    if (!show) {
-      return null;
-    }
-    const { address, time, open_seats: openSeats, price, seat, changed, isVerified, booked } = this.state;
-    return (
-      <Modal show={show} onHide={hideModal} size="md" centered>
-        <Form onSubmit={this.handleSubmit}>
-          <Modal.Header closeButton>
-            <Modal.Title id="contained-modal-title-vcenter">
-              {address}
-            </Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-            <p>Time: {time}</p>
-            <p>Price: {price}</p>
-            <p>Available seats left: {openSeats}</p>
-            <InputTextGroup label="Seat No" name="seat" type="number" value={seat} icon={<EaselFill />} onChange={this.handleChange} />
-          </Modal.Body>
-          <Modal.Footer>
-            <Button variant="primary" type="submit" disabled={!changed} block><Check2 />{' '}Book</Button>
-          </Modal.Footer>
-        </Form>
-        {isVerified || <Redirect to="/user/signin" />}
-        {booked && <Redirect to="/manage/ticket" />}
-      </Modal>
-    );
-  }
+    axios.post(`${BackendURL}/ticket/?session_id=${id}`, { seat_no: values.seat }, { headers: { Authorization: `Bearer ${accessToken}` } })
+      .then(() => {
+        swal.fire({ icon: 'success', title: 'Success', showConfirmButton: false, timer: 1000 })
+          .then(() => redirect());
+      })
+      .catch((error) => {
+        setSubmitting(false);
+        if (error.response && error.response.data) {
+          const message = error.response.data.error_msg || '';
+          swal.fire({ icon: 'error', title: 'Error', text: message });
+          return;
+        }
+        swal.fire({ icon: 'error', title: 'Error', text: 'Unknown error.' });
+      });
+  };
 }
 
 BookTicketModal.propTypes = {
   show: PropTypes.bool,
-  sessionObj: PropTypes.instanceOf(Object),
+  sessionId: PropTypes.number,
+  address: PropTypes.string,
+  time: PropTypes.string,
+  price: PropTypes.string,
+  openSeats: PropTypes.string,
+  seat: PropTypes.string,
   hideModal: PropTypes.func,
 };
 
 BookTicketModal.defaultProps = {
   show: false,
-  sessionObj: {},
+  sessionId: null,
+  address: '',
+  time: '',
+  price: '',
+  openSeats: '',
+  seat: '',
   hideModal: () => {},
 };
-
-export default BookTicketModal;

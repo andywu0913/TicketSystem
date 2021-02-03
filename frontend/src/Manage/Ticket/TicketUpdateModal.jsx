@@ -21,7 +21,7 @@ export default function TicketUpdateModal(props) {
       <Formik
         initialValues={{ seat }}
         validate={handleValidation}
-        onSubmit={(values) => handleUpdate(ticketId, values.seat, reloadData, hideModal)}
+        onSubmit={handleUpdate(ticketId, reloadData, hideModal)}
         enableReinitialize
       >
         {({
@@ -71,22 +71,25 @@ function handleValidation(values) {
   return errors;
 }
 
-function handleUpdate(ticketId, seat, reloadData, hideModal) {
-  const accessToken = getAccessToken();
-  axios.put(`${BackendURL}/ticket/${ticketId}`, { seat_no: seat }, { headers: { Authorization: `Bearer ${accessToken}` } })
-    .then(() => {
-      hideModal();
-      swal.fire({ icon: 'success', title: 'Success', showConfirmButton: false, timer: 1000 })
-        .then(() => reloadData());
-    })
-    .catch((error) => {
-      if (error.response && error.response.data) {
-        const message = error.response.data.error_msg || '';
-        swal.fire({ icon: 'error', title: 'Error', text: message });
-        return;
-      }
-      swal.fire({ icon: 'error', title: 'Error', text: 'Unknown error.' });
-    });
+function handleUpdate(ticketId, reloadData, hideModal) {
+  return (values, { setSubmitting }) => {
+    const accessToken = getAccessToken();
+    axios.put(`${BackendURL}/ticket/${ticketId}`, { seat_no: values.seat }, { headers: { Authorization: `Bearer ${accessToken}` } })
+      .then(() => {
+        hideModal();
+        swal.fire({ icon: 'success', title: 'Success', showConfirmButton: false, timer: 1000 })
+          .then(() => reloadData());
+      })
+      .catch((error) => {
+        setSubmitting(false);
+        if (error.response && error.response.data) {
+          const message = error.response.data.error_msg || '';
+          swal.fire({ icon: 'error', title: 'Error', text: message });
+          return;
+        }
+        swal.fire({ icon: 'error', title: 'Error', text: 'Unknown error.' });
+      });
+  };
 }
 
 function handleDelete(ticketId, reloadData, hideModal) {
