@@ -1,23 +1,23 @@
 import React, { Component } from 'react';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
 
-import Event from 'SRC/Event';
+import PageNotFound from 'SRC/commons/PageNotFound';
+import Event from 'SRC/domain/Event';
+import Home from 'SRC/domain/Home';
+import ManageEvent from 'SRC/domain/Manage/Event';
+import ManageEventCreate from 'SRC/domain/Manage/Event/Create';
+import ManageEventUpdate from 'SRC/domain/Manage/Event/Update';
+import ManageSessionAudiance from 'SRC/domain/Manage/Session/Audiance';
+import ManageSessionCreate from 'SRC/domain/Manage/Session/Create';
+import ManageSessionUpdate from 'SRC/domain/Manage/Session/Update';
+import ManageTicket from 'SRC/domain/Manage/Ticket';
+import ManageUser from 'SRC/domain/Manage/User';
+import Profile from 'SRC/domain/User/Profile';
+import SignIn from 'SRC/domain/User/SignIn';
+import SignInGitHub from 'SRC/domain/User/SignIn/GitHub';
+import SignUp from 'SRC/domain/User/SignUp';
 import Footer from 'SRC/Footer';
 import Header from 'SRC/Header';
-import Home from 'SRC/Home';
-import ManageEvent from 'SRC/Manage/Event';
-import ManageEventCreate from 'SRC/Manage/Event/Create';
-import ManageEventUpdate from 'SRC/Manage/Event/Update';
-import ManageSessionAudiance from 'SRC/Manage/Session/Audiance';
-import ManageSessionCreate from 'SRC/Manage/Session/Create';
-import ManageSessionUpdate from 'SRC/Manage/Session/Update';
-import ManageTicket from 'SRC/Manage/Ticket';
-import ManageUser from 'SRC/Manage/User';
-import PageNotFound from 'SRC/PageNotFound';
-import Profile from 'SRC/User/Profile';
-import SignIn from 'SRC/User/SignIn';
-import SignInGitHub from 'SRC/User/SignIn/GitHub';
-import SignUp from 'SRC/User/SignUp';
 import { setRenewTimer } from 'SRC/utils/jwt';
 
 import AuthRoute from './AuthRoute';

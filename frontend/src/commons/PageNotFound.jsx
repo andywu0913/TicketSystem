@@ -3,7 +3,7 @@ import { Col, Container, Row } from 'react-bootstrap';
 import { HouseFill } from 'react-bootstrap-icons';
 import { Link } from 'react-router-dom';
 
-export default function Error() {
+export default function PageNotFound() {
   return (
     <Container className="align-self-center mt-3 mb-3">
       <Row>
