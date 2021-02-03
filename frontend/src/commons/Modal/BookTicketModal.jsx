@@ -12,7 +12,7 @@ import { getAccessToken } from 'SRC/utils/jwt';
 
 import BackendURL from 'BackendURL';
 
-export default function BookTicketModal(props) {
+function BookTicketModal(props) {
   const { show, sessionId, address, time, price, openSeats, seat, hideModal, redirect } = props;
 
   return (
@@ -39,7 +39,17 @@ export default function BookTicketModal(props) {
               <p>Time: {time}</p>
               <p>Price: {price}</p>
               <p>Available seats left: {openSeats}</p>
-              <InputTextGroup label="Seat No" name="seat" type="text" value={values.seat} icon={<EaselFill />} onChange={handleChange} onBlur={handleBlur} isInvalid={!!errors.seat} errorMsg={errors.seat} />
+              <InputTextGroup
+                label="Seat No"
+                name="seat"
+                type="text"
+                value={values.seat}
+                icon={<EaselFill />}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                isInvalid={!!errors.seat}
+                errorMsg={errors.seat}
+              />
             </Modal.Body>
             <Modal.Footer>
               <Button variant="primary" type="submit" disabled={isSubmitting} block><Check2 />&nbsp;Book</Button>
@@ -104,3 +114,5 @@ BookTicketModal.defaultProps = {
   hideModal: () => {},
   redirect: () => {},
 };
+
+export default BookTicketModal;

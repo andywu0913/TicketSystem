@@ -11,7 +11,7 @@ import { getAccessToken } from 'SRC/utils/jwt';
 
 import BackendURL from 'BackendURL';
 
-export default function UpdateTicketModal(props) {
+function UpdateTicketModal(props) {
   const { show, ticketId, seat, hideModal, reloadData } = props;
 
   return (
@@ -44,7 +44,15 @@ export default function UpdateTicketModal(props) {
                   <Col className="align-self-center text-center">
                     <Form.Group>
                       <InputGroup>
-                        <FormControl type="text" name="seat" size="lg" value={values.seat} onChange={handleChange} onBlur={handleBlur} isInvalid={!!errors.seat} />
+                        <FormControl
+                          type="text"
+                          name="seat"
+                          size="lg"
+                          value={values.seat}
+                          onChange={handleChange}
+                          onBlur={handleBlur}
+                          isInvalid={!!errors.seat}
+                        />
                         <Form.Control.Feedback type="invalid" tooltip>{errors.seat}</Form.Control.Feedback>
                       </InputGroup>
                     </Form.Group>
@@ -110,3 +118,5 @@ UpdateTicketModal.defaultProps = {
   hideModal: () => {},
   reloadData: () => {},
 };
+
+export default UpdateTicketModal;

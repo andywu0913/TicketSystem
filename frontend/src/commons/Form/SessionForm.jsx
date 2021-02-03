@@ -12,7 +12,7 @@ import InputTextGroup from 'SRC/commons/Input/InputTextGroup';
 import 'react-datepicker/dist/react-datepicker.css';
 import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
 
-export default function SessionForm(props) {
+function SessionForm(props) {
   const history = useHistory();
   const { formTitle, name, address, time, eventStartDate, eventEndDate, sellTimeOpen, sellTimeEnd, maxSeats, price, formSubmitBtnText, onSubmit } = props;
   return (
@@ -22,7 +22,14 @@ export default function SessionForm(props) {
           <Card>
             <Card.Body>
               <Formik
-                initialValues={{ address, time: new Date(time || eventEndDate), sellTimeOpen: new Date(sellTimeOpen || eventStartDate), sellTimeEnd: new Date(sellTimeEnd || eventEndDate), maxSeats, price }}
+                initialValues={{
+                  address,
+                  time: new Date(time || eventEndDate),
+                  sellTimeOpen: new Date(sellTimeOpen || eventStartDate),
+                  sellTimeEnd: new Date(sellTimeEnd || eventEndDate),
+                  maxSeats,
+                  price,
+                }}
                 validate={handleValidation}
                 onSubmit={onSubmit}
                 enableReinitialize
@@ -40,12 +47,30 @@ export default function SessionForm(props) {
                     <h2 className="text-dark mb-3">{formTitle}</h2>
                     <hr />
                     <h3 className="text-dark mb-3">{name}</h3>
-                    <InputTextGroup label="Location" name="address" type="text" value={values.address} onChange={handleChange} isInvalid={touched.address && !!errors.address} errorMsg={errors.address} placeholder="Add session address" />
+                    <InputTextGroup
+                      label="Location"
+                      name="address"
+                      type="text"
+                      value={values.address}
+                      onChange={handleChange}
+                      isInvalid={touched.address && !!errors.address}
+                      errorMsg={errors.address}
+                      placeholder="Add session address"
+                    />
                     <Form.Label>Time</Form.Label>
                     <Row>
                       <Col>
                         <Form.Group>
-                          <DatePicker name="time" className="form-control" selected={values.time} onChange={(date) => setFieldValue('time', date || new Date())} minDate={new Date(eventStartDate)} maxDate={new Date(eventEndDate)} dateFormat="yyyy-MM-dd HH:mm" showTimeSelect />
+                          <DatePicker
+                            name="time"
+                            className="form-control"
+                            selected={values.time}
+                            onChange={(date) => setFieldValue('time', date || new Date())}
+                            minDate={new Date(eventStartDate)}
+                            maxDate={new Date(eventEndDate)}
+                            dateFormat="yyyy-MM-dd HH:mm"
+                            showTimeSelect
+                          />
                         </Form.Group>
                       </Col>
                     </Row>
@@ -53,7 +78,19 @@ export default function SessionForm(props) {
                     <Row>
                       <Col>
                         <Form.Group>
-                          <DatePicker name="sellTimeOpen" className="form-control" selected={values.sellTimeOpen} onChange={(date) => setFieldValue('sellTimeOpen', date || new Date())} selectsStart startDate={values.sellTimeOpen} endDate={values.sellTimeEnd} minDate={new Date(eventStartDate)} maxDate={new Date(eventEndDate)} dateFormat="yyyy-MM-dd HH:mm" showTimeInput />
+                          <DatePicker
+                            name="sellTimeOpen"
+                            className="form-control"
+                            selected={values.sellTimeOpen}
+                            onChange={(date) => setFieldValue('sellTimeOpen', date || new Date())}
+                            startDate={values.sellTimeOpen}
+                            endDate={values.sellTimeEnd}
+                            minDate={new Date(eventStartDate)}
+                            maxDate={new Date(eventEndDate)}
+                            dateFormat="yyyy-MM-dd HH:mm"
+                            selectsStart
+                            showTimeInput
+                          />
                         </Form.Group>
                       </Col>
                       <Col md={1} className="align-self-center justify-content-md-center text-center">
@@ -61,13 +98,45 @@ export default function SessionForm(props) {
                       </Col>
                       <Col>
                         <Form.Group>
-                          <DatePicker name="sellTimeEnd" className="form-control" selected={values.sellTimeEnd} onChange={(date) => setFieldValue('sellTimeEnd', date || new Date())} selectsEnd startDate={values.sellTimeOpen} endDate={values.sellTimeEnd} minDate={new Date(eventStartDate)} maxDate={new Date(eventEndDate)} dateFormat="yyyy-MM-dd HH:mm" showTimeInput />
+                          <DatePicker
+                            name="sellTimeEnd"
+                            className="form-control"
+                            selected={values.sellTimeEnd}
+                            onChange={(date) => setFieldValue('sellTimeEnd', date || new Date())}
+                            startDate={values.sellTimeOpen}
+                            endDate={values.sellTimeEnd}
+                            minDate={new Date(eventStartDate)}
+                            maxDate={new Date(eventEndDate)}
+                            dateFormat="yyyy-MM-dd HH:mm"
+                            selectsEnd
+                            showTimeInput
+                          />
                         </Form.Group>
                       </Col>
                     </Row>
                     {errors.date && <Alert variant="danger">{errors.date}</Alert> }
-                    <InputTextGroup label="Total Seats" name="maxSeats" type="number" value={`${values.maxSeats}`} min="0" onChange={handleChange} isInvalid={touched.maxSeats && !!errors.maxSeats} errorMsg={errors.maxSeats} placeholder="Add max seats for this session" />
-                    <InputTextGroup label="Price" name="price" type="number" value={`${values.price}`} min="0" onChange={handleChange} isInvalid={touched.price && !!errors.price} errorMsg={errors.price} placeholder="Add ticket price for this session" />
+                    <InputTextGroup
+                      label="Total Seats"
+                      name="maxSeats"
+                      type="number"
+                      value={`${values.maxSeats}`}
+                      min="0"
+                      onChange={handleChange}
+                      isInvalid={touched.maxSeats && !!errors.maxSeats}
+                      errorMsg={errors.maxSeats}
+                      placeholder="Add max seats for this session"
+                    />
+                    <InputTextGroup
+                      label="Price"
+                      name="price"
+                      type="number"
+                      value={`${values.price}`}
+                      min="0"
+                      onChange={handleChange}
+                      isInvalid={touched.price && !!errors.price}
+                      errorMsg={errors.price}
+                      placeholder="Add ticket price for this session"
+                    />
                     <hr />
                     <Button variant="primary" type="submit" disabled={isSubmitting} block>{formSubmitBtnText}</Button>
                     <Card.Text className="text-center text-secondary mt-1 mb-1">- or -</Card.Text>
@@ -100,7 +169,6 @@ function handleValidation(values) {
 
 SessionForm.propTypes = {
   formTitle: PropTypes.string,
-  formSubmitBtnText: PropTypes.instanceOf(Object),
   name: PropTypes.string,
   address: PropTypes.string,
   time: PropTypes.string,
@@ -110,12 +178,12 @@ SessionForm.propTypes = {
   sellTimeEnd: PropTypes.string,
   maxSeats: PropTypes.string,
   price: PropTypes.string,
+  formSubmitBtnText: PropTypes.instanceOf(Object),
   onSubmit: PropTypes.func,
 };
 
 SessionForm.defaultProps = {
   formTitle: '',
-  formSubmitBtnText: null,
   name: '',
   address: '',
   time: '',
@@ -125,5 +193,8 @@ SessionForm.defaultProps = {
   sellTimeEnd: '',
   maxSeats: '',
   price: '',
+  formSubmitBtnText: null,
   onSubmit: () => {},
 };
+
+export default SessionForm;

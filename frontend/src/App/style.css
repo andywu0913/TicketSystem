@@ -1,5 +1,5 @@
-/* For making the footer always stick at the bottom. */
-body, #app { 
+/* Making the footer always sticks at the bottom. */
+body, #app {
   display: flex;
   min-height: 100vh;
   flex-direction: column;

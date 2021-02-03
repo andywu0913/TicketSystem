@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 
 import PropTypes from 'prop-types';
 
-export default function NavBarUserFunctions(props) {
+function NavBarUserFunctions(props) {
   const { name, role, signout } = props;
   return (
     <Nav>
@@ -65,3 +65,5 @@ NavBarUserFunctions.defaultProps = {
   role: null,
   signout: () => {},
 };
+
+export default NavBarUserFunctions;

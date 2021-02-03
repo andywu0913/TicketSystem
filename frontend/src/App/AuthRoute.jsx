@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 
 import { getUserRole } from 'SRC/utils/jwt';
 
-export default function AuthRoute(props) {
+function AuthRoute(props) {
   const { allowRole = [], rejectToURL = '/', ...params } = props;
   const role = getUserRole();
 
@@ -17,7 +17,7 @@ export default function AuthRoute(props) {
 }
 
 AuthRoute.propTypes = {
-  allowRole: PropTypes.instanceOf(Array),
+  allowRole: PropTypes.arrayOf(PropTypes.number),
   rejectToURL: PropTypes.string,
 };
 
@@ -25,3 +25,5 @@ AuthRoute.defaultProps = {
   allowRole: [],
   rejectToURL: '/',
 };
+
+export default AuthRoute;

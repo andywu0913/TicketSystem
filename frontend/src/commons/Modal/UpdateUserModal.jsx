@@ -13,7 +13,7 @@ import { getAccessToken } from 'SRC/utils/jwt';
 
 import BackendURL from 'BackendURL';
 
-export default function UpdateUserModal(props) {
+function UpdateUserModal(props) {
   const { show, userId, name, email, role, hideModal, reloadData } = props;
   const roleOptions = [{ value: 1, text: 'Admin' }, { value: 2, text: 'Host' }, { value: 3, text: 'User' }];
 
@@ -39,9 +39,39 @@ export default function UpdateUserModal(props) {
               <Modal.Title id="contained-modal-title-vcenter">User Update</Modal.Title>
             </Modal.Header>
             <Modal.Body>
-              <InputTextGroup label="Name" name="name" type="text" value={values.name} icon={<PersonBadge />} onChange={handleChange} onBlur={handleBlur} isInvalid={!!errors.name} errorMsg={errors.name} />
-              <InputTextGroup label="Email" name="email" type="email" value={values.email} icon={<EnvelopeFill />} onChange={handleChange} onBlur={handleBlur} isInvalid={!!errors.email} errorMsg={errors.email} />
-              <InputSelectGroup label="Role" name="role" options={roleOptions} value={values.role} icon={<KeyFill />} onChange={handleChange} onBlur={handleBlur} isInvalid={!!errors.role} errorMsg={errors.role} />
+              <InputTextGroup
+                label="Name"
+                name="name"
+                type="text"
+                value={values.name}
+                icon={<PersonBadge />}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                isInvalid={!!errors.name}
+                errorMsg={errors.name}
+              />
+              <InputTextGroup
+                label="Email"
+                name="email"
+                type="email"
+                value={values.email}
+                icon={<EnvelopeFill />}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                isInvalid={!!errors.email}
+                errorMsg={errors.email}
+              />
+              <InputSelectGroup
+                label="Role"
+                name="role"
+                options={roleOptions}
+                value={values.role}
+                icon={<KeyFill />}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                isInvalid={!!errors.role}
+                errorMsg={errors.role}
+              />
             </Modal.Body>
             <Modal.Footer>
               <Button variant="primary" type="submit" disabled={!dirty || isSubmitting} block><PersonCheckFill />&nbsp;Update</Button>
@@ -110,3 +140,5 @@ UpdateUserModal.defaultProps = {
   hideModal: () => {},
   reloadData: () => {},
 };
+
+export default UpdateUserModal;

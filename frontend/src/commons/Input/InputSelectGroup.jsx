@@ -3,8 +3,8 @@ import { Form, InputGroup } from 'react-bootstrap';
 
 import PropTypes from 'prop-types';
 
-export default function InputTextGroup(props) {
-  const { label, name, options, value, icon, onChange, onBlur, isValid, isInvalid, errorMsg, placeholder, readOnly, ...others } = props;
+function InputTextGroup(props) {
+  const { label, name, options, value, icon, onChange, onBlur, isValid, isInvalid, errorMsg, placeholder, ...others } = props;
   return (
     <Form.Group>
       <Form.Label>{label}</Form.Label>
@@ -18,7 +18,6 @@ export default function InputTextGroup(props) {
           isValid={isValid}
           isInvalid={isInvalid}
           placeholder={placeholder || label}
-          readOnly={readOnly}
           {...others}
         >
           {options.map((option) => <option key={option.value} value={option.value}>{option.text}</option>)}
@@ -33,7 +32,10 @@ export default function InputTextGroup(props) {
 InputTextGroup.propTypes = {
   label:       PropTypes.string,
   name:        PropTypes.string,
-  options:     PropTypes.instanceOf(Array),
+  options:     PropTypes.arrayOf(PropTypes.shape({
+    value:     PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+    text:      PropTypes.string,
+  })),
   value:       PropTypes.string,
   icon:        PropTypes.instanceOf(Object),
   onChange:    PropTypes.func,
@@ -43,7 +45,6 @@ InputTextGroup.propTypes = {
   isInvalid:   PropTypes.bool,
   errorMsg:    PropTypes.string,
   placeholder: PropTypes.string,
-  readOnly:    PropTypes.bool,
 };
 
 InputTextGroup.defaultProps = {
@@ -58,5 +59,6 @@ InputTextGroup.defaultProps = {
   isInvalid:   false,
   errorMsg:    '',
   placeholder: null,
-  readOnly:    false,
 };
+
+export default InputTextGroup;

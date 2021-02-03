@@ -17,9 +17,9 @@ import 'react-datepicker/dist/react-datepicker.css';
 import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
 import './EventForm.css';
 
-export default function EventForm(props) {
+function EventForm(props) {
   const history = useHistory();
-  const { formTitle, formSubmitBtnText, name, description, startDate, endDate, onSubmit } = props;
+  const { formTitle, name, description, startDate, endDate, formSubmitBtnText, onSubmit } = props;
   const editorState = description ? html2editorState(description) : EditorState.createEmpty();
   return (
     <Container className="align-self-center mt-3 mb-3">
@@ -48,7 +48,16 @@ export default function EventForm(props) {
                 }) => (
                   <Form noValidate onSubmit={handleSubmit}>
                     <h2 className="text-dark mb-3">{formTitle}</h2>
-                    <InputTextGroup label="Event Title" name="name" type="text" value={values.name} onChange={handleChange} isInvalid={touched.name && !!errors.name} errorMsg={errors.name} placeholder="Add Title" />
+                    <InputTextGroup
+                      label="Event Title"
+                      name="name"
+                      type="text"
+                      value={values.name}
+                      onChange={handleChange}
+                      isInvalid={touched.name && !!errors.name}
+                      errorMsg={errors.name}
+                      placeholder="Add Title"
+                    />
                     <Form.Label>Description</Form.Label>
                     <Editor
                       editorState={values.editorState}
@@ -62,7 +71,16 @@ export default function EventForm(props) {
                     <Row>
                       <Col>
                         <Form.Group>
-                          <DatePicker name="startDate" className="form-control" selected={values.startDate} onChange={(date) => setFieldValue('startDate', date || new Date())} selectsStart startDate={values.startDate} endDate={values.endDate} dateFormat="yyyy-MM-dd" />
+                          <DatePicker
+                            name="startDate"
+                            className="form-control"
+                            selected={values.startDate}
+                            onChange={(date) => setFieldValue('startDate', date || new Date())}
+                            startDate={values.startDate}
+                            endDate={values.endDate}
+                            dateFormat="yyyy-MM-dd"
+                            selectsStart
+                          />
                         </Form.Group>
                       </Col>
                       <Col md={1} className="align-self-center justify-content-md-center text-center">
@@ -70,7 +88,17 @@ export default function EventForm(props) {
                       </Col>
                       <Col>
                         <Form.Group>
-                          <DatePicker name="endDate" className="form-control" selected={values.endDate} onChange={(date) => setFieldValue('endDate', date || new Date())} selectsEnd startDate={values.startDate} endDate={values.endDate} minDate={values.startDate} dateFormat="yyyy-MM-dd" />
+                          <DatePicker
+                            name="endDate"
+                            className="form-control"
+                            selected={values.endDate}
+                            onChange={(date) => setFieldValue('endDate', date || new Date())}
+                            startDate={values.startDate}
+                            endDate={values.endDate}
+                            minDate={values.startDate}
+                            dateFormat="yyyy-MM-dd"
+                            selectsEnd
+                          />
                         </Form.Group>
                       </Col>
                     </Row>
@@ -114,20 +142,22 @@ function handleValidation(values) {
 
 EventForm.propTypes = {
   formTitle: PropTypes.string,
-  formSubmitBtnText: PropTypes.instanceOf(Object),
   name: PropTypes.string,
   description: PropTypes.string,
   startDate: PropTypes.string,
   endDate: PropTypes.string,
+  formSubmitBtnText: PropTypes.instanceOf(Object),
   onSubmit: PropTypes.func,
 };
 
 EventForm.defaultProps = {
   formTitle: '',
-  formSubmitBtnText: '',
   name: '',
   description: '',
   startDate: Date(),
   endDate: Date(),
+  formSubmitBtnText: null,
   onSubmit: () => {},
 };
+
+export default EventForm;
