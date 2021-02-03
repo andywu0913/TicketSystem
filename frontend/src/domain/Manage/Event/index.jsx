@@ -53,7 +53,7 @@ export default function Event() {
             <h2 className="pt-2">
               <Link to="/manage/event/create" className="text-reset">
                 <Button variant="outline-primary" className="text-nowrap">
-                  <CalendarPlus size="1.25rem" />{' '}Create
+                  <CalendarPlus size="1.25rem" />&nbsp;Create
                 </Button>
               </Link>
             </h2>

@@ -78,7 +78,7 @@ export default function EventForm(props) {
                     <hr />
                     <Button variant="primary" type="submit" disabled={isSubmitting} block>{formSubmitBtnText}</Button>
                     <Card.Text className="text-center text-secondary mt-1 mb-1">- or -</Card.Text>
-                    <Button variant="secondary" onClick={() => history.goBack()} block><ArrowLeftShort />{' '}Go Back</Button>
+                    <Button variant="secondary" onClick={() => history.goBack()} block><ArrowLeftShort />&nbsp;Go Back</Button>
                   </Form>
                 )}
               </Formik>
@@ -91,7 +91,7 @@ export default function EventForm(props) {
 }
 
 function html2editorState(html) {
-  const { contentBlocks, entityMap } = htmlToDraft(html);
+  const { contentBlocks } = htmlToDraft(html);
   const contentState = ContentState.createFromBlockArray(contentBlocks);
   return EditorState.createWithContent(contentState);
 }

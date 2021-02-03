@@ -44,7 +44,7 @@ export default function UpdateUserModal(props) {
               <InputSelectGroup label="Role" name="role" options={roleOptions} value={values.role} icon={<KeyFill />} onChange={handleChange} onBlur={handleBlur} isInvalid={!!errors.role} errorMsg={errors.role} />
             </Modal.Body>
             <Modal.Footer>
-              <Button variant="primary" type="submit" disabled={!dirty || isSubmitting} block><PersonCheckFill />{' '}Update</Button>
+              <Button variant="primary" type="submit" disabled={!dirty || isSubmitting} block><PersonCheckFill />&nbsp;Update</Button>
             </Modal.Footer>
           </Form>
         )}

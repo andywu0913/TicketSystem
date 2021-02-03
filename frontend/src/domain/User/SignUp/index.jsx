@@ -41,7 +41,7 @@ export default function SignUp() {
                     <InputTextGroup label="Nickname" name="name" type="text" value={values.name} icon={<PersonBadge />} onChange={handleChange} onBlur={handleBlur} isInvalid={touched.name && !!errors.name} errorMsg={errors.name} />
                     <InputTextGroup label="Email" name="email" type="email" value={values.email} icon={<EnvelopeFill />} onChange={handleChange} onBlur={handleBlur} isInvalid={touched.email && !!errors.email} errorMsg={errors.email} />
                     <br />
-                    <Button variant="primary" type="submit" disabled={isSubmitting} block><PersonPlusFill />{' '}Sign Up</Button>
+                    <Button variant="primary" type="submit" disabled={isSubmitting} block><PersonPlusFill />&nbsp;Sign Up</Button>
                   </Form>
                 )}
               </Formik>
@@ -75,6 +75,7 @@ function handleValidation(values) {
   else if (values.name.length > 64) errors.name = 'Max length is 64 characters';
 
   if (!values.email) errors.email = 'Required';
+  else if (values.email.length > 64) errors.email = 'Max length is 64 characters';
   else if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(values.email)) errors.email = 'Invalid email address';
 
   return errors;

@@ -11,9 +11,7 @@ export default function PageNotFound() {
           <span className="display-1">404</span>
           <div className="mb-4 lead">Oops! We can&apos;t seem to find the page you are looking for.</div>
           <Link to="/">
-            <HouseFill />
-            &nbsp;
-            Back to Home
+            <HouseFill />&nbsp;Back to Home
           </Link>
         </Col>
       </Row>

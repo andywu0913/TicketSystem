@@ -40,7 +40,7 @@ export default function UpdateProfileTab(props) {
               <InputTextGroup label="Email" name="email" type="email" value={values.email} icon={<EnvelopeFill />} onChange={handleChange} onBlur={handleBlur} isInvalid={touched.email && !!errors.email} errorMsg={errors.email} />
               <InputTextGroup label="Role" name="rname" type="text" value={values.rname} icon={<KeyFill />} readOnly />
               <br />
-              <Button variant="primary" type="submit" disabled={!dirty || isSubmitting} block><PersonCheckFill />{' '}Update</Button>
+              <Button variant="primary" type="submit" disabled={!dirty || isSubmitting} block><PersonCheckFill />&nbsp;Update</Button>
             </Form>
           )}
         </Formik>
@@ -62,6 +62,7 @@ function handleValidation(values) {
   else if (values.name.length > 64) errors.name = 'Max length is 64 characters';
 
   if (!values.email) errors.email = 'Required';
+  else if (values.email.length > 64) errors.email = 'Max length is 64 characters';
   else if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(values.email)) errors.email = 'Invalid email address';
 
   return errors;

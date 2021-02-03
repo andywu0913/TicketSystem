@@ -77,7 +77,7 @@ export default function EventCardSession(props) {
                           <div className="d-flex">
                             <Link to={`/manage/session/${session.id}/audiance`}>
                               <Button variant="info" className="m-1 text-nowrap">
-                                <PeopleFill size="1.25rem" />{' '}Audiance
+                                <PeopleFill size="1.25rem" />&nbsp;Audiance
                               </Button>
                             </Link>
                             {session.is_active
@@ -86,14 +86,14 @@ export default function EventCardSession(props) {
                                   <OverlayTrigger overlay={<Tooltip>Deactivate the session first.</Tooltip>}>
                                     <span>
                                       <Button variant="primary" className="m-1 text-nowrap" style={{ pointerEvents: 'none' }} disabled>
-                                        <PencilSquare size="1.25rem" />{' '}Edit
+                                        <PencilSquare size="1.25rem" />&nbsp;Edit
                                       </Button>
                                     </span>
                                   </OverlayTrigger>
                                   <OverlayTrigger overlay={<Tooltip>Deactivate the session first.</Tooltip>}>
                                     <span>
                                       <Button variant="danger" className="m-1 text-nowrap" style={{ pointerEvents: 'none' }} disabled>
-                                        <TrashFill size="1.25rem" />{' '}Delete
+                                        <TrashFill size="1.25rem" />&nbsp;Delete
                                       </Button>
                                     </span>
                                   </OverlayTrigger>
@@ -103,12 +103,12 @@ export default function EventCardSession(props) {
                                 <>
                                   <Link to={`/manage/session/${session.id}/edit`}>
                                     <Button variant="primary" className="m-1 text-nowrap">
-                                      <PencilSquare size="1.25rem" />{' '}Edit
+                                      <PencilSquare size="1.25rem" />&nbsp;Edit
                                     </Button>
                                   </Link>
                                   <Link to="#" onClick={() => handleDelete(session.id, () => setNeedReload(true))}>
                                     <Button variant="danger" className="m-1 text-nowrap">
-                                      <TrashFill size="1.25rem" />{' '}Delete
+                                      <TrashFill size="1.25rem" />&nbsp;Delete
                                     </Button>
                                   </Link>
                                 </>
@@ -133,7 +133,7 @@ export default function EventCardSession(props) {
                 <tr>
                   <td colSpan="7">
                     <Link to={`/manage/session/create?event_id=${id}`} className="text-secondary">
-                      <Plus size="1.25rem" />{' '}Create Session
+                      <Plus size="1.25rem" />&nbsp;Create Session
                     </Link>
                   </td>
                 </tr>

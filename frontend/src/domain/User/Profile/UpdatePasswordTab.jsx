@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { Button, Card, Form } from 'react-bootstrap';
 import { LockFill, PersonCheckFill } from 'react-bootstrap-icons';
 
@@ -13,11 +13,7 @@ import { getAccessToken } from 'SRC/utils/jwt';
 import BackendURL from 'BackendURL';
 
 export default function UpdatePasswordTab(props) {
-  const [allowUpdate, setAllowUpdate] = useState(true);
-
-  useEffect(() => {
-    setAllowUpdate(props.allowUpdate);
-  }, [props]);
+  const { allowUpdate } = props;
 
   return (
     <Card>
@@ -45,7 +41,7 @@ export default function UpdatePasswordTab(props) {
               <InputTextGroup label="New Password" name="passwordNew" type="password" value={values.passwordNew} icon={<LockFill />} onChange={handleChange} onBlur={handleBlur} isInvalid={touched.passwordNew && touched.passwordNewConfirm && !!errors.passwordNew} errorMsg={errors.passwordNew} readOnly={!allowUpdate} />
               <InputTextGroup label="Confirm New Password" name="passwordNewConfirm" type="password" value={values.passwordNewConfirm} icon={<LockFill />} onChange={handleChange} onBlur={handleBlur} isInvalid={touched.passwordNew && touched.passwordNewConfirm && !!errors.passwordNewConfirm} errorMsg={errors.passwordNewConfirm} readOnly={!allowUpdate} />
               <br />
-              <Button variant="primary" type="submit" disabled={!dirty || isSubmitting} block><PersonCheckFill />{' '}Update</Button>
+              <Button variant="primary" type="submit" disabled={!dirty || isSubmitting} block><PersonCheckFill />&nbsp;Update</Button>
             </Form>
           )}
         </Formik>

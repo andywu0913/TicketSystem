@@ -2,16 +2,18 @@ import React from 'react';
 import { Card, Carousel, Col } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 
+import moment from 'moment';
 import PropTypes from 'prop-types';
 
 export default function EventCards(props) {
   const { data } = props;
 
   const cards = data.map((event) => {
-    let { id, name, description, start_date: startDate, end_date: endDate } = event;
+    const { id, name } = event;
+    let { description, start_date: startDate, end_date: endDate } = event;
     description = description.replace(/(<([^>]+)>)/gi, '');
-    startDate = new Date(startDate).toLocaleDateString();
-    endDate = new Date(endDate).toLocaleDateString();
+    startDate = moment(startDate).format('ll');
+    endDate = moment(endDate).format('ll');
 
     return (
       <Col xs={12} md={6} lg={4} className="mb-4" key={id}>

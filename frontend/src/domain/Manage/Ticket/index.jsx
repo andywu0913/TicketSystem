@@ -56,7 +56,9 @@ export default function Ticket() {
         </Col>
       </Row>
       {data.length > 0
-        ? data.map((ticket) => <TicketCard key={ticket.id} data={ticket} updateTicket={updateTicket} />)
+        ? data.map((ticket) => (
+          <TicketCard key={ticket.id} id={ticket.id} eventId={ticket.event_id} name={ticket.name} address={ticket.address} time={ticket.time} seatNo={ticket.seat_no} price={ticket.price} isActive={!!ticket.session_is_active} updateTicket={updateTicket} />
+        ))
         : (
           <Row className="m-5 p-5 text-center text-muted">
             <Col>

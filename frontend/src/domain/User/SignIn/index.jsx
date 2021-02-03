@@ -29,7 +29,6 @@ export default function SignIn() {
                 {({
                   values,
                   errors,
-                  touched,
                   handleChange,
                   handleSubmit,
                   isSubmitting,
@@ -42,10 +41,10 @@ export default function SignIn() {
                       <InputTextGroup label="Password" name="password" type="password" value={values.password} icon={<LockFill />} onChange={handleChange} isInvalid={!!errors.password} />
                     </Form.Group>
                     <br />
-                    <Button variant="primary" type="submit" disabled={isSubmitting} block><BoxArrowInRight />{' '}Sign In</Button>
+                    <Button variant="primary" type="submit" disabled={isSubmitting} block><BoxArrowInRight />&nbsp;Sign In</Button>
 
                     <Card.Text className="text-center text-secondary mt-1 mb-1">- or -</Card.Text>
-                    <Button variant="secondary" onClick={handleSignInGithub} block><Github />{' '}Sign In with GitHub</Button>
+                    <Button variant="secondary" onClick={handleSignInGithub} block><Github />&nbsp;Sign In with GitHub</Button>
                   </Form>
                 )}
               </Formik>

@@ -16,10 +16,10 @@ function TicketList(props) {
       <td className="align-middle text-nowrap">{new Date(ticket.book_time).toLocaleString()}</td>
       <td className="align-middle d-flex">
         <Button variant="primary" className="m-1 text-nowrap" onClick={() => updateTicket(ticket.id, ticket.seat_no)}>
-          <PencilSquare size="1.25rem" />{' '}Edit
+          <PencilSquare size="1.25rem" />&nbsp;Edit
         </Button>
         <Button variant="danger" className="m-1 text-nowrap" onClick={() => deleteTicket(ticket.id)}>
-          <TrashFill size="1.25rem" />{' '}Delete
+          <TrashFill size="1.25rem" />&nbsp;Delete
         </Button>
       </td>
     </tr>

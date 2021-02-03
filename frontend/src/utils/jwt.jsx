@@ -73,8 +73,7 @@ export function renew(callback, ...params) {
       callback(...params);
     }
   }).catch(() => {
-    clearSaved();
-    window.location.reload();
+    console.error('Fail to renew JWT currently.');
   });
 }
 
@@ -118,19 +117,3 @@ export function getUserRole() {
   const jwt = JWTDecode(accessToken);
   return jwt.role;
 }
-
-export default {
-  saveAccessToken,
-  saveRefreshToken,
-  saveExpiration,
-  getAccessToken,
-  getRefreshToken,
-  getExpiration,
-  clearSaved,
-  verifySaved,
-  renew,
-  setRenewTimer,
-  getUserId,
-  getUserName,
-  getUserRole,
-};

@@ -42,7 +42,7 @@ export default function BookTicketModal(props) {
               <InputTextGroup label="Seat No" name="seat" type="text" value={values.seat} icon={<EaselFill />} onChange={handleChange} onBlur={handleBlur} isInvalid={!!errors.seat} errorMsg={errors.seat} />
             </Modal.Body>
             <Modal.Footer>
-              <Button variant="primary" type="submit" disabled={isSubmitting} block><Check2 />{' '}Book</Button>
+              <Button variant="primary" type="submit" disabled={isSubmitting} block><Check2 />&nbsp;Book</Button>
             </Modal.Footer>
           </Form>
         )}

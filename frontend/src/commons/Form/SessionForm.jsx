@@ -71,7 +71,7 @@ export default function SessionForm(props) {
                     <hr />
                     <Button variant="primary" type="submit" disabled={isSubmitting} block>{formSubmitBtnText}</Button>
                     <Card.Text className="text-center text-secondary mt-1 mb-1">- or -</Card.Text>
-                    <Button variant="secondary" onClick={() => history.goBack()} block><ArrowLeftShort />{' '}Go Back</Button>
+                    <Button variant="secondary" onClick={() => history.goBack()} block><ArrowLeftShort />&nbsp;Go Back</Button>
                   </Form>
                 )}
               </Formik>
@@ -115,7 +115,7 @@ SessionForm.propTypes = {
 
 SessionForm.defaultProps = {
   formTitle: '',
-  formSubmitBtnText: '',
+  formSubmitBtnText: null,
   name: '',
   address: '',
   time: '',

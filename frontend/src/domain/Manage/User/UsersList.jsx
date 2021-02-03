@@ -24,7 +24,7 @@ function UsersList(props) {
             <OverlayTrigger overlay={<Tooltip>Update your own profile from the user profile page.</Tooltip>}>
               <span>
                 <Button variant="primary" className="text-nowrap" style={{ pointerEvents: 'none' }} disabled>
-                  <PencilSquare size="1.25rem" />{' '}Edit
+                  <PencilSquare size="1.25rem" />&nbsp;Edit
                 </Button>
               </span>
             </OverlayTrigger>
@@ -32,7 +32,7 @@ function UsersList(props) {
           : (
             <Link to="#" onClick={() => props.showUpdateUserModal(user)} className="text-reset">
               <Button variant="primary" className="text-nowrap">
-                <PencilSquare size="1.25rem" />{' '}Edit
+                <PencilSquare size="1.25rem" />&nbsp;Edit
               </Button>
             </Link>
           )}
