@@ -1,74 +1,33 @@
 {
     "env": {
-        "node": true,
-        "es2021": true
+        "commonjs": true,
+        "es2021": true,
+        "node": true
     },
     "extends": [
-        "eslint:recommended"
+        "airbnb-base",
+        "plugin:node/recommended",
+        "plugin:security/recommended"
     ],
-    "parserOptions": {
-        "ecmaVersion": 12
-    },
     "globals": {
         "process": "readonly",
         "__dirname": "readonly",
         "__projdir": "readonly"
     },
+    "parserOptions": {
+        "ecmaVersion": 2021
+    },
     "rules": {
-        // Possible Errors
-        "no-console": ["error", {"allow": ["warn", "error"]}],
-        "no-inner-declarations": ["error", "both"],
-        "no-irregular-whitespace": ["error"],
-        "no-unreachable": ["error"],
-        "no-unreachable-loop": ["error"],
-        "valid-typeof": ["error"],
-
-        // Best Practices
-        "dot-location": ["error", "property"],
-        "eqeqeq": ["error", "always"],
-        "no-multi-spaces": ["warn"],
-        "no-redeclare": ["error"],
-        "require-await": ["error"],
-
-        // Variables
-        "no-unused-vars": ["error", {"args": "none", "varsIgnorePattern": "_"}],
-        "no-use-before-define": ["error", {"functions": false, "classes": true, "variables": true}],
-        "no-var": ["error"],
-
-        // Stylistic Issues
-        "array-bracket-spacing": ["error", "never"],
-        "block-spacing": ["error", "never"],
-        "brace-style": ["error", "stroustrup", {"allowSingleLine": false}],
-        "camelcase": ["error", {"properties": "always"}],
-        "comma-dangle": ["error", "never"],
-        "comma-spacing": ["error", {"before": false, "after": true}],
-        "comma-style": ["error", "last"],
-        "computed-property-spacing": ["error", "never"],
-        "eol-last": ["error", "always"],
-        "func-call-spacing": ["error", "never"],
-        "implicit-arrow-linebreak": ["error", "beside"],
-        "indent": ["error", 2, {"SwitchCase": 1}],
-        "key-spacing": ["error", {"beforeColon": false}],
-        "keyword-spacing": ["error", {"before": true, "after": false, "overrides": {"let": {"after": true}, "else": {"after": true}, "try": {"after": true}, "finally": {"after": true}, "throw": {"after": true}, "return": {"after": true}}}],
-        "linebreak-style": ["error", "unix"],
-        "new-parens": ["error", "always"],
-        "no-mixed-operators": ["error"],
-        "no-trailing-spaces": ["error", {"skipBlankLines": false, "ignoreComments": false}],
-        "no-whitespace-before-property": ["error"],
-        "nonblock-statement-body-position": ["error", "below"],
-        "object-curly-spacing": ["error", "never"],
-        "one-var": ["error", "never"],
-        "padded-blocks": ["error", "never"],
-        "quote-props": ["error", "always"],
-        "quotes": ["error", "single"],
-        "semi": ["error", "always"],
-        "semi-spacing": ["error", {"before": false, "after": true}],
-        "semi-style": ["error", "last"],
-        "space-before-blocks": ["error"],
-        "space-before-function-paren": ["error", "never"],
-        "space-in-parens": ["error", "never"],
-        "space-infix-ops": ["error"],
-        "spaced-comment": ["error", "always"],
-        "switch-colon-spacing": ["error", {"after": true, "before": false}]
+        "node/exports-style": ["error", "module.exports"],
+        "node/file-extension-in-import": ["error", "always"],
+        "node/prefer-global/buffer": ["error", "always"],
+        "node/prefer-global/console": ["error", "always"],
+        "node/prefer-global/process": ["error", "always"],
+        "node/prefer-global/url-search-params": ["error", "always"],
+        "node/prefer-global/url": ["error", "always"],
+        "node/prefer-promises/dns": "error",
+        "node/prefer-promises/fs": "error",
+        "no-multi-str": ["off"],
+        "max-len": ["off"]
     }
 }
