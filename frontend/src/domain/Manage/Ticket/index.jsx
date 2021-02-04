@@ -15,8 +15,7 @@ export default function Ticket() {
   const [data, setData] = useState([]);
   const [needReload, setNeedReload] = useState(true);
   const [showUpdateTicketModal, setShowUpdateTicketModal] = useState(false);
-  const [selectedTicketId, setSelectedTicketId] = useState(null);
-  const [selectedSeat, setSelectedSeat] = useState(null);
+  const [ticketObj, setTicketObj] = useState({});
 
   useEffect(() => {
     if (!needReload) {
@@ -41,10 +40,40 @@ export default function Ticket() {
       });
   }, [needReload]);
 
-  function updateTicket(ticketId, seatNo) {
-    setSelectedTicketId(ticketId);
-    setSelectedSeat(seatNo);
+  function updateTicket(ticketObj) {
+    setTicketObj(ticketObj);
     setShowUpdateTicketModal(true);
+  }
+
+  function deleteTicket(id) {
+    swal.fire({
+      title: 'Are you sure?',
+      text: "You won't be able to revert this!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Yes, delete it!',
+    }).then((result) => {
+      if (!result.isConfirmed) {
+        return;
+      }
+      swal.showLoading();
+      const accessToken = getAccessToken();
+      axios.delete(`${BackendURL}/ticket/${id}`, { headers: { Authorization: `Bearer ${accessToken}` } })
+        .then(() => {
+          swal.fire({ icon: 'success', title: 'Success', showConfirmButton: false, timer: 1000 })
+            .then(() => setNeedReload(true));
+        })
+        .catch((error) => {
+          if (error.response && error.response.data) {
+            const message = error.response.data.error_msg || '';
+            swal.fire({ icon: 'error', title: 'Error', text: message });
+            return;
+          }
+          swal.fire({ icon: 'error', title: 'Error', text: 'Unknown error.' });
+        });
+    });
   }
 
   return (
@@ -57,7 +86,19 @@ export default function Ticket() {
       </Row>
       {data.length > 0
         ? data.map((ticket) => (
-          <TicketCard key={ticket.id} id={ticket.id} eventId={ticket.event_id} name={ticket.name} address={ticket.address} time={ticket.time} seatNo={ticket.seat_no} price={ticket.price} isActive={!!ticket.session_is_active} updateTicket={updateTicket} />
+          <TicketCard
+            key={ticket.id}
+            id={ticket.id}
+            eventId={ticket.event_id}
+            name={ticket.name}
+            address={ticket.address}
+            time={ticket.time}
+            seatNo={ticket.seat_no}
+            price={ticket.price}
+            isActive={!!ticket.session_is_active}
+            updateTicket={updateTicket}
+            deleteTicket={deleteTicket}
+          />
         ))
         : (
           <Row className="m-5 p-5 text-center text-muted">
@@ -66,7 +107,13 @@ export default function Ticket() {
             </Col>
           </Row>
         )}
-      <UpdateTicketModal show={showUpdateTicketModal} ticketId={selectedTicketId} seat={selectedSeat} hideModal={() => setShowUpdateTicketModal(false)} reloadData={() => setNeedReload(true)} />
+      <UpdateTicketModal
+        show={showUpdateTicketModal}
+        ticketId={ticketObj.id}
+        seatNo={String(ticketObj.seatNo)}
+        hideModal={() => setShowUpdateTicketModal(false)}
+        reloadData={() => setNeedReload(true)}
+      />
     </Container>
   );
 }

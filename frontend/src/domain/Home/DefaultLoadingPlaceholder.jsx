@@ -4,12 +4,12 @@ import ContentLoader from 'react-content-loader';
 
 import PropTypes from 'prop-types';
 
-export default function DefaultLoadingPlaceholder(props) {
+function DefaultLoadingPlaceholder(props) {
   const { nums } = props;
   return (
     <>
       {Array.from(Array(nums).keys()).map((key) => (
-        <Col xs={12} md={6} lg={4} className="mb-4" key={key}>
+        <Col xs={12} md={6} lg={4} xl={3} className="mb-4" key={key}>
           <Card className="h-100">
             <ContentLoader width="100%" height="300">
               <rect x="0" y="0" rx="2" ry="2" width="100%" height="66%" />
@@ -31,3 +31,5 @@ DefaultLoadingPlaceholder.propTypes = {
 DefaultLoadingPlaceholder.defaultProps = {
   nums: 10,
 };
+
+export default DefaultLoadingPlaceholder;

@@ -42,7 +42,6 @@ function signout() {
   swal.showLoading();
   const accessToken = getAccessToken();
   axios.get(`${BackendURL}/user/logout`, { headers: { Authorization: `Bearer ${accessToken}` } })
-    .then(() => {})
     .catch((error) => {
       if (error.response && error.response.data) {
         const { error_msg: message = '' } = error.response.data;

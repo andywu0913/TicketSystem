@@ -12,7 +12,7 @@ import { getAccessToken } from 'SRC/utils/jwt';
 
 import BackendURL from 'BackendURL';
 
-export default function UpdatePasswordTab(props) {
+function UpdatePasswordTab(props) {
   const { allowUpdate } = props;
 
   return (
@@ -36,12 +36,47 @@ export default function UpdatePasswordTab(props) {
             isSubmitting,
           }) => (
             <Form noValidate onSubmit={handleSubmit}>
-              <InputTextGroup label="Current Password" name="password" type="password" value={values.password} icon={<LockFill />} onChange={handleChange} onBlur={handleBlur} isInvalid={touched.password && !!errors.password} errorMsg={errors.password} readOnly={!allowUpdate} />
+              <InputTextGroup
+                label="Current Password"
+                name="password"
+                type="password"
+                value={values.password}
+                icon={<LockFill />}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                isInvalid={touched.password && !!errors.password}
+                errorMsg={errors.password}
+                readOnly={!allowUpdate}
+              />
               <hr />
-              <InputTextGroup label="New Password" name="passwordNew" type="password" value={values.passwordNew} icon={<LockFill />} onChange={handleChange} onBlur={handleBlur} isInvalid={touched.passwordNew && touched.passwordNewConfirm && !!errors.passwordNew} errorMsg={errors.passwordNew} readOnly={!allowUpdate} />
-              <InputTextGroup label="Confirm New Password" name="passwordNewConfirm" type="password" value={values.passwordNewConfirm} icon={<LockFill />} onChange={handleChange} onBlur={handleBlur} isInvalid={touched.passwordNew && touched.passwordNewConfirm && !!errors.passwordNewConfirm} errorMsg={errors.passwordNewConfirm} readOnly={!allowUpdate} />
+              <InputTextGroup
+                label="New Password"
+                name="passwordNew"
+                type="password"
+                value={values.passwordNew}
+                icon={<LockFill />}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                isInvalid={touched.passwordNew && touched.passwordNewConfirm && !!errors.passwordNew}
+                errorMsg={errors.passwordNew}
+                readOnly={!allowUpdate}
+              />
+              <InputTextGroup
+                label="Confirm New Password"
+                name="passwordNewConfirm"
+                type="password"
+                value={values.passwordNewConfirm}
+                icon={<LockFill />}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                isInvalid={touched.passwordNew && touched.passwordNewConfirm && !!errors.passwordNewConfirm}
+                errorMsg={errors.passwordNewConfirm}
+                readOnly={!allowUpdate}
+              />
               <br />
-              <Button variant="primary" type="submit" disabled={!dirty || isSubmitting} block><PersonCheckFill />&nbsp;Update</Button>
+              <Button variant="primary" type="submit" disabled={!dirty || isSubmitting} block>
+                <PersonCheckFill />&nbsp;Update
+              </Button>
             </Form>
           )}
         </Formik>
@@ -99,3 +134,5 @@ UpdatePasswordTab.propTypes = {
 UpdatePasswordTab.defaultProps = {
   allowUpdate: true,
 };
+
+export default UpdatePasswordTab;

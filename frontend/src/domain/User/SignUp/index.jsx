@@ -35,18 +35,70 @@ export default function SignUp() {
                   isSubmitting,
                 }) => (
                   <Form noValidate onSubmit={handleSubmit}>
-                    <InputTextGroup label="Username" name="uname" type="text" value={values.uname} icon={<PersonFill />} onChange={handleChange} onBlur={handleBlur} isInvalid={touched.uname && !!errors.uname} errorMsg={errors.uname} />
-                    <InputTextGroup label="Password" name="password" type="password" value={values.password} icon={<LockFill />} onChange={handleChange} onBlur={handleBlur} isInvalid={touched.password && !!errors.password} errorMsg={errors.password} />
-                    <InputTextGroup label="Confirm Password" name="passwordConfirm" type="password" value={values.passwordConfirm} icon={<LockFill />} onChange={handleChange} onBlur={handleBlur} isInvalid={touched.passwordConfirm && !!errors.passwordConfirm} errorMsg={errors.passwordConfirm} />
-                    <InputTextGroup label="Nickname" name="name" type="text" value={values.name} icon={<PersonBadge />} onChange={handleChange} onBlur={handleBlur} isInvalid={touched.name && !!errors.name} errorMsg={errors.name} />
-                    <InputTextGroup label="Email" name="email" type="email" value={values.email} icon={<EnvelopeFill />} onChange={handleChange} onBlur={handleBlur} isInvalid={touched.email && !!errors.email} errorMsg={errors.email} />
+                    <InputTextGroup
+                      label="Username"
+                      name="uname"
+                      type="text"
+                      value={values.uname}
+                      icon={<PersonFill />}
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                      isInvalid={touched.uname && !!errors.uname}
+                      errorMsg={errors.uname}
+                    />
+                    <InputTextGroup
+                      label="Password"
+                      name="password"
+                      type="password"
+                      value={values.password}
+                      icon={<LockFill />}
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                      isInvalid={touched.password && !!errors.password}
+                      errorMsg={errors.password}
+                    />
+                    <InputTextGroup
+                      label="Confirm Password"
+                      name="passwordConfirm"
+                      type="password"
+                      value={values.passwordConfirm}
+                      icon={<LockFill />}
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                      isInvalid={touched.passwordConfirm && !!errors.passwordConfirm}
+                      errorMsg={errors.passwordConfirm}
+                    />
+                    <InputTextGroup
+                      label="Nickname"
+                      name="name"
+                      type="text"
+                      value={values.name}
+                      icon={<PersonBadge />}
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                      isInvalid={touched.name && !!errors.name}
+                      errorMsg={errors.name}
+                    />
+                    <InputTextGroup
+                      label="Email"
+                      name="email"
+                      type="email"
+                      value={values.email}
+                      icon={<EnvelopeFill />}
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                      isInvalid={touched.email && !!errors.email}
+                      errorMsg={errors.email}
+                    />
                     <br />
                     <Button variant="primary" type="submit" disabled={isSubmitting} block><PersonPlusFill />&nbsp;Sign Up</Button>
                   </Form>
                 )}
               </Formik>
               <hr />
-              <Card.Text className="text-center text-secondary">Already have an account? <Link to="/user/signin">Sign in</Link> now!</Card.Text>
+              <Card.Text className="text-center text-secondary">
+                Already have an account? <Link to="/user/signin">Sign in</Link> now!
+              </Card.Text>
             </Card.Body>
           </Card>
         </Col>

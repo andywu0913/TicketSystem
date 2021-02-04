@@ -38,7 +38,7 @@ export default function Home() {
       </Row>
       <Row>
         {data.length > 0
-          ? <EventCards data={data} />
+          ? <EventCards events={data} />
           : <DefaultLoadingPlaceholder nums={9} />}
       </Row>
     </Container>

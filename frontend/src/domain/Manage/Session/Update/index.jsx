@@ -34,7 +34,20 @@ export default function Create() {
   }, []);
 
   return (
-    <SessionForm formTitle="Update Session" formSubmitBtnText={<><JournalCheck /> Update</>} name={data.name} address={data.address} time={data.time} eventStartDate={data.start_date} eventEndDate={data.end_date} sellTimeOpen={data.ticket_sell_time_open} sellTimeEnd={data.ticket_sell_time_end} maxSeats={`${data.max_seats}`} price={`${data.price}`} onSubmit={handleUpdate(params.id)} />
+    <SessionForm
+      formTitle="Update Session"
+      name={data.name}
+      address={data.address}
+      time={data.time}
+      eventStartDate={data.start_date}
+      eventEndDate={data.end_date}
+      sellTimeOpen={data.ticket_sell_time_open}
+      sellTimeEnd={data.ticket_sell_time_end}
+      maxSeats={`${data.max_seats}`}
+      price={`${data.price}`}
+      formSubmitBtnText={<><JournalCheck />Update</>}
+      onSubmit={handleUpdate(params.id)}
+    />
   );
 }
 

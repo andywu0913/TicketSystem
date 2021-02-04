@@ -12,7 +12,7 @@ import { getAccessToken } from 'SRC/utils/jwt';
 
 import BackendURL from 'BackendURL';
 
-export default function EventCardSession(props) {
+function EventCardSession(props) {
   const { show, id } = props;
   const [data, setData] = useState([]);
   const [needReload, setNeedReload] = useState(true);
@@ -38,6 +38,55 @@ export default function EventCardSession(props) {
         swal.fire({ icon: 'error', title: 'Error', text: 'Unknown error.' });
       });
   }, [show, needReload]);
+
+  function activateSession(id, activation) {
+    swal.showLoading();
+    const accessToken = getAccessToken();
+    axios.post(`${BackendURL}/session/${id}/activation`, { activation }, { headers: { Authorization: `Bearer ${accessToken}` } })
+      .then(() => {
+        setNeedReload(true);
+        swal.close();
+      })
+      .catch((error) => {
+        if (error.response && error.response.data) {
+          const { error_msg: message = '' } = error.response.data;
+          swal.fire({ icon: 'error', title: 'Error', text: message });
+          return;
+        }
+        swal.fire({ icon: 'error', title: 'Error', text: 'Unknown error.' });
+      });
+  }
+
+  function deleteSession(id) {
+    const accessToken = getAccessToken();
+    swal.fire({
+      title: 'Are you sure?',
+      text: "You won't be able to revert this!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Yes, delete it!',
+    }).then((result) => {
+      if (!result.isConfirmed) {
+        return;
+      }
+      swal.showLoading();
+      axios.delete(`${BackendURL}/session/${id}`, { headers: { Authorization: `Bearer ${accessToken}` } })
+        .then(() => {
+          swal.fire({ icon: 'success', title: 'Success', showConfirmButton: false, timer: 1000 })
+            .then(() => setNeedReload(true));
+        })
+        .catch((error) => {
+          if (error.response && error.response.data) {
+            const message = error.response.data.error_msg || '';
+            swal.fire({ icon: 'error', title: 'Error', text: message });
+            return;
+          }
+          swal.fire({ icon: 'error', title: 'Error', text: 'Unknown error.' });
+        });
+    });
+  }
 
   return (
     <Card>
@@ -67,11 +116,21 @@ export default function EventCardSession(props) {
                       <tr key={session.id}>
                         <td className="align-middle text-nowrap">{session.address}</td>
                         <td className="align-middle text-nowrap">{time}</td>
-                        <td className="align-middle text-nowrap"><span>{sellTimeOpen}</span> - <span>{sellTimeEnd}</span></td>
+                        <td className="align-middle text-nowrap">
+                          <p className="m-0">{sellTimeOpen}</p>
+                          <p className="m-0">~</p>
+                          <p className="m-0">{sellTimeEnd}</p>
+                        </td>
                         <td className="align-middle text-nowrap">{session.open_seats ? session.open_seats : '--'} / {session.max_seats}</td>
                         <td className="align-middle text-nowrap">{session.price}</td>
                         <td className="align-middle text-nowrap">
-                          <Form.Check id={`activationSwitch${session.id}`} type="switch" label="" checked={session.is_active} onChange={() => handleActivation(session.id, !session.is_active, () => setNeedReload(true))} />
+                          <Form.Check
+                            id={`activationSwitch${session.id}`}
+                            type="switch"
+                            label=""
+                            checked={session.is_active}
+                            onChange={() => activateSession(session.id, !session.is_active)}
+                          />
                         </td>
                         <td className="align-middle text-nowrap">
                           <div className="d-flex">
@@ -106,11 +165,9 @@ export default function EventCardSession(props) {
                                       <PencilSquare size="1.25rem" />&nbsp;Edit
                                     </Button>
                                   </Link>
-                                  <Link to="#" onClick={() => handleDelete(session.id, () => setNeedReload(true))}>
-                                    <Button variant="danger" className="m-1 text-nowrap">
-                                      <TrashFill size="1.25rem" />&nbsp;Delete
-                                    </Button>
-                                  </Link>
+                                  <Button variant="danger" className="m-1 text-nowrap" onClick={() => deleteSession(session.id)}>
+                                    <TrashFill size="1.25rem" />&nbsp;Delete
+                                  </Button>
                                 </>
                               )}
                           </div>
@@ -146,54 +203,6 @@ export default function EventCardSession(props) {
   );
 }
 
-function handleActivation(id, activation, reloadData) {
-  swal.showLoading();
-  const accessToken = getAccessToken();
-  axios.post(`${BackendURL}/session/${id}/activation`, { activation }, { headers: { Authorization: `Bearer ${accessToken}` } })
-    .then(() => {
-      reloadData();
-      swal.close();
-    })
-    .catch((error) => {
-      if (error.response && error.response.data) {
-        const { error_msg: message = '' } = error.response.data;
-        swal.fire({ icon: 'error', title: 'Error', text: message });
-        return;
-      }
-      swal.fire({ icon: 'error', title: 'Error', text: 'Unknown error.' });
-    });
-}
-
-function handleDelete(id, reloadData) {
-  const accessToken = getAccessToken();
-  swal.fire({
-    title: 'Are you sure?',
-    text: "You won't be able to revert this!",
-    icon: 'warning',
-    showCancelButton: true,
-    confirmButtonColor: '#d33',
-    cancelButtonColor: '#3085d6',
-    confirmButtonText: 'Yes, delete it!',
-  }).then((result) => {
-    if (!result.isConfirmed) {
-      return;
-    }
-    axios.delete(`${BackendURL}/session/${id}`, { headers: { Authorization: `Bearer ${accessToken}` } })
-      .then(() => {
-        swal.fire({ icon: 'success', title: 'Success', showConfirmButton: false, timer: 1000 })
-          .then(() => reloadData());
-      })
-      .catch((error) => {
-        if (error.response && error.response.data) {
-          const message = error.response.data.error_msg || '';
-          swal.fire({ icon: 'error', title: 'Error', text: message });
-          return;
-        }
-        swal.fire({ icon: 'error', title: 'Error', text: 'Unknown error.' });
-      });
-  });
-}
-
 EventCardSession.propTypes = {
   show: PropTypes.bool,
   id: PropTypes.number,
@@ -203,3 +212,5 @@ EventCardSession.defaultProps = {
   show: false,
   id: null,
 };
+
+export default EventCardSession;

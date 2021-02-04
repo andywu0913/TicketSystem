@@ -1,4 +1,4 @@
-/* Making the footer always sticks at the bottom. */
+/* Make the footer always sticks at the bottom. */
 body, #app {
   display: flex;
   min-height: 100vh;

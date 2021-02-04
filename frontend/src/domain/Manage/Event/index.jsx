@@ -4,7 +4,6 @@ import { CalendarPlus } from 'react-bootstrap-icons';
 import { Link } from 'react-router-dom';
 
 import axios from 'axios';
-import moment from 'moment';
 import swal from 'sweetalert2';
 
 import { getAccessToken, getUserId } from 'SRC/utils/jwt';
@@ -23,12 +22,13 @@ export default function Event() {
     }
 
     swal.showLoading();
-    const accessToken = getAccessToken();
     const userId = getUserId();
+    const accessToken = getAccessToken();
     axios.get(`${BackendURL}/event/creator/${userId}`, { headers: { Authorization: `Bearer ${accessToken}` } })
       .then((response) => {
         const { data } = response.data;
         setData(data);
+        setNeedReload(false);
         swal.close();
       })
       .catch((error) => {
@@ -38,11 +38,39 @@ export default function Event() {
           return;
         }
         swal.fire({ icon: 'error', title: 'Error', text: 'Unknown error.' });
-      })
-      .then(() => {
-        setNeedReload(false);
       });
   }, [needReload]);
+
+  function deleteEvent(id) {
+    swal.fire({
+      title: 'Are you sure?',
+      text: "You won't be able to revert this!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Yes, delete it!',
+    }).then((result) => {
+      if (!result.isConfirmed) {
+        return;
+      }
+      swal.showLoading();
+      const accessToken = getAccessToken();
+      axios.delete(`${BackendURL}/event/${id}`, { headers: { Authorization: `Bearer ${accessToken}` } })
+        .then(() => {
+          swal.fire({ icon: 'success', title: 'Success', showConfirmButton: false, timer: 1000 })
+            .then(() => setNeedReload(true));
+        })
+        .catch((error) => {
+          if (error.response && error.response.data) {
+            const message = error.response.data.error_msg || '';
+            swal.fire({ icon: 'error', title: 'Error', text: message });
+            return;
+          }
+          swal.fire({ icon: 'error', title: 'Error', text: 'Unknown error.' });
+        });
+    });
+  }
 
   return (
     <Container className="p-3">
@@ -61,29 +89,26 @@ export default function Event() {
           <hr />
         </Col>
       </Row>
-      {data.length > 0 ? renderEventCardList(data, () => setNeedReload(true)) : renderEmpty()}
+      {data.length > 0
+        ? data.map((event) => (
+          <EventCard
+            key={event.id}
+            id={event.id}
+            name={event.name}
+            description={event.description}
+            startDate={event.start_date}
+            endDate={event.end_date}
+            reloadData={() => setNeedReload(true)}
+            deleteEvent={deleteEvent}
+          />
+        ))
+        : (
+          <Row className="m-5 p-5 text-center text-muted">
+            <Col>
+              <h6>You haven&apos;t create any event yet.</h6>
+            </Col>
+          </Row>
+        )}
     </Container>
-  );
-}
-
-function renderEventCardList(data, reloadData) {
-  const events = data.map((event) => {
-    let { id, name, description, start_date: startDate, end_date: endDate } = event;
-    description = description.replace(/(<([^>]+)>)/gi, '');
-    startDate = moment(startDate).format('ll');
-    endDate = moment(endDate).format('ll');
-
-    return <EventCard key={id} id={id} name={name} description={description} startDate={startDate} endDate={endDate} reloadData={reloadData} />;
-  });
-  return <>{events}</>;
-}
-
-function renderEmpty() {
-  return (
-    <Row className="m-5 p-5 text-center text-muted">
-      <Col>
-        <h6>You haven&apos;t create any event yet.</h6>
-      </Col>
-    </Row>
   );
 }

@@ -12,12 +12,12 @@ import { getAccessToken } from 'SRC/utils/jwt';
 import BackendURL from 'BackendURL';
 
 function UpdateTicketModal(props) {
-  const { show, ticketId, seat, hideModal, reloadData } = props;
+  const { show, ticketId, seatNo, hideModal, reloadData } = props;
 
   return (
     <Modal show={show} onHide={hideModal} size="sm" centered>
       <Formik
-        initialValues={{ seat }}
+        initialValues={{ seatNo }}
         validate={handleValidation}
         onSubmit={handleUpdate(ticketId, hideModal, reloadData)}
         enableReinitialize
@@ -46,14 +46,14 @@ function UpdateTicketModal(props) {
                       <InputGroup>
                         <FormControl
                           type="text"
-                          name="seat"
+                          name="seatNo"
                           size="lg"
-                          value={values.seat}
+                          value={values.seatNo}
                           onChange={handleChange}
                           onBlur={handleBlur}
-                          isInvalid={!!errors.seat}
+                          isInvalid={!!errors.seatNo}
                         />
-                        <Form.Control.Feedback type="invalid" tooltip>{errors.seat}</Form.Control.Feedback>
+                        <Form.Control.Feedback type="invalid" tooltip>{errors.seatNo}</Form.Control.Feedback>
                       </InputGroup>
                     </Form.Group>
                   </Col>
@@ -75,8 +75,8 @@ function UpdateTicketModal(props) {
 function handleValidation(values) {
   const errors = {};
 
-  if (!values.seat) errors.seat = 'Required';
-  else if (!/^[0-9]+$/.test(values.seat)) errors.seat = 'Not valid number';
+  if (!values.seatNo) errors.seatNo = 'Required';
+  else if (!/^[0-9]+$/.test(values.seatNo)) errors.seatNo = 'Not valid number';
 
   return errors;
 }
@@ -85,7 +85,7 @@ function handleUpdate(ticketId, hideModal, reloadData) {
   return (values, { setSubmitting }) => {
     swal.showLoading();
     const accessToken = getAccessToken();
-    axios.put(`${BackendURL}/ticket/${ticketId}`, { seat_no: values.seat }, { headers: { Authorization: `Bearer ${accessToken}` } })
+    axios.put(`${BackendURL}/ticket/${ticketId}`, { seat_no: values.seatNo }, { headers: { Authorization: `Bearer ${accessToken}` } })
       .then(() => {
         hideModal();
         swal.fire({ icon: 'success', title: 'Success', showConfirmButton: false, timer: 1000 })
@@ -106,7 +106,7 @@ function handleUpdate(ticketId, hideModal, reloadData) {
 UpdateTicketModal.propTypes = {
   show: PropTypes.bool,
   ticketId: PropTypes.number,
-  seat: PropTypes.string,
+  seatNo: PropTypes.string,
   hideModal: PropTypes.func,
   reloadData: PropTypes.func,
 };
@@ -114,7 +114,7 @@ UpdateTicketModal.propTypes = {
 UpdateTicketModal.defaultProps = {
   show: false,
   ticketId: null,
-  seat: '',
+  seatNo: '',
   hideModal: () => {},
   reloadData: () => {},
 };

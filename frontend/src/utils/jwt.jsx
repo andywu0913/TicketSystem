@@ -59,22 +59,20 @@ export function renew(callback, ...params) {
   const accessToken = getAccessToken();
   const refreshToken = getRefreshToken();
 
-  axios.post(`${BackendURL}/user/refresh`, { refresh_token: refreshToken }, {
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-    },
-  }).then((response) => {
-    const { data } = response.data;
-    saveAccessToken(data.access_token);
-    saveRefreshToken(data.refresh_token);
-    saveExpiration(data.expires_in);
+  axios.post(`${BackendURL}/user/refresh`, { refresh_token: refreshToken }, { headers: { Authorization: `Bearer ${accessToken}` } })
+    .then((response) => {
+      const { data } = response.data;
+      saveAccessToken(data.access_token);
+      saveRefreshToken(data.refresh_token);
+      saveExpiration(data.expires_in);
 
-    if (callback) {
-      callback(...params);
-    }
-  }).catch(() => {
-    console.error('Fail to renew JWT currently.');
-  });
+      if (callback) {
+        callback(...params);
+      }
+    })
+    .catch(() => {
+      console.error('Fail to renew JWT currently.');
+    });
 }
 
 export function setRenewTimer() {

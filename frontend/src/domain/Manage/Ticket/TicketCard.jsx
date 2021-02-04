@@ -6,8 +6,8 @@ import { Link } from 'react-router-dom';
 import moment from 'moment';
 import PropTypes from 'prop-types';
 
-export default function TicketCard(props) {
-  const { id, eventId, name, address, time, seatNo, price, isActive, updateTicket } = props;
+function TicketCard(props) {
+  const { id, eventId, name, address, time, seatNo, price, isActive, updateTicket, deleteTicket } = props;
   return (
     <Row className="mb-4">
       <Col>
@@ -35,10 +35,10 @@ export default function TicketCard(props) {
                     </Link>
                   </Card.Title>
                   <Card.Text>
-                    <GeoAltFill className="text-muted" /> {address}
+                    <GeoAltFill className="text-muted" />&nbsp;{address}
                   </Card.Text>
                   <Card.Text>
-                    <ClockFill className="text-muted" /> {moment(time).format('lll')}
+                    <ClockFill className="text-muted" />&nbsp;{moment(time).format('lll')}
                   </Card.Text>
                 </Card.Body>
               </Col>
@@ -56,18 +56,23 @@ export default function TicketCard(props) {
                 {isActive
                   ? (
                     <>
-                      <Button variant="link" onClick={() => updateTicket(id, seatNo)}>
+                      <Button variant="link" onClick={() => updateTicket({ id, seatNo })}>
                         <GearFill className="text-muted" size="1.25rem" />
                       </Button>
-                      <Button variant="link" onClick={() => updateTicket(id, seatNo)}>
+                      <Button variant="link" onClick={() => deleteTicket(id)}>
                         <TrashFill className="text-muted" size="1.25rem" />
                       </Button>
                     </>
                   )
                   : (
-                    <OverlayTrigger overlay={<Tooltip>Cannot modify this ticket right now. The event host has locked this session.</Tooltip>}>
-                      <GearFill className="text-light" size="1.25rem" />
-                    </OverlayTrigger>
+                    <>
+                      <OverlayTrigger overlay={<Tooltip>Cannot modify this ticket right now. The event host has locked this session.</Tooltip>}>
+                        <GearFill className="text-light" size="1.25rem" />
+                      </OverlayTrigger>
+                      <OverlayTrigger overlay={<Tooltip>Cannot modify this ticket right now. The event host has locked this session.</Tooltip>}>
+                        <TrashFill className="text-light" size="1.25rem" />
+                      </OverlayTrigger>
+                    </>
                   )}
               </Col>
             </Row>
@@ -88,6 +93,7 @@ TicketCard.propTypes = {
   price: PropTypes.number,
   isActive: PropTypes.bool,
   updateTicket: PropTypes.func,
+  deleteTicket: PropTypes.func,
 };
 
 TicketCard.defaultProps = {
@@ -96,8 +102,11 @@ TicketCard.defaultProps = {
   name: '',
   address: '',
   time: '',
-  seatNo: '',
+  seatNo: null,
   price: null,
   isActive: false,
   updateTicket: () => {},
+  deleteTicket: () => {},
 };
+
+export default TicketCard;

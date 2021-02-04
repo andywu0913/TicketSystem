@@ -3,12 +3,18 @@ import { Card, Carousel, Col, Container, Row } from 'react-bootstrap';
 import { ClockFill } from 'react-bootstrap-icons';
 import { Link } from 'react-router-dom';
 
+import moment from 'moment';
 import PropTypes from 'prop-types';
 
 import './style.css';
 
-export default function EventCardInfo(props) {
-  const { id, name, description, startDate, endDate } = props;
+function EventCardInfo(props) {
+  const { id, name } = props;
+  let { description, startDate, endDate } = props;
+  description = description.replace(/(<([^>]+)>)/gi, ''); // get pure html content
+  startDate = moment(startDate).format('ll');
+  endDate = moment(endDate).format('ll');
+
   return (
     <Card>
       <Container>
@@ -37,7 +43,7 @@ export default function EventCardInfo(props) {
                 {description.length < 100 ? description : `${description.substring(0, 100)}...`}
               </Card.Text>
               <Card.Text>
-                <ClockFill className="text-muted" /> {startDate} ~ {endDate}
+                <ClockFill className="text-muted" />&nbsp;{startDate} ~ {endDate}
               </Card.Text>
             </Card.Body>
           </Col>
@@ -57,8 +63,10 @@ EventCardInfo.propTypes = {
 
 EventCardInfo.defaultProps = {
   id: null,
-  name: null,
-  description: null,
-  startDate: null,
-  endDate: null,
+  name: '',
+  description: '',
+  startDate: '',
+  endDate: '',
 };
+
+export default EventCardInfo;

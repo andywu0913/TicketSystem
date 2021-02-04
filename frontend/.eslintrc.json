@@ -43,7 +43,9 @@
             }
         ],
         "max-len": ["off"],
-        "no-use-before-define": ["error", {"functions": false}],
+        "no-multi-assign": ["warn"],
+        "no-shadow": ["warn"],
+        "no-use-before-define": ["error", { "functions": false }],
         "object-curly-newline": ["off"],
         "react/jsx-one-expression-per-line": ["off"]
     },

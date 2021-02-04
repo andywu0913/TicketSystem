@@ -38,7 +38,7 @@ export default function Profile() {
     <Container className="align-self-center mt-3 mb-3">
       <Row className="justify-content-center">
         <Col xs sm={8} md={6} lg={5} xl={4}>
-          <Tabs activeKey={tab} onSelect={(tab) => setTab(tab)} className="border-bottom-0">
+          <Tabs activeKey={tab} onSelect={setTab} className="border-bottom-0">
             <Tab eventKey="profile" title="Profile">
               <UpdateProfileTab user={data} />
             </Tab>

@@ -5,18 +5,18 @@ import { Link } from 'react-router-dom';
 import moment from 'moment';
 import PropTypes from 'prop-types';
 
-export default function EventCards(props) {
-  const { data } = props;
+function EventCards(props) {
+  const { events } = props;
 
-  const cards = data.map((event) => {
+  const cards = events.map((event) => {
     const { id, name } = event;
     let { description, start_date: startDate, end_date: endDate } = event;
-    description = description.replace(/(<([^>]+)>)/gi, '');
+    description = description.replace(/(<([^>]+)>)/gi, ''); // get pure html content
     startDate = moment(startDate).format('ll');
     endDate = moment(endDate).format('ll');
 
     return (
-      <Col xs={12} md={6} lg={4} className="mb-4" key={id}>
+      <Col xs={12} md={6} lg={4} xl={3} className="mb-4" key={id}>
         <Card className="h-100">
           <Carousel interval={2000}>
             <Carousel.Item>
@@ -49,9 +49,17 @@ export default function EventCards(props) {
 }
 
 EventCards.propTypes = {
-  data: PropTypes.instanceOf(Array),
+  events: PropTypes.arrayOf(PropTypes.shape({
+    id: PropTypes.number,
+    name: PropTypes.string,
+    description: PropTypes.string,
+    start_date: PropTypes.string,
+    end_date: PropTypes.string,
+  })),
 };
 
 EventCards.defaultProps = {
-  data: [],
+  events: [],
 };
+
+export default EventCards;

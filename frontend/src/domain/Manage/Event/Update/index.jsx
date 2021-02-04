@@ -33,7 +33,15 @@ export default function Create() {
   }, []);
 
   return (
-    <EventForm formTitle="Update Event" formSubmitBtnText={<><CalendarCheck /> Update</>} name={data.name} description={data.description} startDate={data.start_date} endDate={data.end_date} onSubmit={handleUpdate(params.id)} />
+    <EventForm
+      formTitle="Update Event"
+      formSubmitBtnText={<><CalendarCheck />Update</>}
+      name={data.name}
+      description={data.description}
+      startDate={data.start_date}
+      endDate={data.end_date}
+      onSubmit={handleUpdate(params.id)}
+    />
   );
 }
 

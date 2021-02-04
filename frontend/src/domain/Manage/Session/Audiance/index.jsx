@@ -8,7 +8,7 @@ import swal from 'sweetalert2';
 import UpdateTicketModal from 'SRC/commons/Modal/UpdateTicketModal';
 import { getAccessToken } from 'SRC/utils/jwt';
 
-import UsersList from './UsersList';
+import TicketList from './TicketList';
 
 import BackendURL from 'BackendURL';
 
@@ -17,8 +17,7 @@ export default function Audiance() {
   const [data, setData] = useState([]);
   const [needReload, setNeedReload] = useState(true);
   const [showUpdateTicketModal, setShowUpdateTicketModal] = useState(false);
-  const [selectedTicketId, setSelectedTicketId] = useState(null);
-  const [selectedSeat, setSelectedSeat] = useState(null);
+  const [ticketObj, setTicketObj] = useState({});
 
   useEffect(() => {
     if (!needReload) {
@@ -43,14 +42,12 @@ export default function Audiance() {
       });
   }, [needReload]);
 
-  function updateTicket(id, seatNo) {
-    setSelectedTicketId(id);
-    setSelectedSeat(seatNo);
+  function updateTicket(ticketObj) {
+    setTicketObj(ticketObj);
     setShowUpdateTicketModal(true);
   }
 
   function deleteTicket(id) {
-    const accessToken = getAccessToken();
     swal.fire({
       title: 'Are you sure?',
       text: "You won't be able to revert this!",
@@ -63,6 +60,8 @@ export default function Audiance() {
       if (!result.isConfirmed) {
         return;
       }
+      swal.showLoading();
+      const accessToken = getAccessToken();
       axios.delete(`${BackendURL}/ticket/${id}`, { headers: { Authorization: `Bearer ${accessToken}` } })
         .then(() => {
           swal.fire({ icon: 'success', title: 'Success', showConfirmButton: false, timer: 1000 })
@@ -87,8 +86,18 @@ export default function Audiance() {
           <hr />
         </Col>
       </Row>
-      <UsersList data={data} updateTicket={updateTicket} deleteTicket={deleteTicket} />
-      <UpdateTicketModal show={showUpdateTicketModal} ticketId={selectedTicketId} seat={selectedSeat} hideModal={() => setShowUpdateTicketModal(false)} reloadData={() => setNeedReload(true)} />
+      <TicketList
+        tickets={data}
+        updateTicket={updateTicket}
+        deleteTicket={deleteTicket}
+      />
+      <UpdateTicketModal
+        show={showUpdateTicketModal}
+        ticketId={ticketObj.id}
+        seatNo={ticketObj.seatNo}
+        hideModal={() => setShowUpdateTicketModal(false)}
+        reloadData={() => setNeedReload(true)}
+      />
     </Container>
   );
 }

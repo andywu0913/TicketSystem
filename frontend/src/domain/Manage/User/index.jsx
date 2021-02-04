@@ -1,61 +1,71 @@
-import React, { Component } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Col, Container, Row } from 'react-bootstrap';
 
 import Axios from 'axios';
+import swal from 'sweetalert2';
 
+import UpdateUserModal from 'SRC/commons/Modal/UpdateUserModal';
 import { getAccessToken } from 'SRC/utils/jwt';
 
-import UsersList from './UsersList';
-import UpdateUserModal from 'SRC/commons/Modal/UpdateUserModal';
+import UserList from './UserList';
 
-export default class extends Component {
-  constructor(props) {
-    super(props);
-    this.loadData = this.loadData.bind(this);
-    this.showUpdateUserModal = this.showUpdateUserModal.bind(this);
-    this.hideUpdateUserModal = this.hideUpdateUserModal.bind(this);
-    this.state = { data: [], showUpdateUserModal: false, userObj: {} };
-  }
+import BackendURL from 'BackendURL';
 
-  componentDidMount() {
-    this.loadData();
-  }
+export default function User() {
+  const [data, setData] = useState([]);
+  const [needReload, setNeedReload] = useState(true);
+  const [showUpdateUserModal, setShowUpdateUserModal] = useState(false);
+  const [userObj, setUserObj] = useState({});
 
-  loadData() {
-    const self = this;
+  useEffect(() => {
+    if (!needReload) {
+      return;
+    }
+    swal.showLoading();
     const accessToken = getAccessToken();
-    Axios.get('http://localhost:3000/api/user/all', {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    }).then((response) => {
-      self.setState({ data: response.data.data });
-    }).catch((error) => {
-      // TODO
-    });
+    Axios.get(`${BackendURL}/user/all`, { headers: { Authorization: `Bearer ${accessToken}` } })
+      .then((response) => {
+        const { data } = response.data;
+        setData(data);
+        setNeedReload(false);
+        swal.close();
+      })
+      .catch((error) => {
+        if (error.response && error.response.data) {
+          const { error_msg: message = '' } = error.response.data;
+          swal.fire({ icon: 'error', title: 'Error', text: message });
+          return;
+        }
+        swal.fire({ icon: 'error', title: 'Error', text: 'Unknown error.' });
+      });
+  }, [needReload]);
+
+  function updateUser(userObj) {
+    setUserObj(userObj);
+    setShowUpdateUserModal(true);
   }
 
-  showUpdateUserModal(userObj) {
-    this.setState({ showUpdateUserModal: true, userObj });
-  }
-
-  hideUpdateUserModal() {
-    this.setState({ showUpdateUserModal: false, userObj: {} });
-  }
-
-  render() {
-    const { data, showUpdateUserModal, userObj } = this.state;
-    return (
-      <Container className="p-3">
-        <Row>
-          <Col>
-            <h1 className="text-dark">Users</h1>
-            <hr />
-          </Col>
-        </Row>
-        <UsersList data={data} showUpdateUserModal={this.showUpdateUserModal} />
-        <UpdateUserModal show={showUpdateUserModal} userId={userObj.id} name={userObj.name} email={userObj.email} role={`${userObj.role}`} hideModal={this.hideUpdateUserModal} reloadData={this.loadData} />
-      </Container>
-    );
-  }
+  return (
+    <Container className="p-3">
+      <Row>
+        <Col>
+          <h1 className="text-dark">Users</h1>
+          <hr />
+        </Col>
+      </Row>
+      <UserList
+        users={data}
+        updateUser={updateUser}
+      />
+      <UpdateUserModal
+        show={showUpdateUserModal}
+        userId={userObj.id}
+        name={userObj.name}
+        email={userObj.email}
+        role={String(userObj.role)}
+        hideModal={() => setShowUpdateUserModal(false)}
+        reloadData={() => setNeedReload(true)}
+      />
+    </Container>
+  );
 }

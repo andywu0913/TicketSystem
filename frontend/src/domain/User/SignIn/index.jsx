@@ -35,10 +35,26 @@ export default function SignIn() {
                 }) => (
                   <Form noValidate onSubmit={handleSubmit}>
                     <Form.Group>
-                      <InputTextGroup label="Username" name="uname" type="text" value={values.uname} icon={<PersonFill />} onChange={handleChange} isInvalid={!!errors.uname} />
+                      <InputTextGroup
+                        label="Username"
+                        name="uname"
+                        type="text"
+                        value={values.uname}
+                        icon={<PersonFill />}
+                        onChange={handleChange}
+                        isInvalid={!!errors.uname}
+                      />
                     </Form.Group>
                     <Form.Group>
-                      <InputTextGroup label="Password" name="password" type="password" value={values.password} icon={<LockFill />} onChange={handleChange} isInvalid={!!errors.password} />
+                      <InputTextGroup
+                        label="Password"
+                        name="password"
+                        type="password"
+                        value={values.password}
+                        icon={<LockFill />}
+                        onChange={handleChange}
+                        isInvalid={!!errors.password}
+                      />
                     </Form.Group>
                     <br />
                     <Button variant="primary" type="submit" disabled={isSubmitting} block><BoxArrowInRight />&nbsp;Sign In</Button>
@@ -49,7 +65,9 @@ export default function SignIn() {
                 )}
               </Formik>
               <hr />
-              <Card.Text className="text-center text-secondary">Don&apos;t have an account? <Link to="/user/signup">Sign up</Link> now!</Card.Text>
+              <Card.Text className="text-center text-secondary">
+                Don&apos;t have an account?&nbsp;<Link to="/user/signup">Sign up</Link>&nbsp;now!
+              </Card.Text>
             </Card.Body>
           </Card>
         </Col>
@@ -60,8 +78,10 @@ export default function SignIn() {
 
 function handleValidation(values) {
   const errors = {};
+
   if (!values.uname) errors.uname = 'Required';
   if (!values.password) errors.password = 'Required';
+
   return errors;
 }
 

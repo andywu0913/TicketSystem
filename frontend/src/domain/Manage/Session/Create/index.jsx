@@ -35,7 +35,14 @@ export default function Create() {
   }, []);
 
   return (
-    <SessionForm formTitle="Create Session" name={data.name} eventStartDate={data.start_date} eventEndDate={data.end_date} formSubmitBtnText={<><JournalPlus /> Create</>} onSubmit={handleCreate(eventId, () => history.replace('/manage/event'))} />
+    <SessionForm
+      formTitle="Create Session"
+      name={data.name}
+      eventStartDate={data.start_date}
+      eventEndDate={data.end_date}
+      formSubmitBtnText={<><JournalPlus />&nbsp;Create</>}
+      onSubmit={handleCreate(eventId, () => history.replace('/manage/event'))}
+    />
   );
 }
 

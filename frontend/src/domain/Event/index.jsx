@@ -7,25 +7,41 @@ import axios from 'axios';
 import swal from 'sweetalert2';
 
 import BookTicketModal from 'SRC/commons/Modal/BookTicketModal';
+import { verifySaved } from 'SRC/utils/jwt';
 
 import SessionList from './SessionList';
 
 import BackendURL from 'BackendURL';
 
-export default function Event() {
+function Event() {
   const params = useParams();
   const history = useHistory();
   const [showBootTicketModal, setShowBootTicketModal] = useState(false);
   const [event, setEvent] = useState({});
-  const [session, setSession] = useState({});
+  const [sessions, setSessions] = useState([]);
+  const [sessionObj, setSessionObj] = useState({});
 
   useEffect(() => {
-    swal.showLoading();
     axios.get(`${BackendURL}/event/${params.id}`)
       .then((response) => {
         const { data } = response.data;
         setEvent(data);
-        swal.close();
+      })
+      .catch((error) => {
+        if (error.response && error.response.data) {
+          const { error_msg: message = '' } = error.response.data;
+          swal.fire({ icon: 'error', title: 'Error', text: message });
+          return;
+        }
+        swal.fire({ icon: 'error', title: 'Error', text: 'Unknown error.' });
+      });
+  }, []);
+
+  useEffect(() => {
+    axios.get(`${BackendURL}/session/?event_id=${params.id}`)
+      .then((response) => {
+        const { data } = response.data;
+        setSessions(data);
       })
       .catch((error) => {
         if (error.response && error.response.data) {
@@ -38,13 +54,12 @@ export default function Event() {
   }, []);
 
   function bookTicket(sessionObj) {
+    setSessionObj(sessionObj);
     setShowBootTicketModal(true);
-    setSession(sessionObj);
   }
 
-  function hideBookTicketModal() {
-    setShowBootTicketModal(false);
-    setSession({});
+  function redirectSignIn() {
+    history.push('/user/signin');
   }
 
   return (
@@ -72,8 +87,8 @@ export default function Event() {
             <Col>
               <Tabs className="border-bottom-0">
                 <Tab eventKey="session" title="Sessions" disabled>
-                  {params.id
-                    ? <SessionList eventId={params.id} bookTicket={bookTicket} />
+                  {sessions.length > 0
+                    ? <SessionList sessions={sessions} bookTicket={verifySaved() ? bookTicket : redirectSignIn} />
                     : (
                       <ContentLoader width="100%" height="250">
                         <rect x="0" y="0" rx="10" ry="10" width="100%" height="100%" />
@@ -109,7 +124,18 @@ export default function Event() {
           </Row>
         </Col>
       </Row>
-      <BookTicketModal show={showBootTicketModal} sessionId={session.id} address={session.address} time={session.time} price={session.price} openSeats={session.open_seats} seat={session.seat} hideModal={hideBookTicketModal} redirect={() => history.push('/manage/ticket')} />
+      <BookTicketModal
+        show={showBootTicketModal}
+        sessionId={sessionObj.id}
+        address={sessionObj.address}
+        time={sessionObj.time}
+        price={sessionObj.price}
+        openSeats={sessionObj.open_seats}
+        hideModal={() => setShowBootTicketModal(false)}
+        redirect={() => history.push('/manage/ticket')}
+      />
     </Container>
   );
 }
+
+export default Event;

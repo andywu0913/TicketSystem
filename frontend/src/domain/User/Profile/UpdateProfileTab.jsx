@@ -12,8 +12,9 @@ import { getAccessToken, renew } from 'SRC/utils/jwt';
 
 import BackendURL from 'BackendURL';
 
-export default function UpdateProfileTab(props) {
+function UpdateProfileTab(props) {
   const { user } = props;
+
   return (
     <Card>
       <Card.Body>
@@ -35,12 +36,52 @@ export default function UpdateProfileTab(props) {
             isSubmitting,
           }) => (
             <Form noValidate onSubmit={handleSubmit}>
-              <InputTextGroup label="Username" name="uname" type="text" value={values.uname} icon={<PersonFill />} onChange={handleChange} onBlur={handleBlur} isInvalid={touched.uname && !!errors.uname} errorMsg={errors.uname} readOnly={!!values.github_id} />
-              <InputTextGroup label="Nickname" name="name" type="text" value={values.name} icon={<PersonBadge />} onChange={handleChange} onBlur={handleBlur} isInvalid={touched.name && !!errors.name} errorMsg={errors.name} />
-              <InputTextGroup label="Email" name="email" type="email" value={values.email} icon={<EnvelopeFill />} onChange={handleChange} onBlur={handleBlur} isInvalid={touched.email && !!errors.email} errorMsg={errors.email} />
-              <InputTextGroup label="Role" name="rname" type="text" value={values.rname} icon={<KeyFill />} readOnly />
+              <InputTextGroup
+                label="Username"
+                name="uname"
+                type="text"
+                value={values.uname}
+                icon={<PersonFill />}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                isInvalid={touched.uname && !!errors.uname}
+                errorMsg={errors.uname}
+                readOnly={!!values.github_id}
+              />
+              <InputTextGroup
+                label="Nickname"
+                name="name"
+                type="text"
+                value={values.name}
+                icon={<PersonBadge />}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                isInvalid={touched.name && !!errors.name}
+                errorMsg={errors.name}
+              />
+              <InputTextGroup
+                label="Email"
+                name="email"
+                type="email"
+                value={values.email}
+                icon={<EnvelopeFill />}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                isInvalid={touched.email && !!errors.email}
+                errorMsg={errors.email}
+              />
+              <InputTextGroup
+                label="Role"
+                name="rname"
+                type="text"
+                value={values.rname}
+                icon={<KeyFill />}
+                readOnly
+              />
               <br />
-              <Button variant="primary" type="submit" disabled={!dirty || isSubmitting} block><PersonCheckFill />&nbsp;Update</Button>
+              <Button variant="primary" type="submit" disabled={!dirty || isSubmitting} block>
+                <PersonCheckFill />&nbsp;Update
+              </Button>
             </Form>
           )}
         </Formik>
@@ -91,9 +132,18 @@ function handleUpdate(values, { setSubmitting, setFieldError }) {
 }
 
 UpdateProfileTab.propTypes = {
-  user: PropTypes.instanceOf(Object),
+  user: PropTypes.shape({
+    id: PropTypes.number,
+    uname: PropTypes.string,
+    name: PropTypes.string,
+    email: PropTypes.string,
+    rname: PropTypes.string,
+    github_id: PropTypes.number,
+  }),
 };
 
 UpdateProfileTab.defaultProps = {
   user: {},
 };
+
+export default UpdateProfileTab;

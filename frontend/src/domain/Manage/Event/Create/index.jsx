@@ -13,7 +13,11 @@ import BackendURL from 'BackendURL';
 export default function Create() {
   const history = useHistory();
   return (
-    <EventForm formTitle="Create Event" formSubmitBtnText={<><CalendarPlus /> Create</>} onSubmit={handleCreate(() => history.replace('/manage/event'))} />
+    <EventForm
+      formTitle="Create Event"
+      formSubmitBtnText={<><CalendarPlus />Create</>}
+      onSubmit={handleCreate(() => history.replace('/manage/event'))}
+    />
   );
 }
 

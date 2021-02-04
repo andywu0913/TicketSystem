@@ -40,6 +40,4 @@ export default function GitHub() {
       }
       swal.fire({ icon: 'error', title: 'Error', text: 'Unknown error.' });
     });
-
-  return null;
 }

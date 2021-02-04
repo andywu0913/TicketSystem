@@ -13,12 +13,12 @@ import { getAccessToken } from 'SRC/utils/jwt';
 import BackendURL from 'BackendURL';
 
 function BookTicketModal(props) {
-  const { show, sessionId, address, time, price, openSeats, seat, hideModal, redirect } = props;
+  const { show, sessionId, address, time, price, openSeats, hideModal, redirect } = props;
 
   return (
     <Modal show={show} onHide={hideModal} size="md" centered>
       <Formik
-        initialValues={{ seat }}
+        initialValues={{ seatNo: '' }}
         validate={handleValidation}
         onSubmit={handleCreate(sessionId, redirect)}
         enableReinitialize
@@ -41,14 +41,14 @@ function BookTicketModal(props) {
               <p>Available seats left: {openSeats}</p>
               <InputTextGroup
                 label="Seat No"
-                name="seat"
+                name="seatNo"
                 type="text"
-                value={values.seat}
+                value={values.seatNo}
                 icon={<EaselFill />}
                 onChange={handleChange}
                 onBlur={handleBlur}
-                isInvalid={!!errors.seat}
-                errorMsg={errors.seat}
+                isInvalid={!!errors.seatNo}
+                errorMsg={errors.seatNo}
               />
             </Modal.Body>
             <Modal.Footer>
@@ -64,8 +64,8 @@ function BookTicketModal(props) {
 function handleValidation(values) {
   const errors = {};
 
-  if (!values.seat) errors.seat = 'Required';
-  else if (!/^[0-9]+$/.test(values.seat)) errors.seat = 'Not valid number';
+  if (!values.seatNo) errors.seatNo = 'Required';
+  else if (!/^[0-9]+$/.test(values.seatNo)) errors.seatNo = 'Not valid number';
 
   return errors;
 }
@@ -74,7 +74,7 @@ function handleCreate(id, redirect) {
   return (values, { setSubmitting }) => {
     swal.showLoading();
     const accessToken = getAccessToken();
-    axios.post(`${BackendURL}/ticket/?session_id=${id}`, { seat_no: values.seat }, { headers: { Authorization: `Bearer ${accessToken}` } })
+    axios.post(`${BackendURL}/ticket/?session_id=${id}`, { seat_no: values.seatNo }, { headers: { Authorization: `Bearer ${accessToken}` } })
       .then(() => {
         swal.fire({ icon: 'success', title: 'Success', showConfirmButton: false, timer: 1000 })
           .then(() => redirect());
@@ -98,7 +98,6 @@ BookTicketModal.propTypes = {
   time: PropTypes.string,
   price: PropTypes.string,
   openSeats: PropTypes.string,
-  seat: PropTypes.string,
   hideModal: PropTypes.func,
   redirect: PropTypes.func,
 };
@@ -110,7 +109,6 @@ BookTicketModal.defaultProps = {
   time: '',
   price: '',
   openSeats: '',
-  seat: '',
   hideModal: () => {},
   redirect: () => {},
 };
