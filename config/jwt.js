@@ -1,3 +1,3 @@
 module.exports = {
-	secret: 'JWTSecretKey4TicketSystemByAndyWu'
+  secret: 'JWTSecretKey4TicketSystemByAndyWu',
 };
