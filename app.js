@@ -5,6 +5,7 @@ const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 
 global.__version = require('./package.json').version;
+
 global.__projdir = __dirname;
 
 const corsMiddleware = require('./middlewares/cors');
@@ -24,14 +25,16 @@ app.set('view engine', 'ejs');
 
 app.use(logger('dev'));
 app.use(express.json());
-app.use(express.urlencoded({'extended': false}));
+app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 
-if(process.env.HOST_FRONTEND_SPA) // host frontend within the same app
+if (process.env.HOST_FRONTEND_SPA) { // host frontend within the same app
   app.use(express.static(path.join(__dirname, process.env.HOST_FRONTEND_SPA)));
+}
 
-if(process.env.NODE_ENV === 'development') // allow CORS in development environment
+if (process.env.NODE_ENV === 'development') { // allow CORS in development environment
   app.use(corsMiddleware);
+}
 
 app.use(mysqlMiddleware); // put mysql.pool instance into req.mysql
 app.use(redisMiddleware); // put redis instance into req.redis
@@ -41,18 +44,19 @@ app.use('/api/event', eventRouter);
 app.use('/api/session', sessionRouter);
 app.use('/api/ticket', ticketRouter);
 
-if(process.env.HOST_FRONTEND_SPA) // host frontend within the same app
-  app.get('*', function(req, res, next) {
+if (process.env.HOST_FRONTEND_SPA) { // host frontend within the same app
+  app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, process.env.HOST_FRONTEND_SPA, 'index.html'));
   });
+}
 
 // catch 404 and forward to error handler
-app.use(function(req, res, next) {
+app.use((req, res, next) => {
   next(createError(404));
 });
 
 // error handler
-app.use(function(err, req, res, next) {
+app.use((err, req, res) => {
   // set locals, only providing error in development
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
