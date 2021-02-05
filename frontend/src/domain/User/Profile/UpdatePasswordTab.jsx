@@ -101,7 +101,7 @@ function handleValidation(values) {
   return errors;
 }
 
-function handleUpdate(values, { resetForm, setFieldError }) {
+function handleUpdate(values, { resetForm, setSubmitting, setFieldError }) {
   swal.showLoading();
   const accessToken = getAccessToken();
   axios.put(`${BackendURL}/user/password`, { password_current: values.password, password_new: values.passwordNew }, { headers: { Authorization: `Bearer ${accessToken}` } })
@@ -110,6 +110,7 @@ function handleUpdate(values, { resetForm, setFieldError }) {
       swal.fire({ icon: 'success', title: 'Success', showConfirmButton: false, timer: 1000 });
     })
     .catch((error) => {
+      setSubmitting(false);
       if (error.response && error.response.data) {
         const { error_msg: message = '', error_field: fields } = error.response.data;
 

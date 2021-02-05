@@ -18,7 +18,7 @@ function Event() {
   const history = useHistory();
   const [showBootTicketModal, setShowBootTicketModal] = useState(false);
   const [event, setEvent] = useState({});
-  const [sessions, setSessions] = useState([]);
+  const [sessions, setSessions] = useState(null);
   const [sessionObj, setSessionObj] = useState({});
 
   useEffect(() => {
@@ -87,7 +87,7 @@ function Event() {
             <Col>
               <Tabs className="border-bottom-0">
                 <Tab eventKey="session" title="Sessions" disabled>
-                  {sessions.length > 0
+                  {sessions
                     ? <SessionList sessions={sessions} bookTicket={verifySaved() ? bookTicket : redirectSignIn} />
                     : (
                       <ContentLoader width="100%" height="250">

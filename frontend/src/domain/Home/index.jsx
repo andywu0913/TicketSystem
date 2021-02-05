@@ -10,7 +10,7 @@ import EventCards from './EventCards';
 import BackendURL from 'BackendURL';
 
 export default function Home() {
-  const [data, setData] = useState([]);
+  const [data, setData] = useState(null);
 
   useEffect(() => {
     axios.get(`${BackendURL}/event`)
@@ -37,7 +37,7 @@ export default function Home() {
         </Col>
       </Row>
       <Row>
-        {data.length > 0
+        {data
           ? <EventCards events={data} />
           : <DefaultLoadingPlaceholder nums={9} />}
       </Row>
