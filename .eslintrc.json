@@ -27,10 +27,16 @@
         "node/prefer-global/url": ["error", "always"],
         "node/prefer-promises/dns": "error",
         "node/prefer-promises/fs": "error",
+
+        "func-names": ["error", "never"],
+        "max-len": ["off"],
         "no-multi-str": ["off"],
         "no-shadow": ["warn"],
         "no-underscore-dangle": ["error", { "allow": ["__version", "__projdir"] }],
         "no-use-before-define": ["error", { "functions": false }],
-        "max-len": ["off"]
+        "security/detect-non-literal-require": ["off"],
+        "space-before-function-paren": ["error", { "anonymous": "never", "named": "never", "asyncArrow": "always" }],
+
+        "import/no-dynamic-require": ["off"]
     }
 }

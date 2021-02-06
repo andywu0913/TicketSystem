@@ -1,14 +1,15 @@
 const express = require('express');
+
 const router = express.Router();
 
-const authentication = require(__projdir + '/middlewares/authentication');
-const authorization = require(__projdir + '/middlewares/authorization');
+const authentication = require(`${__projdir}/middlewares/authentication`);
+const authorization = require(`${__projdir}/middlewares/authorization`);
 
-const ticketController = require(__projdir + '/controllers/ticket');
+const ticketController = require(`${__projdir}/controllers/ticket`);
 
 router.get('/', authentication(), ticketController.getAllByUserId);
 
-router.get('/session/:session_id', authentication(), authorization(roles = [1, 2]), ticketController.getAllBySessionId);
+router.get('/session/:session_id', authentication(), authorization([1, 2]), ticketController.getAllBySessionId);
 
 router.post('/', authentication(), ticketController.create);
 

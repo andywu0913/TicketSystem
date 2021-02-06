@@ -1,4 +1,4 @@
-module.exports = function Session(dbConnection) {
+module.exports = function(dbConnection) {
   return {
     async create(eventId, time, address, ticketSellTimeOpen, ticketSellTimeEnd, maxSeats, price) {
       const sql = 'INSERT INTO `session` \

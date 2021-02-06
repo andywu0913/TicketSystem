@@ -1,4 +1,4 @@
-module.exports = function User(dbConnection) {
+module.exports = function(dbConnection) {
   return {
     async create(uname, password, role, name, email) {
       const sql = 'INSERT INTO `user` \

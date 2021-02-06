@@ -1,4 +1,4 @@
-module.exports = function Event(dbConnection) {
+module.exports = function(dbConnection) {
   return {
     async create(name, description, startDate, endDate, creatorUid) {
       const sql = 'INSERT INTO `event` \

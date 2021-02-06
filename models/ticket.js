@@ -1,4 +1,4 @@
-module.exports = function Ticket(dbConnection) {
+module.exports = function(dbConnection) {
   return {
     async create(id, sessionId, seatNo) {
       const sql = 'INSERT INTO `ticket` \
