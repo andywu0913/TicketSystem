@@ -41,14 +41,13 @@
         "import/resolver": {
             "alias": {
                 "map": [
-                  ["@models", "./models"],
-                  ["@root", "./"],
-                  ["@config", "./config/"],
-                  ["@routes", "./routes/"],
-                  ["@controllers", "./controllers/"],
-                  ["@middlewares", "./middlewares/"],
-                  ["@models", "./models/"],
-                  ["@utils", "./utils/"]
+                    ["@root", "./"],
+                    ["@config", "./config/"],
+                    ["@routes", "./routes/"],
+                    ["@controllers", "./controllers/"],
+                    ["@middlewares", "./middlewares/"],
+                    ["@models", "./models/"],
+                    ["@utils", "./utils/"]
                 ],
                 "extensions": [".js", ".json"]
             }
