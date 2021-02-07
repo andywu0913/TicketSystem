@@ -33,6 +33,7 @@
         "import/no-dynamic-require": ["off"],
         "max-len": ["off"],
         "no-multi-str": ["off"],
+        "no-param-reassign": "warn",
         "no-shadow": ["warn"],
         "no-underscore-dangle": ["error", { "allow": ["__version", "__projdir"] }],
         "no-use-before-define": ["error", { "functions": false }],

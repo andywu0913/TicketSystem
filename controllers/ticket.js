@@ -1,259 +1,248 @@
-const sessionModel = require(__projdir + '/models/session');
-const ticketModel = require(__projdir + '/models/ticket');
+const SessionModel = require(`${__projdir}/models/session`);
+const TicketModel = require(`${__projdir}/models/ticket`);
 
-module.exports.getAllByUserId = async function(req, res, next) {
+const Errors = require(`${__projdir}/utils/Errors`);
+const ReturnCode = require(`${__projdir}/utils/ReturnCode`);
+const ReturnObject = require(`${__projdir}/utils/ReturnObject`);
+
+module.exports.getAllByUserId = async function(req, res) {
+  const returnObject = new ReturnObject([]);
   try {
-    let userId = req.user_id;
+    const userId = req.user_id;
 
-    let Ticket = ticketModel(req.mysql);
+    const Ticket = TicketModel(req.mysql);
 
-    let ticket = await Ticket.getAllByUserId(userId);
-    res.json({'successful': true, 'data': ticket, 'error_field': [], 'error_msg': ''});
-  }
-  catch(err) {
-    res.status(500);
-    res.json({'successful': false, 'data': {}, 'error_field': [], 'error_msg': err});
+    const tickets = await Ticket.getAllByUserId(userId);
+
+    returnObject.setData(tickets);
+    res.status(ReturnCode.OK).json(returnObject);
+  } catch (err) {
+    returnObject.setError(err.message);
+    res.status(ReturnCode.INTERNAL_SERVER_ERROR).json(returnObject);
   }
 };
 
-module.exports.getAllBySessionId = async function(req, res, next) {
+module.exports.getAllBySessionId = async function(req, res) {
+  const returnObject = new ReturnObject([]);
   try {
-    let sessionId = req.params.session_id;
-    let userId    = req.user_id;
-    let role      = req.role;
+    const { session_id: sessionId } = req.params;
+    const { user_id: userId, role } = req;
 
-    if(!sessionId) {
-      res.status(400);
-      return res.json({'successful': false, 'data': {}, 'error_field': ['session_id'], 'error_msg': 'Missing one or more required parameters.'});
+    if (!sessionId) {
+      throw new Errors.BadRequestError('Missing one or more required parameters.', ['session_id']);
     }
 
-    let Session = sessionModel(req.mysql);
+    const Session = SessionModel(req.mysql);
 
-    let session = await Session.get(sessionId);
-    if(Object.keys(session).length === 0) {
-      res.status(400);
-      return res.json({'successful': false, 'data': [], 'error_field': ['session_id'], 'error_msg': 'Fail to locate the session from the database.'});
+    const session = await Session.get(sessionId);
+    if (Object.keys(session).length === 0) {
+      throw new Errors.BadRequestError('Fail to locate the session from the database.', ['session_id']);
     }
 
-    if(userId !== session.creator_uid && role !== 1) {
-      res.status(403);
-      return res.json({'successful': false, 'data': [], 'error_field': [], 'error_msg': 'No permission to get the tickets from this session.'});
+    if (userId !== session.creator_uid && role !== 1) {
+      throw new Errors.ForbiddenError('No permission to get the tickets from this session.');
     }
 
-    let Ticket = ticketModel(req.mysql);
+    const Ticket = TicketModel(req.mysql);
 
-    let tickets = await Ticket.getAllBySessionId(sessionId);
-    res.json({'successful': true, 'data': tickets, 'error_field': [], 'error_msg': ''});
-  }
-  catch(err) {
-    res.status(500);
-    res.json({'successful': false, 'data': {}, 'error_field': [], 'error_msg': err});
+    const tickets = await Ticket.getAllBySessionId(sessionId);
+
+    returnObject.setData(tickets);
+    res.status(ReturnCode.OK).json(returnObject);
+  } catch (err) {
+    returnObject.setError(err.message, err.fields);
+    res.status(err.statusCode || ReturnCode.INTERNAL_SERVER_ERROR).json(returnObject);
   }
 };
 
-module.exports.getById = async function(req, res, next) {
+module.exports.getById = async function(req, res) {
+  const returnObject = new ReturnObject({});
   try {
-    let ticketId = req.params.ticket_id;
-    let userId    = req.user_id;
-    let role      = req.role;
+    const { ticket_id: ticketId } = req.params;
+    const { user_id: userId, role } = req;
 
-    if(!ticketId) {
-      res.status(400);
-      return res.json({'successful': false, 'data': {}, 'error_field': ['ticket_id'], 'error_msg': 'Missing one or more required parameters.'});
+    if (!ticketId) {
+      throw new Errors.BadRequestError('Missing one or more required parameters.', ['ticket_id']);
     }
 
-    let Ticket = ticketModel(req.mysql);
+    const Ticket = TicketModel(req.mysql);
 
-    let ticket = await Ticket.get(ticketId);
+    const ticket = await Ticket.get(ticketId);
 
-    if(userId !== ticket.user_id && userId !== ticket.creator_uid && role !== 1) {
-      res.status(403);
-      return res.json({'successful': false, 'data': [], 'error_field': [], 'error_msg': 'No permission to get the ticket.'});
+    if (userId !== ticket.user_id && userId !== ticket.creator_uid && role !== 1) {
+      throw new Errors.ForbiddenError('No permission to get the ticket.');
     }
 
-    res.json({'successful': true, 'data': ticket, 'error_field': [], 'error_msg': ''});
-  }
-  catch(err) {
-    res.status(500);
-    res.json({'successful': false, 'data': {}, 'error_field': [], 'error_msg': err});
+    returnObject.setData(ticket);
+    res.status(ReturnCode.OK).json(returnObject);
+  } catch (err) {
+    returnObject.setError(err.message, err.fields);
+    res.status(err.statusCode || ReturnCode.INTERNAL_SERVER_ERROR).json(returnObject);
   }
 };
 
-module.exports.create = async function(req, res, next) {
+module.exports.create = async function(req, res) {
+  const returnObject = new ReturnObject({});
   try {
-    let sessionId = req.query.session_id;
-    let seatNo    = req.body.seat_no;
-    let userId    = req.user_id;
+    const { session_id: sessionId } = req.query;
+    const { seat_no: seatNo } = req.body;
+    const userId = req.user_id;
 
-    if(!sessionId || !seatNo) {
-      res.status(400);
-      return res.json({'successful': false, 'data': {}, 'error_field': ['session_id', 'seat_no'], 'error_msg': 'Missing one or more required parameters.'});
+    if (!sessionId || !seatNo) {
+      throw new Errors.BadRequestError('Missing one or more required parameters.', ['session_id', 'seat_no']);
     }
 
-    let isActive = await req.redis.hget(`session:${sessionId}`, 'is_active');
+    const isActive = await req.redis.hget(`session:${sessionId}`, 'is_active'); // TODO
     let timeOpen = await req.redis.hget(`session:${sessionId}`, 'ticket_sell_time_open');
-    let timeEnd  = await req.redis.hget(`session:${sessionId}`, 'ticket_sell_time_end');
+    let timeEnd = await req.redis.hget(`session:${sessionId}`, 'ticket_sell_time_end');
 
-    if(isActive === 'false' || !timeOpen || !timeEnd) {
-      res.status(400);
-      return res.json({'successful': false, 'data': {}, 'error_field': [], 'error_msg': 'Not available yet.'});
+    if (isActive === 'false' || !timeOpen || !timeEnd) {
+      throw new Errors.BadRequestError('Not available yet.');
     }
 
-    let now  = new Date();
+    const now = new Date();
     timeOpen = new Date(timeOpen);
-    timeEnd  = new Date(timeEnd);
+    timeEnd = new Date(timeEnd);
 
-    if(now < timeOpen) {
-      res.status(400);
-      return res.json({'successful': false, 'data': {}, 'error_field': [], 'error_msg': 'Not booking time yet.'});
+    if (now < timeOpen) {
+      throw new Errors.BadRequestError('Not booking time yet.');
     }
 
-    if(now > timeEnd) {
-      res.status(400);
-      return res.json({'successful': false, 'data': {}, 'error_field': [], 'error_msg': 'Booking time is over.'});
+    if (now > timeEnd) {
+      throw new Errors.BadRequestError('Booking time is over.');
     }
 
-    let seats = await req.redis.hincrby(`session:${sessionId}`, 'open_seats', -1);
-    if(seats < 0) {
+    const seats = await req.redis.hincrby(`session:${sessionId}`, 'open_seats', -1);
+    if (seats < 0) {
       await req.redis.hincrby(`session:${sessionId}`, 'open_seats', 1);
-      res.status(400);
-      return res.json({'successful': false, 'data': {}, 'error_field': [], 'error_msg': 'No tickets currently available.'});
+      throw new Errors.BadRequestError('No tickets currently available.');
     }
 
     try {
-      let Session = sessionModel(req.mysql);
+      const Session = SessionModel(req.mysql);
 
-      let session = await Session.get(sessionId);
-      if(Object.keys(session).length === 0)
-        throw 'Fail to locate the session from the database.';
-
-      if(seatNo <= 0 || seatNo > session.max_seats) {
-        res.status(400);
-        return res.json({'successful': false, 'data': {}, 'error_field': ['seat_no'], 'error_msg': 'The selected seat is not valid.'});
+      const session = await Session.get(sessionId);
+      if (Object.keys(session).length === 0) {
+        throw new Errors.BadRequestError('Fail to locate the session from the database.', ['session_id']);
       }
 
-      let Ticket = ticketModel(req.mysql);
+      if (seatNo <= 0 || seatNo > session.max_seats) {
+        throw new Errors.BadRequestError('The selected seat is not valid.', ['seat_no']);
+      }
 
-      let result = await Ticket.create(userId, sessionId, seatNo);
-      if(result.affectedRows === 0)
-        throw 'Fail to create the ticket.';
+      const Ticket = TicketModel(req.mysql);
 
-      res.status(201);
-      res.json({'successful': true, 'data': {'id': result.insertId}, 'error_field': [], 'error_msg': ''});
-    }
-    catch(err) {
+      const result = await Ticket.create(userId, sessionId, seatNo);
+      if (result.affectedRows === 0) {
+        throw new Errors.InternalServerError('Fail to create the ticket.');
+      }
+
+      returnObject.setData({ id: result.insertId });
+      res.status(ReturnCode.CREATED).json(returnObject);
+    } catch (err) {
       await req.redis.hincrby(`session:${sessionId}`, 'open_seats', 1);
-      if(err.code === 'ER_DUP_ENTRY') {
-        res.status(409);
-        return res.json({'successful': false, 'data': {}, 'error_field': ['seat_no'], 'error_msg': 'This seat has already been occupied. Choose another one.'});
+      if (err.code === 'ER_DUP_ENTRY') {
+        throw new Errors.ConflictError('This seat has already been occupied. Choose another one.', ['seat_no']);
       }
       throw err;
     }
-  }
-  catch(err) {
-    res.status(500);
-    res.json({'successful': false, 'data': {}, 'error_field': [], 'error_msg': err});
-  }
-};
-
-module.exports.update = async function(req, res, next) {
-  try {
-    let ticketId = req.params.ticket_id;
-    let seatNo   = req.body.seat_no;
-    let userId   = req.user_id;
-    let role     = req.role;
-
-    if(!ticketId || !seatNo) {
-      res.status(400);
-      return res.json({'successful': false, 'data': {}, 'error_field': ['ticket_id', 'seat_no'], 'error_msg': 'Missing one or more required parameters.'});
-    }
-
-    let Ticket = ticketModel(req.mysql);
-
-    let ticket = await Ticket.get(ticketId);
-    if(Object.keys(ticket).length === 0)
-      throw 'Fail to locate the ticket from the database.';
-
-    let Session = sessionModel(req.mysql);
-
-    let session = await Session.get(ticket.session_id);
-
-    if(userId !== ticket.user_id && userId !== session.creator_uid && role !== 1) {
-      res.status(403);
-      return res.json({'successful': false, 'data': [], 'error_field': [], 'error_msg': 'No permission to update the ticket.'});
-    }
-
-    if(!session.is_active && userId !== session.creator_uid && role !== 1) {
-      res.status(400);
-      return res.json({'successful': false, 'data': [], 'error_field': ['is_active'], 'error_msg': 'Unable to update the ticket. This session is inactive currently.'});
-    }
-
-    if(seatNo <= 0 || seatNo > session.max_seats) {
-      res.status(400);
-      return res.json({'successful': false, 'data': {}, 'error_field': ['seat_no'], 'error_msg': 'The selected seat is not valid.'});
-    }
-
-    let result = await Ticket.update(ticketId, seatNo);
-    if(result.affectedRows === 0)
-      throw 'Fail to update the ticket in the database.';
-
-    res.status(204);
-    res.end();
-  }
-  catch(err) {
-    if(err.code === 'ER_DUP_ENTRY') {
-      res.status(409);
-      res.json({'successful': false, 'data': {}, 'error_field': ['seat_no'], 'error_msg': 'This seat has already been occupied. Choose another one.'});
-    }
-    else {
-      res.status(500);
-      res.json({'successful': false, 'data': {}, 'error_field': [], 'error_msg': err});
-    }
+  } catch (err) {
+    returnObject.setError(err.message, err.fields);
+    res.status(err.statusCode || ReturnCode.INTERNAL_SERVER_ERROR).json(returnObject);
   }
 };
 
-module.exports.delete = async function(req, res, next) {
+module.exports.update = async function(req, res) {
+  const returnObject = new ReturnObject({});
   try {
-    let ticketId = req.params.ticket_id;
-    let userId   = req.user_id;
-    let role     = req.role;
+    const { ticket_id: ticketId } = req.params;
+    const { seat_no: seatNo } = req.body;
+    const { user_id: userId, role } = req;
 
-    if(!ticketId) {
-      res.status(400);
-      return res.json({'successful': false, 'data': [], 'error_field': ['ticket_id'], 'error_msg': 'Missing one or more required parameters.'});
+    if (!ticketId || !seatNo) {
+      throw new Errors.BadRequestError('Missing one or more required parameters.', ['ticket_id', 'seat_no']);
     }
 
-    let Ticket = ticketModel(req.mysql);
+    const Ticket = TicketModel(req.mysql);
 
-    let ticket = await Ticket.get(ticketId);
-    if(Object.keys(ticket).length === 0)
-      throw 'Fail to locate the ticket from the database.';
-
-    let Session = sessionModel(req.mysql);
-
-    let session = await Session.get(ticket.session_id);
-
-    if(userId !== ticket.user_id && userId !== session.creator_uid && role !== 1) {
-      res.status(403);
-      return res.json({'successful': false, 'data': [], 'error_field': [], 'error_msg': 'No permission to update the ticket.'});
+    const ticket = await Ticket.get(ticketId);
+    if (Object.keys(ticket).length === 0) {
+      throw new Errors.BadRequestError('Fail to locate the ticket from the database.', ['ticket_id']);
     }
 
-    if(!session.is_active && userId !== session.creator_uid && role !== 1) {
-      res.status(400);
-      return res.json({'successful': false, 'data': [], 'error_field': ['is_active'], 'error_msg': 'Unable to delete the ticket. This session is inactive currently.'});
+    const Session = SessionModel(req.mysql);
+
+    const session = await Session.get(ticket.session_id);
+
+    if (userId !== ticket.user_id && userId !== session.creator_uid && role !== 1) {
+      throw new Errors.ForbiddenError('No permission to update the ticket.');
     }
 
-    let result = await Ticket.delete(ticketId);
-    if(result.affectedRows === 0)
-      throw 'Fail to delete the ticket from the database.';
+    if (!session.is_active && userId !== session.creator_uid && role !== 1) {
+      throw new Errors.BadRequestError('Unable to update the ticket. This session is inactive currently.', ['is_active']);
+    }
+
+    if (seatNo <= 0 || seatNo > session.max_seats) {
+      throw new Errors.BadRequestError('The selected seat is not valid.', ['seat_no']);
+    }
+
+    const result = await Ticket.update(ticketId, seatNo);
+    if (result.affectedRows === 0) {
+      throw new Errors.InternalServerError('Fail to update the ticket in the database.');
+    }
+
+    res.status(ReturnCode.NO_CONTENT).end();
+  } catch (err) {
+    if (err.code === 'ER_DUP_ENTRY') {
+      returnObject.setError('This seat has already been occupied. Choose another one.', ['seat_no']);
+      res.status(ReturnCode.CONFLICT);
+    } else {
+      returnObject.setError(err.message, err.fields);
+      res.status(err.statusCode || ReturnCode.INTERNAL_SERVER_ERROR);
+    }
+    res.json(returnObject);
+  }
+};
+
+module.exports.delete = async function(req, res) {
+  const returnObject = new ReturnObject({});
+  try {
+    const { ticket_id: ticketId } = req.params;
+    const { user_id: userId, role } = req;
+
+    if (!ticketId) {
+      throw new Errors.BadRequestError('Missing one or more required parameters.', ['ticket_id']);
+    }
+
+    const Ticket = TicketModel(req.mysql);
+
+    const ticket = await Ticket.get(ticketId);
+    if (Object.keys(ticket).length === 0) {
+      throw new Errors.BadRequestError('Fail to locate the ticket from the database.', ['ticket_id']);
+    }
+
+    const Session = SessionModel(req.mysql);
+
+    const session = await Session.get(ticket.session_id);
+
+    if (userId !== ticket.user_id && userId !== session.creator_uid && role !== 1) {
+      throw new Errors.ForbiddenError('No permission to delete the ticket.');
+    }
+
+    if (!session.is_active && userId !== session.creator_uid && role !== 1) {
+      throw new Errors.BadRequestError('Unable to delete the ticket. This session is inactive currently.', ['is_active']);
+    }
+
+    const result = await Ticket.delete(ticketId);
+    if (result.affectedRows === 0) {
+      throw new Errors.InternalServerError('Fail to delete the ticket from the database.');
+    }
 
     await req.redis.hincrby(`session:${ticket.session_id}`, 'open_seats', 1);
 
-    res.status(204);
-    res.end();
-  }
-  catch(err) {
-    res.status(500);
-    res.json({'successful': false, 'data': [], 'error_field': [], 'error_msg': err});
+    res.status(ReturnCode.NO_CONTENT).end();
+  } catch (err) {
+    returnObject.setError(err.message, err.fields);
+    res.status(err.statusCode || ReturnCode.INTERNAL_SERVER_ERROR).json(returnObject);
   }
 };

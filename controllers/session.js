@@ -1,299 +1,278 @@
-const eventModel = require(__projdir + '/models/event');
-const sessionModel = require(__projdir + '/models/session');
-const ticketModel = require(__projdir + '/models/ticket');
+const EventModel = require(`${__projdir}/models/event`);
+const SessionModel = require(`${__projdir}/models/session`);
+const TicketModel = require(`${__projdir}/models/ticket`);
 
-module.exports.getAllByEventId = async function(req, res, next) {
+const Errors = require(`${__projdir}/utils/Errors`);
+const ReturnCode = require(`${__projdir}/utils/ReturnCode`);
+const ReturnObject = require(`${__projdir}/utils/ReturnObject`);
+
+module.exports.getAllByEventId = async function(req, res) {
+  const returnObject = new ReturnObject([]);
   try {
-    let eventId = req.query.event_id;
+    const { event_id: eventId } = req.query;
 
-    if(!eventId) {
-      res.status(400);
-      return res.json({'successful': false, 'data': {}, 'error_field': ['event_id'], 'error_msg': 'Missing one or more required parameters.'});
+    if (!eventId) {
+      throw new Errors.BadRequestError('Missing one or more required parameters.', ['event_id']);
     }
 
-    let Session = sessionModel(req.mysql);
+    const Session = SessionModel(req.mysql);
 
-    let sessions = await Session.getAllByEventId(eventId);
+    const sessions = await Session.getAllByEventId(eventId);
 
-    await Promise.all(sessions.map(async function(session) {
-      let seats = await req.redis.hget(`session:${session.id}`, 'open_seats');
-      session.open_seats = seats === null ? null : parseInt(seats);
+    await Promise.all(sessions.map(async (session) => {
+      const seats = await req.redis.hget(`session:${session.id}`, 'open_seats');
+      session.open_seats = seats && parseInt(seats, 10);
     }));
-    res.json({'successful': true, 'data': sessions, 'error_field': [], 'error_msg': ''});
-  }
-  catch(err) {
-    res.status(500);
-    res.json({'successful': false, 'data': {}, 'error_field': [], 'error_msg': err});
-  }
-};
 
-module.exports.getById = async function(req, res, next) {
-  try {
-    let sessionId = req.params.session_id;
-
-    if(!sessionId) {
-      res.status(400);
-      return res.json({'successful': false, 'data': {}, 'error_field': ['session_id'], 'error_msg': 'Missing one or more required parameters.'});
-    }
-
-    let Session = sessionModel(req.mysql);
-
-    let session = await Session.get(sessionId);
-    res.json({'successful': true, 'data': session, 'error_field': [], 'error_msg': ''});
-  }
-  catch(err) {
-    res.status(500);
-    res.json({'successful': false, 'data': {}, 'error_field': [], 'error_msg': err});
+    returnObject.setData(sessions);
+    res.status(ReturnCode.OK).json(returnObject);
+  } catch (err) {
+    returnObject.setError(err.message, err.fields);
+    res.status(err.statusCode || ReturnCode.INTERNAL_SERVER_ERROR).json(returnObject);
   }
 };
 
-module.exports.create = async function(req, res, next) {
+module.exports.getById = async function(req, res) {
+  const returnObject = new ReturnObject({});
   try {
-    let eventId            = req.query.event_id;
-    let time               = req.body.time;
-    let address            = req.body.address;
-    let ticketSellTimeOpen = req.body.ticket_sell_time_open;
-    let ticketSellTimeEnd  = req.body.ticket_sell_time_end;
-    let maxSeats           = req.body.max_seats;
-    let price              = req.body.price;
-    let userId             = req.user_id;
-    let role               = req.role;
+    const { session_id: sessionId } = req.params;
 
-    if(!eventId || !time || !address || !ticketSellTimeOpen || !ticketSellTimeEnd || !maxSeats || !price) {
-      res.status(400);
-      return res.json({'successful': false, 'data': {}, 'error_field': ['event_id', 'time', 'address', 'ticket_sell_time_open', 'ticket_sell_time_end', 'max_seats', 'price'], 'error_msg': 'Missing one or more required parameters.'});
+    if (!sessionId) {
+      throw new Errors.BadRequestError('Missing one or more required parameters.', ['session_id']);
     }
 
-    time               = new Date(time);
+    const Session = SessionModel(req.mysql);
+
+    const session = await Session.get(sessionId);
+
+    returnObject.setData(session);
+    res.status(ReturnCode.OK).json(returnObject);
+  } catch (err) {
+    returnObject.setError(err.message, err.fields);
+    res.status(err.statusCode || ReturnCode.INTERNAL_SERVER_ERROR).json(returnObject);
+  }
+};
+
+module.exports.create = async function(req, res) {
+  const returnObject = new ReturnObject({});
+  try {
+    const { event_id: eventId } = req.query;
+    let { time, ticket_sell_time_open: ticketSellTimeOpen, ticket_sell_time_end: ticketSellTimeEnd } = req.body;
+    const { address, max_seats: maxSeats, price } = req.body;
+    const { user_id: userId, role } = req;
+
+    if (!eventId || !time || !address || !ticketSellTimeOpen || !ticketSellTimeEnd || !maxSeats || !price) {
+      throw new Errors.BadRequestError('Missing one or more required parameters.', ['event_id', 'time', 'address', 'ticket_sell_time_open', 'ticket_sell_time_end', 'max_seats', 'price']);
+    }
+
+    time = new Date(time);
     ticketSellTimeOpen = new Date(ticketSellTimeOpen);
-    ticketSellTimeEnd  = new Date(ticketSellTimeEnd);
+    ticketSellTimeEnd = new Date(ticketSellTimeEnd);
 
-    if(address.length > 64 || time.toString() === 'Invalid Date' || ticketSellTimeOpen.toString() === 'Invalid Date' || ticketSellTimeEnd.toString() === 'Invalid Date' || maxSeats < 0 || price < 0) {
-      res.status(400);
-      return res.json({'successful': false, 'data': {}, 'error_field': ['event_id', 'time', 'address', 'ticket_sell_time_open', 'ticket_sell_time_end', 'max_seats', 'price'], 'error_msg': 'One or more parameters contain incorrect values.'});
+    if (address.length > 64 || time.toString() === 'Invalid Date' || ticketSellTimeOpen.toString() === 'Invalid Date' || ticketSellTimeEnd.toString() === 'Invalid Date' || maxSeats < 0 || price < 0) {
+      throw new Errors.BadRequestError('One or more parameters contain incorrect values.', ['event_id', 'time', 'address', 'ticket_sell_time_open', 'ticket_sell_time_end', 'max_seats', 'price']);
     }
 
-    let Event = eventModel(req.mysql);
+    const Event = EventModel(req.mysql);
 
-    let event = await Event.get(eventId);
-    if(Object.keys(event).length === 0)
-      throw 'Fail to locate the event from the database.';
+    const event = await Event.get(eventId);
+    if (Object.keys(event).length === 0) {
+      throw new Errors.BadRequestError('Fail to locate the event from the database.', ['event_id']);
+    }
 
     // TODO: check session time is between event period
 
-    if(userId !== event.creator_uid && role !== 1) {
-      res.status(403);
-      return res.json({'successful': false, 'data': {}, 'error_field': [], 'error_msg': 'No permission to create the session under this event.'});
+    if (userId !== event.creator_uid && role !== 1) {
+      throw new Errors.ForbiddenError('No permission to create the session under this event.');
     }
 
-    let Session = sessionModel(req.mysql);
+    const Session = SessionModel(req.mysql);
 
-    let result = await Session.create(eventId, time, address, ticketSellTimeOpen, ticketSellTimeEnd, maxSeats, price);
-    if(result.affectedRows === 0)
-      throw 'Fail to create the session.';
+    const result = await Session.create(eventId, time, address, ticketSellTimeOpen, ticketSellTimeEnd, maxSeats, price);
+    if (result.affectedRows === 0) {
+      throw new Errors.InternalServerError('Fail to create the session.');
+    }
 
-    res.status(201);
-    res.json({'successful': true, 'data': {'id': result.insertId}, 'error_field': [], 'error_msg': ''});
-  }
-  catch(err) {
-    res.status(500);
-    res.json({'successful': false, 'data': {}, 'error_field': [], 'error_msg': err});
+    returnObject.setData({ id: result.insertId });
+    res.status(ReturnCode.CREATED).json(returnObject);
+  } catch (err) {
+    returnObject.setError(err.message, err.fields);
+    res.status(err.statusCode || ReturnCode.INTERNAL_SERVER_ERROR).json(returnObject);
   }
 };
 
-module.exports.getAvailableSeats = async function(req, res, next) {
+module.exports.getAvailableSeats = async function(req, res) {
+  const returnObject = new ReturnObject({});
   try {
-    let sessionId = req.params.session_id;
+    const { session_id: sessionId } = req.params;
 
-    if(!sessionId) {
-      res.status(400);
-      return res.json({'successful': false, 'data': [], 'error_field': ['session_id'], 'error_msg': 'Missing one or more required parameters.'});
+    if (!sessionId) {
+      throw new Errors.BadRequestError('Missing one or more required parameters.', ['session_id']);
     }
 
     let seats = await req.redis.hget(`session:${sessionId}`, 'open_seats');
-    seats = seats === null ? null : parseInt(seats);
-    res.json({'successful': true, 'data': {'open_seats': seats}, 'error_field': [], 'error_msg': ''});
-  }
-  catch(err) {
-    res.status(500);
-    res.json({'successful': false, 'data': [], 'error_field': [], 'error_msg': err});
+    seats = seats && parseInt(seats, 10);
+
+    returnObject.setData({ open_seats: seats });
+    res.status(ReturnCode.OK).json(returnObject);
+  } catch (err) {
+    returnObject.setError(err.message);
+    res.status(ReturnCode.INTERNAL_SERVER_ERROR).json(returnObject);
   }
 };
 
-module.exports.activation = async function(req, res, next) {
+module.exports.activation = async function(req, res) {
+  const returnObject = new ReturnObject({});
   try {
-    let sessionId  = req.params.session_id;
-    let activation = req.body.activation;
-    let userId     = req.user_id;
-    let role       = req.role;
+    const { session_id: sessionId } = req.params;
+    const { activation } = req.body;
+    const { user_id: userId, role } = req;
 
-    if(!sessionId) {
-      res.status(400);
-      return res.json({'successful': false, 'data': [], 'error_field': ['session_id'], 'error_msg': 'Missing one or more required parameters.'});
+    if (!sessionId) {
+      throw new Errors.BadRequestError('Missing one or more required parameters.', ['session_id']);
     }
 
-    let Session = sessionModel(req.mysql);
+    const Session = SessionModel(req.mysql);
 
-    let session = await Session.get(sessionId);
-    if(Object.keys(session).length === 0) {
-      res.status(400);
-      return res.json({'successful': false, 'data': [], 'error_field': ['session_id'], 'error_msg': 'Fail to locate the session from the database.'});
+    const session = await Session.get(sessionId);
+    if (Object.keys(session).length === 0) {
+      throw new Errors.BadRequestError('Fail to locate the session from the database.', ['session_id']);
     }
 
-    if(userId !== session.creator_uid && role !== 1) {
-      res.status(403);
-      return res.json({'successful': false, 'data': [], 'error_field': [], 'error_msg': 'No permission to update the session.'});
+    if (userId !== session.creator_uid && role !== 1) {
+      throw new Errors.ForbiddenError('No permission to update the session.');
     }
 
-    if(activation) {
-      let Ticket = ticketModel(req.mysql);
-      let count = await Ticket.countTicket(sessionId);
+    if (activation) {
+      const Ticket = TicketModel(req.mysql);
+      const count = await Ticket.countTicket(sessionId);
 
-      let result = await Session.activation(sessionId, true);
-      if(result.affectedRows === 0)
-        throw 'Fail to set the session activation status in the database.';
+      const result = await Session.activation(sessionId, true);
+      if (result.affectedRows === 0) {
+        throw new Errors.InternalServerError('Fail to set the session activation status in the database.');
+      }
 
       await req.redis.hset(
         `session:${sessionId}`,
-        'name',                  session.name,
+        'name', session.name,
         'ticket_sell_time_open', session.ticket_sell_time_open,
-        'ticket_sell_time_end',  session.ticket_sell_time_end,
-        'open_seats',            session.max_seats - count,
-        'is_active',             true
+        'ticket_sell_time_end', session.ticket_sell_time_end,
+        'open_seats', session.max_seats - count,
+        'is_active', true,
       );
-    }
-    else {
+    } else {
       try {
         await req.redis.hset(`session:${sessionId}`, 'is_active', false);
 
-        let result = await Session.activation(sessionId, false);
-        if(result.affectedRows === 0) {
-          throw 'Fail to set the session activation status in the database.';
+        const result = await Session.activation(sessionId, false);
+        if (result.affectedRows === 0) {
+          throw new Errors.InternalServerError('Fail to set the session activation status in the database.');
         }
 
         await req.redis.del(`session:${sessionId}`);
-      }
-      catch(err) {
+      } catch (err) {
         await req.redis.set(`session:${sessionId}:is_active`, true);
         throw err;
       }
     }
 
-    res.status(204);
-    res.end();
-  }
-  catch(err) {
-    res.status(500);
-    res.json({'successful': false, 'data': [], 'error_field': [], 'error_msg': err});
+    res.status(ReturnCode.NO_CONTENT).end();
+  } catch (err) {
+    returnObject.setError(err.message, err.fields);
+    res.status(err.statusCode || ReturnCode.INTERNAL_SERVER_ERROR).json(returnObject);
   }
 };
 
-module.exports.update = async function(req, res, next) {
+module.exports.update = async function(req, res) {
+  const returnObject = new ReturnObject({});
   try {
-    let sessionId          = req.params.session_id;
-    let time               = req.body.time;
-    let address            = req.body.address;
-    let ticketSellTimeOpen = req.body.ticket_sell_time_open;
-    let ticketSellTimeEnd  = req.body.ticket_sell_time_end;
-    let maxSeats           = req.body.max_seats;
-    let price              = req.body.price;
-    let userId             = req.user_id;
-    let role               = req.role;
+    const { session_id: sessionId } = req.params;
+    let { time, ticket_sell_time_open: ticketSellTimeOpen, ticket_sell_time_end: ticketSellTimeEnd } = req.body;
+    const { address, max_seats: maxSeats, price } = req.body;
+    const { user_id: userId, role } = req;
 
-    if(!sessionId || !time || !address || !ticketSellTimeOpen || !ticketSellTimeEnd || !maxSeats || !price) {
-      res.status(400);
-      return res.json({'successful': false, 'data': [], 'error_field': ['session_id', 'time', 'address', 'ticket_sell_time_open', 'ticket_sell_time_end', 'max_seats', 'price'], 'error_msg': 'Missing one or more required parameters.'});
+    if (!sessionId || !time || !address || !ticketSellTimeOpen || !ticketSellTimeEnd || !maxSeats || !price) {
+      throw new Errors.BadRequestError('Missing one or more required parameters.', ['session_id', 'time', 'address', 'ticket_sell_time_open', 'ticket_sell_time_end', 'max_seats', 'price']);
     }
 
-    time               = new Date(time);
+    time = new Date(time);
     ticketSellTimeOpen = new Date(ticketSellTimeOpen);
-    ticketSellTimeEnd  = new Date(ticketSellTimeEnd);
+    ticketSellTimeEnd = new Date(ticketSellTimeEnd);
 
-    if(address.length > 64 || time.toString() === 'Invalid Date' || ticketSellTimeOpen.toString() === 'Invalid Date' || ticketSellTimeEnd.toString() === 'Invalid Date' || maxSeats < 0 || price < 0) {
-      res.status(400);
-      return res.json({'successful': false, 'data': [], 'error_field': ['session_id', 'time', 'address', 'ticket_sell_time_open', 'ticket_sell_time_end', 'max_seats', 'price'], 'error_msg': 'One or more parameters contain incorrect values.'});
+    if (address.length > 64 || time.toString() === 'Invalid Date' || ticketSellTimeOpen.toString() === 'Invalid Date' || ticketSellTimeEnd.toString() === 'Invalid Date' || maxSeats < 0 || price < 0) {
+      throw new Errors.BadRequestError('One or more parameters contain incorrect values.', ['session_id', 'time', 'address', 'ticket_sell_time_open', 'ticket_sell_time_end', 'max_seats', 'price']);
     }
 
-    let Session = sessionModel(req.mysql);
+    const Session = SessionModel(req.mysql);
 
-    let session = await Session.get(sessionId);
-    if(Object.keys(session).length === 0) {
-      res.status(400);
-      return res.json({'successful': false, 'data': [], 'error_field': ['session_id'], 'error_msg': 'Fail to locate the session from the database.'});
+    const session = await Session.get(sessionId);
+    if (Object.keys(session).length === 0) {
+      throw new Errors.BadRequestError('Fail to locate the session from the database.', ['session_id']);
     }
 
-    if(userId !== session.creator_uid && role !== 1) {
-      res.status(403);
-      return res.json({'successful': false, 'data': [], 'error_field': [], 'error_msg': 'No permission to update the session.'});
+    if (userId !== session.creator_uid && role !== 1) {
+      throw new Errors.ForbiddenError('No permission to update the session.');
     }
 
-    if(session.is_active) {
-      res.status(400);
-      return res.json({'successful': false, 'data': [], 'error_field': ['is_active'], 'error_msg': 'Unable to update the active session. Please deactivate it first.'});
+    if (session.is_active) {
+      throw new Errors.BadRequestError('Unable to update the active session. Please deactivate it first.', ['is_active']);
     }
 
     // TODO: check session time is between event period
     // TODO: check the total number of ticket sold out before reducing the maxSeats
 
-    let result = await Session.update(sessionId, time, address, ticketSellTimeOpen, ticketSellTimeEnd, maxSeats, price);
-    if(result.affectedRows === 0)
-      throw 'Fail to update the session in the database.';
+    const result = await Session.update(sessionId, time, address, ticketSellTimeOpen, ticketSellTimeEnd, maxSeats, price);
+    if (result.affectedRows === 0) {
+      throw new Errors.InternalServerError('Fail to update the session in the database.');
+    }
 
-    res.status(204);
-    res.end();
-  }
-  catch(err) {
-    res.status(500);
-    res.json({'successful': false, 'data': [], 'error_field': [], 'error_msg': err});
+    res.status(ReturnCode.NO_CONTENT).end();
+  } catch (err) {
+    returnObject.setError(err.message, err.fields);
+    res.status(err.statusCode || ReturnCode.INTERNAL_SERVER_ERROR).json(returnObject);
   }
 };
 
-module.exports.delete = async function(req, res, next) {
+module.exports.delete = async function(req, res) {
+  const returnObject = new ReturnObject({});
   try {
-    let sessionId = req.params.session_id;
-    let userId    = req.user_id;
-    let role      = req.role;
+    const { session_id: sessionId } = req.params;
+    const { user_id: userId, role } = req;
 
-    if(!sessionId) {
-      res.status(400);
-      return res.json({'successful': false, 'data': [], 'error_field': ['session_id'], 'error_msg': 'Missing one or more required parameters.'});
+    if (!sessionId) {
+      throw new Errors.BadRequestError('Missing one or more required parameters.', ['session_id']);
     }
 
-    let Session = sessionModel(req.mysql);
+    const Session = SessionModel(req.mysql);
 
-    let session = await Session.get(sessionId);
-    if(Object.keys(session).length === 0) {
-      res.status(400);
-      return res.json({'successful': false, 'data': [], 'error_field': ['session_id'], 'error_msg': 'Fail to locate the session from the database.'});
+    const session = await Session.get(sessionId);
+    if (Object.keys(session).length === 0) {
+      throw new Errors.BadRequestError('Fail to locate the session from the database.', ['session_id']);
     }
 
-    if(userId !== session.creator_uid && role !== 1) {
-      res.status(403);
-      return res.json({'successful': false, 'data': [], 'error_field': [], 'error_msg': 'No permission to delete the session.'});
+    if (userId !== session.creator_uid && role !== 1) {
+      throw new Errors.ForbiddenError('No permission to delete the session.');
     }
 
-    if(session.is_active) {
-      res.status(400);
-      return res.json({'successful': false, 'data': [], 'error_field': ['is_active'], 'error_msg': 'Unable to delete the active session. Please deactivate it first.'});
+    if (session.is_active) {
+      throw new Errors.BadRequestError('Unable to delete the active session. Please deactivate it first.', ['is_active']);
     }
 
-    let Ticket = ticketModel(req.mysql);
+    const Ticket = TicketModel(req.mysql);
 
-    let tickets = await Ticket.getAllBySessionId(sessionId);
-    if(tickets.length > 0) {
-      res.status(400);
-      return res.json({'successful': false, 'data': [], 'error_field': [], 'error_msg': 'One or more tickets exist under current session. Cannot delete the session.'});
+    const tickets = await Ticket.getAllBySessionId(sessionId);
+    if (tickets.length > 0) {
+      throw new Errors.BadRequestError('One or more tickets exist under current session. Cannot delete the session.');
     }
 
-    let result = await Session.delete(sessionId);
-    if(result.affectedRows === 0)
-      throw 'Fail to delete the session from the database.';
+    const result = await Session.delete(sessionId);
+    if (result.affectedRows === 0) {
+      throw new Errors.InternalServerError('Fail to delete the session from the database.');
+    }
 
-    res.status(204);
-    res.end();
-  }
-  catch(err) {
-    res.status(500);
-    res.json({'successful': false, 'data': [], 'error_field': [], 'error_msg': err});
+    res.status(ReturnCode.NO_CONTENT).end();
+  } catch (err) {
+    returnObject.setError(err.message, err.fields);
+    res.status(err.statusCode || ReturnCode.INTERNAL_SERVER_ERROR).json(returnObject);
   }
 };

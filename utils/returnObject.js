@@ -20,7 +20,7 @@ module.exports = class {
     return {
       successful: this.successful,
       data: this.data,
-      error_fields: this.errorFields,
+      error_field: this.errorFields,
       error_msg: this.errorMsg,
     };
   }
