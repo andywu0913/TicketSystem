@@ -1,6 +1,5 @@
-const ReturnObject = require(`${__projdir}/utils/ReturnObject`);
-
-const Errors = require(`${__projdir}/utils/Errors`);
+const Errors = require('@utils/Errors');
+const ReturnObject = require('@utils/ReturnObject');
 
 module.exports = function(roles = []) {
   return function(req, res, next) {

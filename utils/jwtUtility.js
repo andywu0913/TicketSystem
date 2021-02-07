@@ -1,14 +1,14 @@
 const crypto = require('crypto');
 const jwt = require('jsonwebtoken');
 
-const { secret } = require(`${__projdir}/config/jwt`);
+const { secret } = require('@config/jwt');
 
 module.exports.create = {
   accessToken(payload, exp = '6h') {
     return new Promise((resolve, reject) => {
       jwt.sign(payload, secret, { expiresIn: exp }, (err, token) => {
         if (err) {
-          reject('Fail to create JWT token.');
+          reject(err);
         }
         resolve(token);
       });

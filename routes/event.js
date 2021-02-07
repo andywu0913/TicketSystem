@@ -2,10 +2,10 @@ const express = require('express');
 
 const router = express.Router();
 
-const authentication = require(`${__projdir}/middlewares/authentication`);
-const authorization = require(`${__projdir}/middlewares/authorization`);
+const authentication = require('@middlewares/authentication');
+const authorization = require('@middlewares/authorization');
 
-const eventController = require(`${__projdir}/controllers/event`);
+const eventController = require('@controllers/event');
 
 router.get('/', eventController.getMultipleByConstraints);
 

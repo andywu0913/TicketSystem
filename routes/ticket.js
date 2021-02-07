@@ -2,10 +2,10 @@ const express = require('express');
 
 const router = express.Router();
 
-const authentication = require(`${__projdir}/middlewares/authentication`);
-const authorization = require(`${__projdir}/middlewares/authorization`);
+const authentication = require('@middlewares/authentication');
+const authorization = require('@middlewares/authorization');
 
-const ticketController = require(`${__projdir}/controllers/ticket`);
+const ticketController = require('@controllers/ticket');
 
 router.get('/', authentication(), ticketController.getAllByUserId);
 

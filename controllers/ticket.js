@@ -1,9 +1,9 @@
-const SessionModel = require(`${__projdir}/models/session`);
-const TicketModel = require(`${__projdir}/models/ticket`);
+const SessionModel = require('@models/session');
+const TicketModel = require('@models/ticket');
 
-const Errors = require(`${__projdir}/utils/Errors`);
-const ReturnCode = require(`${__projdir}/utils/ReturnCode`);
-const ReturnObject = require(`${__projdir}/utils/ReturnObject`);
+const Errors = require('@utils/Errors');
+const ReturnCode = require('@utils/ReturnCode');
+const ReturnObject = require('@utils/ReturnObject');
 
 module.exports.getAllByUserId = async function(req, res) {
   const returnObject = new ReturnObject([]);

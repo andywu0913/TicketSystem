@@ -1,15 +1,15 @@
 const axios = require('axios');
 
-const UserModel = require(`${__projdir}/models/user`);
+const UserModel = require('@models/user');
 
-const jwtUtility = require(`${__projdir}/utils/jwtUtility`);
-const passwordUtility = require(`${__projdir}/utils/passwordUtility`);
+const jwtUtility = require('@utils/jwtUtility');
+const passwordUtility = require('@utils/passwordUtility');
 
-const Errors = require(`${__projdir}/utils/Errors`);
-const ReturnCode = require(`${__projdir}/utils/ReturnCode`);
-const ReturnObject = require(`${__projdir}/utils/ReturnObject`);
+const Errors = require('@utils/Errors');
+const ReturnCode = require('@utils/ReturnCode');
+const ReturnObject = require('@utils/ReturnObject');
 
-const oauth = require(`${__projdir}/config/oauth`);
+const oauth = require('@config/oauth');
 
 module.exports.login = async function(req, res) {
   const returnObject = new ReturnObject({});

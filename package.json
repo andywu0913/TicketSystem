@@ -5,6 +5,15 @@
     "node": ">=10.5.0"
   },
   "private": true,
+  "_moduleAliases": {
+    "@root": "./",
+    "@config": "./config/",
+    "@routes": "./routes/",
+    "@controllers": "./controllers/",
+    "@middlewares": "./middlewares/",
+    "@models": "./models/",
+    "@utils": "./utils/"
+  },
   "scripts": {
     "dev": "NODE_ENV=development nodemon --ignore ./frontend/ --verbose ./bin/www",
     "dev:debug": "NODE_ENV=development DEBUG=*:* nodemon --ignore ./frontend/ --verbose ./bin/www",
@@ -22,12 +31,14 @@
     "http-errors": "~1.6.3",
     "ioredis": "^4.19.4",
     "jsonwebtoken": "^8.5.1",
+    "module-alias": "^2.2.2",
     "morgan": "~1.9.1",
     "mysql2": "^2.2.5"
   },
   "devDependencies": {
     "eslint": "^7.19.0",
     "eslint-config-airbnb-base": "^14.2.1",
+    "eslint-import-resolver-alias": "^1.1.2",
     "eslint-plugin-import": "^2.22.1",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-security": "^1.4.0",

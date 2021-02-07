@@ -1,8 +1,7 @@
-const ReturnObject = require(`${__projdir}/utils/ReturnObject`);
+const jwtUtility = require('@utils/jwtUtility');
 
-const Errors = require(`${__projdir}/utils/Errors`);
-
-const jwtUtility = require(`${__projdir}/utils/jwtUtility`);
+const Errors = require('@utils/Errors');
+const ReturnObject = require('@utils/ReturnObject');
 
 module.exports = function(ignoreExpiration = false) {
   return async function(req, res, next) {

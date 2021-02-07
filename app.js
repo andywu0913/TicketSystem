@@ -1,25 +1,23 @@
+require('module-alias/register');
+
 const createError = require('http-errors');
 const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 
-global.__version = require('./package.json').version;
+const corsMiddleware = require('@middlewares/cors');
+const mysqlMiddleware = require('@middlewares/mysql');
+const redisMiddleware = require('@middlewares/redis');
 
-global.__projdir = __dirname;
-
-const corsMiddleware = require('./middlewares/cors');
-const mysqlMiddleware = require('./middlewares/mysql');
-const redisMiddleware = require('./middlewares/redis');
-
-const userRouter = require('./routes/user');
-const eventRouter = require('./routes/event');
-const sessionRouter = require('./routes/session');
-const ticketRouter = require('./routes/ticket');
+const userRouter = require('@routes/user');
+const eventRouter = require('@routes/event');
+const sessionRouter = require('@routes/session');
+const ticketRouter = require('@routes/ticket');
 
 const app = express();
 
-// view engine setup
+// default express view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
@@ -55,7 +53,7 @@ app.use((req, res, next) => {
   next(createError(404));
 });
 
-// error handler
+// default error handler
 app.use((err, req, res) => {
   // set locals, only providing error in development
   res.locals.message = err.message;

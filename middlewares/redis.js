@@ -1,10 +1,10 @@
 const Redis = require('ioredis');
 
-const config = require(__projdir + '/config/redis');
+const config = require('@config/redis');
 
 const redis = new Redis(config);
 
 module.exports = function(req, res, next) {
-  req.redis = redis;
+  req.redis = redis; // TODO: using .multi() with singleton might cause problems???
   next();
 };
