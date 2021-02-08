@@ -4,6 +4,7 @@ import { Check2, EaselFill } from 'react-bootstrap-icons';
 
 import axios from 'axios';
 import { Formik } from 'formik';
+import moment from 'moment';
 import PropTypes from 'prop-types';
 import swal from 'sweetalert2';
 
@@ -36,7 +37,7 @@ function BookTicketModal(props) {
               <Modal.Title id="contained-modal-title-vcenter">{address}</Modal.Title>
             </Modal.Header>
             <Modal.Body>
-              <p>Time: {time}</p>
+              <p>Time: {moment(time).format('lll')}</p>
               <p>Price: {price}</p>
               <p>Available seats left: {openSeats}</p>
               <InputTextGroup
